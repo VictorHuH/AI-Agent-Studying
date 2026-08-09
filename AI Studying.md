@@ -1646,5 +1646,61 @@ dispatch_node 读 sources 列表，返回 3 个 Send：
 
 ## Popular Tools
 
+### Ponytail
+
+**定义：** 开源的 AI Coding 技能插件（本质是 Skill），定位【AI Coding 质量约束层】--不给 Agent 新能力，而是叠加一层"最懒资深工程师"的思维约束，要求只写任务必需的代码，治 AI Coding 的"代码膨胀"病（LOC 剧增、乱装依赖、过度设计）。
+
+**核心：七层决策阶梯**（理解问题后、动笔前依次爬升，停在第一个命中的档）：
+
+```
+1. 这东西需要存在吗？   -> 不需要就跳过（YAGNI）
+2. 代码库里已经有了？   -> 复用，别重写
+3. 标准库能做？         -> 用标准库
+4. 原生平台特性能做？   -> 用原生（<input type=date>、<dialog>、IntersectionObserver）
+5. 已安装的依赖能做？   -> 用已装依赖，别新增
+6. 一行能搞定？         -> 一行
+7. 最后才是：能工作的最小实现
+```
+
+**实现机制：hook 每轮注入。** 通过 `SessionStart` / `UserPromptSubmit` 等 hook **每轮对话重新注入**七层阶梯，纪律不随对话变长而稀释（对比写死 system prompt 一次会被稀释）。注入是 Harness（Claude Code）干的，不是模型--即 [[Skill]] 站"声明式 + Harness 实现"的产品级实物。七层阶梯本质是一组结构化 [[Rule]] 约束。
+
+**命令：**
+
+| 命令 | 作用 |
+|---|---|
+| `/ponytail [lite\|full\|ultra\|off]` | 设置强度或关闭，无参数返回当前等级 |
+| `/ponytail-review` | 单文件/变更块过度设计冗余评审 |
+| `/ponytail-audit` | 全仓库代码审计，输出待删冗余优先级清单 |
+| `/ponytail-debt` | 提取注释里 `ponytail:` 前缀的技术债，汇总台账 |
+
+`ponytail:` 注释前缀：Agent 做"有意简化"时标记（如 `// ponytail: 用原生 date 而非装 dayjs`），配合 `/ponytail-debt` 留可追溯痕迹。
+
+**实测收益（我的实验，Vue2+ElementUI 后台 + Claude Code+GLM-5.2，每组 4 轮取均，新会话防干扰）：**
+
+- 代码编写（简单+一般任务，保障正确性）：**LOC ↓33% / Token ↓30% / 耗时 ↓20%**，安全不降级
+- 原生优先验证：进度条、Excel 导出等场景，Ponytail 用原生方法替代装依赖（七层阶梯第 4 档实战兑现）
+- 代码审核（`/ponytail-audit`）：审核效率与建议采纳率均高于纯 AI Coding
+- 官方 Benchmark（React+FastAPI，n=4）：LOC -54% / token -22% / cost -20% / time -27% / 安全 100%
+
+**劣势/边界：**
+
+1. 极简任务收益≈0（代码已够精简时无的放矢，已验证）
+2. 复杂交互/已有严格组件规范的需求，收益明显收窄
+3. 对模型有要求：小模型不生效；部分 reasoning 模型（GPT-5.6）反复 deliberating 反而更贵
+4. 设计系统盲区：只看代码库有没有，不知项目实际组件库，可能破坏前端一致性
+
+**同类质量约束层插件：**
+
+| 插件 | 定位 | 治什么 | 与 Ponytail 差异 |
+|---|---|---|---|
+| Caveman | 压缩输出散文省 token | 输出啰嗦（管"说什么"） | 不改代码逻辑 |
+| Karpathy Skills | Karpathy 四原则编码纪律 | 乱改/跑偏 | 偏行为纪律 + 工程化 enforcement |
+| Ponytail | 七层阶梯约束代码量 | 代码多（管"写多少"） | 治本，约束代码本身 |
+| tokless | 整合包一键装齐 | -- | 全家桶入口（装上面三个+其他） |
+
+**连接已学：** Ponytail 没引入新概念，是已学概念的工程化组装--Skill（它本身是 Skill 插件）+ Prompt Rule（七层阶梯=结构化 Rule）+ Harness（hook 每轮注入=Harness 层能力）。归「工程实践补充」，非学习路线节点。详见 [[11-Ponytail]]。
+
+**参考：** [GitHub](https://github.com/DietrichGebert/ponytail) / [官网 ponytail.dev](https://ponytail.dev) / 官方 benchmark writeup
+
 
 

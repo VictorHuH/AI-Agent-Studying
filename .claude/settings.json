@@ -1,7 +1,8 @@
 {
   "permissions": {
     "allow": [
-      "Bash(PYTHONIOENCODING=utf-8 python daily_brief.py)"
+      "Bash(PYTHONIOENCODING=utf-8 python daily_brief.py)",
+      "Edit(/.claude/skills/record-tool/**)"
     ]
   }
 }
