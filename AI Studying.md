@@ -1702,5 +1702,51 @@ dispatch_node 读 sources 列表，返回 3 个 Send：
 
 **参考：** [GitHub](https://github.com/DietrichGebert/ponytail) / [官网 ponytail.dev](https://ponytail.dev) / 官方 benchmark writeup
 
+### 应用层 Benchmark
+
+**定义：** 标准化评测体系：输入测试集 → 评分规则 → 判定 AI 系统好坏。分**模型层**（测模型通用能力，供选型）与**应用层**（⭐测模型在特定业务链路的适用程度，供质量保障/回归测试/持续优化），工程重心在应用层。
+
+**核心：界定 → 衡量 → 改进。** 界定=建黄金数据集（20–50 例输入↔预期输出，专家独立判断）；衡量=评分器对测试集打分；改进=数据飞轮（记录→抽样→专家审查→回填黄金集，越用越厚的数据资产）。四要素：**数据集、评分器、指标、框架（eval harness）**。
+
+**评分器三型（内置逻辑都是断言）：** 代码型（确定性规则，可复现但只判形式不判语义）/ 模型型（LLM-as-a-Judge，能判语义但需人工校准）/ 人工型（专家判分，准但不可规模化）。准则：能编码→代码型；能用语言描述好坏→模型型；都不行→人工型。
+
+**命令（Promptfoo，CLI+YAML，TDD for LLM）：**
+
+| 命令 | 作用 |
+|---|---|
+| `promptfoo init` | 初始化生成配置（promptfooconfig.yaml） |
+| `promptfoo generate dataset` | 合成测试集 |
+| `promptfoo optimize` | 自动迭代优化 prompt |
+| `promptfoo eval` | 运行评估（prompts×providers×tests 矩阵评测） |
+| `promptfoo view` | 本地 Web UI 看结果 |
+
+指标按评测对象分六套：Prompt（矩阵评测）/ RAG（检索生成分阶段：context-recall、factuality、faithfulness…）/ Agent（trajectory:goal-success、tool-used…）/ SKILL（skill-used / not-skill-used，只换 SKILL.md 做对照）/ LLM 链（unit vs end-to-end）/ 结构化输出（is-json 带 Schema）。差异化能力：红队 50+ 漏洞类型（Plugins×Strategies）+ CI/CD 集成。
+
+**实测收益：** 调研阶段，无自建实测；后续真实场景落地时补黄金集 + 基线数据。
+
+**劣势/边界：**
+
+1. 框架只是工具，评估质量取决于任务和评分器本身
+2. 评分器各有天花板：代码型脆弱、模型型会幻觉需校准、人工型不可规模化
+3. 黄金集冷启动要专家投入，且需持续维护
+4. 自动化评估可能脱离真实用法造成假信心，需配合生产监控/用户反馈
+
+**同类（专用评测框架）：**
+
+| 框架 | 定位 | 一句话 |
+|---|---|---|
+| Promptfoo | 通用评测 + 红队（50+ 漏洞，最强） | 通用首选 |
+| DeepEval | Python/pytest 生态全家族指标 | Python 团队首选 |
+| RAGAS | RAG 专项 reference-free 指标库 | RAG 专项 |
+| mcp-eval | MCP 专项（真实 agent↔server + OTel 断言） | MCP 专项 |
+| skill-up | SKILL.md 评测 + 演进 | Skill 专项 |
+| Langfuse | 可观测性平台 + 在线评测 | 生产监控 |
+
+观测+评测一体化平台：LangSmith（LangChain 生态）/ Langfuse（自托管）/ Arize Phoenix（OTel 原生）/ Braintrust（一站式商业）。选型从评测对象 + 是否需生产监控出发。
+
+**连接已学：** 应用层 Benchmark 没引入新范式，是已学全链路的验收层——RAG 站手写 Hit@K/MRR 是代码型评分器的手写版；LLM-as-a-Judge 是 Prompt+FC 的反向应用（模型当裁判）；trajectory 指标量化 ReAct 轨迹；skill-used 断言测 Skill 站 description 触发正确性；数据飞轮≈长期记忆闭环的评测版；红队=阶段4护栏的自动化探测。前端老本行 TDD 的 LLM 重生。归「工程实践补充」，非学习路线节点。详见 [[12-应用层Benchmark评测]]。
+
+**参考：** [Anthropic — Demystifying evals for AI agents](https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents) / [OpenAI — 评估框架](https://openai.com/zh-Hans-CN/index/evals-drive-next-chapter-of-ai/) / [Langfuse — LLM Evaluation Strategy](https://langfuse.com/resources/engineering/llm-evaluation-strategy)
+
 
 
