@@ -15,7 +15,7 @@
 
 ## Prompt
 
-**定义：**给大模型输入的“自然语言指令”，特点在于 **轻量、灵活、非强约束**，局限在于 **幻觉、不稳定、输出漂移**
+**定义：**给大模型输入的“自然语言指令”，特点在于 **轻量、灵活、非强约束**，局限在于 **幻觉、不稳定、输出漂移*
 
 **本质：**模型是概率机器，Prompt 决定从概率分布里采哪个结果
 
@@ -340,6 +340,65 @@ Host 持有多个 Client ──(JSON-RPC over stdio/HTTP)──> 多个 Server
 （1）**TypeScript/Node.js**：基于官方 `@modelcontextprotocol/sdk`，自动生成 Zod 参数校验、类型定义、传输层代码
 
 （2）**Python**：基于 FastMCP 框架，自动（@mcp.tool() 装饰器）从函数签名和类型提示生成Schema（读**类型注解** `city: str` -> 生成参数、读**docstring** -> 生成 `description`），无需手写 JSON Schema
+
+
+
+## CLI
+
+**定义：**CLI = Command - Line Interface，命令行程序，**三要素**：
+
+- **输入**：命令 + 参数（`--input xx.txt --format json`）
+- **输出**：打印到终端（stdout/stderr）
+- **结果**：退出码（0 = 成功，非 0 = 失败）
+
+**本质：**Agent 有 **Bash 工具**（ Function Calling：LLM 决定调用 `bash` 这个函数，参数是命令字符串）。 **Agent 天然能用任何 CLI 工具** —— 不需要 MCP，LLM 自己“看”着 `--help` 输出，拼出正确的命令。
+
+> **Agent 能自动调用 CLI，是因为它的 Harness 给它注册了执行 shell 命令的工具；模型负责拼命令，Harness 负责跑命令。**
+
+```
+模型（Agent 的大脑）
+   ↓  决策：调用 bash 工具，参数 = 命令字符串     ← 这是模型干的唯一一件事
+Harness（运行壳，如 Claude Code）
+   ↓  执行：在操作系统里真的起进程跑这条命令
+操作系统 → 运行 CLI → stdout/退出码回填给模型
+```
+
+**调用过程示例：**
+
+```
+Claude Code对话框：帮我检查这份合同的风险
+LLM 第 1 轮：我不了解这个工具 → 调用 bash("contract-check --help")
+              ↓ 运行时执行，--help 输出回填
+LLM 第 2 轮：明白了，有 --file 和 --format → bash("contract-check --file a.pdf --format json")
+              ↓ stdout 的 JSON 结果回填
+LLM 第 3 轮：读结果，总结风险点给你
+```
+
+**和MCP区别：**
+
+|          | MCP 形式                                                    | CLI 形式                                  |
+| -------- | ----------------------------------------------------------- | ----------------------------------------- |
+| 谁来调用 | Cursor、Claude Code 这类 MCP 宿主                           | 人、脚本、CI、任何有 shell 的 Agent       |
+| 工具发现 | 宿主启动时自动 `tools/list`，结构化注册                     | LLM 要自己跑 `--help` 去发现              |
+| 怎么调用 | 走 MCP 协议，工具以结构化的 `tools/list`、`tools/call` 暴露 | 直接跑命令：`contract-check --file a.pdf` |
+| 参数传递 | JSON Schema，类型化、有描述                                 | 字符串参数 + 帮助文档（`--help`）         |
+
+> **MCP 是为 LLM 量身定制的接口，CLI 是为操作系统已有的通用接口——而 Agent 的 Bash 工具让 LLM “降级兼容”了后者。**
+
+**在连接器中的应用：**
+
+| 原文                        | 人话                                                         |
+| --------------------------- | ------------------------------------------------------------ |
+| **MCP + CLI（标准化协议）** | 连接器是个 MCP Server，通过协议自动注册到模型工具列表里；Server 本身是个命令行程序 |
+| **Skill + CLI（内置脚本）** | 连接器是个技能包，模型读说明书学会用法，再通过跑内置脚本来干活 |
+
+一句话压缩：
+
+> **+CLI 是“活谁来干”（都是命令行程序干）；MCP 和 Skill 是“模型怎么学会用它”（协议自动注册 vs 读说明书自学）。**
+
+
+
+
 
 
 
@@ -1702,6 +1761,8 @@ dispatch_node 读 sources 列表，返回 3 个 Send：
 
 **参考：** [GitHub](https://github.com/DietrichGebert/ponytail) / [官网 ponytail.dev](https://ponytail.dev) / 官方 benchmark writeup
 
+
+
 ### 应用层 Benchmark
 
 **定义：** 标准化评测体系：输入测试集 → 评分规则 → 判定 AI 系统好坏。分**模型层**（测模型通用能力，供选型）与**应用层**（⭐测模型在特定业务链路的适用程度，供质量保障/回归测试/持续优化），工程重心在应用层。
@@ -1747,6 +1808,4 @@ dispatch_node 读 sources 列表，返回 3 个 Send：
 **连接已学：** 应用层 Benchmark 没引入新范式，是已学全链路的验收层——RAG 站手写 Hit@K/MRR 是代码型评分器的手写版；LLM-as-a-Judge 是 Prompt+FC 的反向应用（模型当裁判）；trajectory 指标量化 ReAct 轨迹；skill-used 断言测 Skill 站 description 触发正确性；数据飞轮≈长期记忆闭环的评测版；红队=阶段4护栏的自动化探测。前端老本行 TDD 的 LLM 重生。归「工程实践补充」，非学习路线节点。详见 [[12-应用层Benchmark评测]]。
 
 **参考：** [Anthropic — Demystifying evals for AI agents](https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents) / [OpenAI — 评估框架](https://openai.com/zh-Hans-CN/index/evals-drive-next-chapter-of-ai/) / [Langfuse — LLM Evaluation Strategy](https://langfuse.com/resources/engineering/llm-evaluation-strategy)
-
-
 

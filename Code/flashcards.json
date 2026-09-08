@@ -1,0 +1,14 @@
+[
+  {
+    "question": "CLI 的三要素契约是什么",
+    "answer": "参数进（--help 是说明书）、文本出（stdout 数据 / stderr 日志）、退出码报成败（0 成功）"
+  },
+  {
+    "question": "MCP 和 CLI 作为 AI 工具接口的核心区别",
+    "answer": "MCP 是结构化协议、Schema 校验、宿主自动发现；CLI 是进程契约、零集成成本、Agent 通过 Bash 工具自己发现和调用"
+  },
+  {
+    "question": "Function Calling 的循环是什么",
+    "answer": "LLM 看到工具定义 → 决定调用哪个工具+JSON 参数 → 运行时执行 → 结果回填给 LLM → 循环，直到 LLM 认为任务完成"
+  }
+]
