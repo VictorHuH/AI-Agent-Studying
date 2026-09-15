@@ -1,0 +1,22 @@
+{
+  "name": "学习卡片（CLI 版）",
+  "name_zh": "学习卡片（CLI 版）",
+  "name_en": "Flashcards (CLI)",
+  "description": "通过自然语言管理学习卡片：添加、按标签浏览、随机抽卡自测。与 MCP 版共享同一个卡片库。",
+  "description_zh": "通过自然语言管理学习卡片：添加、按标签浏览、随机抽卡自测。与 MCP 版共享同一个卡片库。",
+  "description_en": "Manage study flashcards with natural language: add, browse by tag, and draw random cards for self-testing. Shares the same card library with the MCP version.",
+  "source": "flashcards-cli",
+  "type": "cli",
+  "version": "1.0.0",
+  "minWorkbuddyVersion": "5.0.0",
+  "examples_zh": [
+    "帮我记一张卡片：RAG 的三个经典步骤是什么",
+    "列出标签为 RAG 的所有卡片",
+    "随机抽一张卡片考考我，我答完你再说答案"
+  ],
+  "examples_en": [
+    "Add a flashcard: what are the three classic steps of RAG",
+    "List all cards tagged RAG",
+    "Draw a random card to quiz me, and tell me the answer after I respond"
+  ]
+}

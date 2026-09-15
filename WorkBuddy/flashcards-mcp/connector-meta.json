@@ -1,0 +1,21 @@
+{
+  "name": "学习卡片",
+  "name_zh": "学习卡片",
+  "name_en": "Flashcards",
+  "description": "通过自然语言管理学习卡片，添加、浏览、按标签过滤，以及随机抽卡自测。",
+  "description_zh": "通过自然语言管理学习卡片：添加、浏览、按标签过滤，以及随机抽卡自测。",
+  "description_en": "Manage study flashcards with natural language: add, browse, filter by tag, and draw a random card for self-testing.",
+  "source": "flashcards",
+  "type": "mcp",
+  "version": "1.0.0",
+  "examples_zh": [
+    "帮我记一张卡片：RAG 的三个经典步骤是什么",
+    "列出标签为 RAG 的所有卡片",
+    "随机抽一张卡片考考我"
+  ],
+  "examples_en": [
+    "Add a flashcard: what are the three classic steps of RAG",
+    "List all cards tagged RAG",
+    "Draw a random card to quiz me"
+  ]
+}

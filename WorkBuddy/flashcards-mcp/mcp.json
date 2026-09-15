@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "flashcards": {
+      "type": "stdio",
+      "command": "python",
+      "args": ["server/server.py"],
+      "env": { "PYTHONUTF8": "1" },
+      "timeout": 10000
+    }
+  }
+}

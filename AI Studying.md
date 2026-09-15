@@ -1809,3 +1809,29 @@ dispatch_node 读 sources 列表，返回 3 个 Send：
 
 **参考：** [Anthropic — Demystifying evals for AI agents](https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents) / [OpenAI — 评估框架](https://openai.com/zh-Hans-CN/index/evals-drive-next-chapter-of-ai/) / [Langfuse — LLM Evaluation Strategy](https://langfuse.com/resources/engineering/llm-evaluation-strategy)
 
+### WorkBuddy 连接器
+
+**定义：** 腾讯 WorkBuddy（AI 助手）的第三方能力扩展接口：开发者提交符合规范的目录（zip），审核通过进市场，用户安装后自然语言调用服务。
+
+**核心：** 两条接法、一个连接器只选一种——**MCP + Skill**（推荐，协议注册：mcp.json 单 Server + 远程 HTTPS 或本地 stdio）/ **CLI + Skill**（读说明书：cli.json 三平台 init + auth/status/unAuth 认证生命周期，AI 全靠 SKILL.md 学会用 CLI）。共同配置 connector-meta.json（source 全局唯一 kebab-case、中英名称/描述/示例）。**版本门控**：带版本号的字段（如 cli.json runtime Python = 5.0.0）必须在 meta 声明 minWorkbuddyVersion。
+
+**结构（MCP 版）：**
+
+| 文件 | 作用 |
+|---|---|
+| connector-meta.json | 注册 + 市场展示（名称/描述/示例/source/type/version） |
+| mcp.json | 单 Server 连接（stdio: command+args / HTTP: url+${VAR} 占位） |
+| icon.svg | 市场图标 |
+| skills/{name}/SKILL.md | 使用策略：何时用哪个工具、多步编排、错误恢复 |
+
+**实测收益：** 同一能力（学习卡片）两方案各实现一遍共享同一数据库：MCP 版 FastMCP stdio 真实 Client 冒烟全通；CLI 版四步循环验收 + 退出码全通；`verify_skill.py`（system prompt=SKILL.md 正文 + run_command 工具，断言 add→random→reveal 序列）glm-5.2 实测 PASS——skill-used 断言的回归落地。
+
+**劣势/边界：**
+1. demo 的本地路径/未发布包名需正式化（PyPI/npm 发布或远程 HTTPS）才能真提交
+2. 人工审核市场，更新要 10~15 分钟同步
+3. CLI 认证时序约束细（杀进程/轮询/跨重启），能走 MCP 就别走 CLI
+
+**连接已学：** 没引入新概念——MCP+Skill = 协议注册与读说明书两种"模型怎么知道能力"的拼合（13-CLI 三形态判断被官方文档证实）；skills/ 复用 07-Skill 的格式与渐进式披露；版本门控 = 配置分发层的渐进式披露；verify_skill.py = 12-Benchmark skill-used 断言的最小实现；WorkBuddy 本身 = 05-Agent 站的 Host/Harness（管安装认证轮询，模型只决策）。归「工程实践补充」，非学习路线节点。详见 [[14-WorkBuddy连接器]]。
+
+**参考：** [WorkBuddy 连接器指南](https://open.workbuddy.cn/docs/connector) / [WorkBuddy 技能指南](https://open.workbuddy.cn/docs/skill) / 本仓库实物 `WorkBuddy/flashcards-mcp/`、`WorkBuddy/flashcards-cli/`
+
