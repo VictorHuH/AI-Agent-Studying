@@ -1,0 +1,42 @@
+{
+  "eval_name": "mcp-standard",
+  "configuration": "with_skill",
+  "expectations": [
+    {
+      "text": "正好 6 道题",
+      "passed": true,
+      "evidence": "输出含第 1-6 题共 6 道题，编号连续：第1题三大原语、第2题M×N→M+N、第3题解耦的本质、第4题新场景迁移、第5题FastMCP实战（含两个小问，算一道）、第6题MCP和FC的关系。标题也明示'MCP 自测 · 6 道题'。"
+    },
+    {
+      "text": "题目基于正确笔记（06-MCP.md）",
+      "passed": true,
+      "evidence": "输出第3行明确声明'范围：06-MCP.md 全部七节'，六道题分别对应笔记的七个真实小节，未混入其他笔记文件的内容。"
+    },
+    {
+      "text": "每道题可溯源到 06-MCP.md 真实小节，无笔记里不存在的内容",
+      "passed": true,
+      "evidence": "逐题核对：第1题→'三、三大原语'（Tools/Resources/Prompts 对应 FC/RAG/Prompt，笔记88-94行）；第2题→'一、本质：M×N→M+N'（笔记20-35行，含USB-C类比在35行）；第3题→'五、实战2'关键认知段（笔记141-151行，StdioServerParameters、不import Server代码、跨进程跨语言均在）；第4题→'三'的Resources例子'简历PDF'（笔记91行）+'二'的Host例子Claude Desktop（笔记71行）；第5题→'四、实战1'（schema从类型注解自动生成、docstring即description见笔记118-126行；'不能直接python test_mcp_server.py看输出'见笔记129行）；第6题→'六、MCP和FC的关系'（笔记189-200行，FC出决策→MCP执行）。未发现笔记外内容。"
+    },
+    {
+      "text": "一个考点最多出一道题",
+      "passed": true,
+      "evidence": "六道题各占一个考点：第1题考'三大原语列举与对应'（笔记三）、第2题考'M×N问题与MCP解法'（笔记一）、第3题考'Client不import Server的解耦本质'（笔记五）、第4题考'Resources原语在新场景的选用'（笔记三的应用，与第1题的列举考点不同）、第5题考'FastMCP schema自动生成+stdio服务性质'（笔记四）、第6题考'FC与MCP分层关系'（笔记六）。无同一小节/考点被两道题重复考。"
+    },
+    {
+      "text": "认知层次混合，至少覆盖 2 个布鲁姆层次，不全是记忆层",
+      "passed": true,
+      "evidence": "输出自标'记忆 1 + 理解 2 + 应用 2 + 分析 1'，我逐题判定与其一致：第1题=记忆（列举三类原语）；第2题=理解（解释为什么M×N变成M+N）；第3题=理解（解释为什么不需要import）；第4题=应用（把简历知识库迁移到新场景选择原语）；第5题=应用（分析FastMCP重写后的schema来源与运行行为）；第6题=分析（评判'MCP淘汰FC'的观点并说明两层配合）。覆盖记忆/理解/应用/分析4个层次，非全记忆。"
+    },
+    {
+      "text": "出题时不附带答案或解析",
+      "passed": true,
+      "evidence": "六道题均为纯题干，无'参考答案'/'答题要点'段落。第3题括号'（提示：跨进程、跨语言）'属题干内提示，规则明确不算泄题。结尾'答完我逐题判分，错的题会讲清思路'属判分说明，不算泄题。"
+    }
+  ],
+  "summary": {
+    "pass_rate": 1.0,
+    "passed": 6,
+    "failed": 0,
+    "total": 6
+  }
+}

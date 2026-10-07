@@ -1,0 +1,626 @@
+{
+  "skill_name": "self-test",
+  "schema_version": "v1alpha1",
+  "engine_name": "claude_code",
+  "model_name": "",
+  "requested_configuration": {
+    "role": "runner",
+    "engine": "claude_code",
+    "protocol": "anthropic"
+  },
+  "applied_configuration": {
+    "role": "runner",
+    "engine": "claude_code",
+    "protocol": "anthropic"
+  },
+  "observed_configuration": {
+    "version": "2.1.273"
+  },
+  "start_time": "2026-10-06T23:34:51.5878028+08:00",
+  "end_time": "2026-10-06T23:46:10.2716938+08:00",
+  "case_results": [
+    {
+      "case_id": "case-0",
+      "title": "MCP 标准请求",
+      "status": "PASS",
+      "duration_ms": 25725,
+      "turns": 1,
+      "input_tokens": 27437,
+      "output_tokens": 824,
+      "judge_duration_ms": 47328,
+      "judge_input_tokens": 30385,
+      "judge_output_tokens": 2445,
+      "grading": {
+        "status": "PASS",
+        "turns_executed": 1,
+        "turns_total": 1,
+        "assertion_results": [
+          {
+            "text": "expect.must_not_contain",
+            "passed": true,
+            "evidence": "all checks passed"
+          },
+          {
+            "text": "正好 6 道题（一题含多个小问仍算一道）",
+            "passed": true,
+            "evidence": "final_message 中恰好包含 6 道题：第 1 题（M×N → M+N）、第 2 题（三角架构与通信）、第 3 题（三大原语）、第 4 题（写 Server）、第 5 题（写 Client）、第 6 题（MCP 和 FC 的关系），编号连续为 1–6; 第 2 题含 a/b 两个小问（连接关系、传输层），第 4、5 题也各含多个小问，但均各自归为一道题，总题数仍为 6 道，符合'一题含多个小问仍算一道'的规则; 标题明确写'📝 MCP 自测 · 共 6 题'，与实际题目数量一致"
+          },
+          {
+            "text": "题目基于工作区中的 06-MCP.md，未混入其他笔记或笔记外知识",
+            "passed": true,
+            "evidence": "transcript 显示 agent 通过 Glob 定位到 c:\\Users\\Administrator\\Desktop\\AI\\Studying\\06-MCP.md 并完整 Read 了该文件（243 行全文），随后出题，未读取其他笔记文件; 6 道题的题干素材均可对应 06-MCP.md 内容：Q1 对应第 10–35 行'一、本质：为什么需要 MCP（M×N → M+N）'，Q2 对应第 50–80 行'二、架构：Host / Client / Server 三角'，Q3 对应第 84–94 行'三、三大原语'，Q4 对应第 100–129 行'四、实战 1：写一个 MCP Server'，Q5 对应第 133–151 行'五、实战 2：写一个 MCP Client'，Q6 对应第 187–200 行'六、关键认知：MCP 和 FC 的关系'; 题干中的具体细节均出自该笔记原文：如 'M×N 份适配代码变成 M+N'（第 22–33 行）、SSE 已废弃（第 80 行）、'python test_mcp_server.py 看不到输出'（第 129 行）、'不 import server 代码！只起子进程'（第 140、151 行）、'嘴'和'手'的比喻（第 200 行），未混入笔记外知识"
+          },
+          {
+            "text": "每道题可溯源到 06-MCP.md 真实小节，无笔记里不存在的内容",
+            "passed": true,
+            "evidence": "第 1 题可溯源到笔记'## 一、本质：为什么需要 MCP（M×N → M+N）'小节，M×N → M+N 表述见第 22、33 行; 第 2 题可溯源到'## 二、架构：Host / Client / Server 三角'：三角色表格在第 69–73 行，Client 与 Server 1:1 连接见第 59 行，stdio/Streamable HTTP 两种传输及 SSE 已废弃见第 78–80 行; 第 3 题可溯源到'## 三、三大原语（Primitives）'：三类原语对应 FC/RAG/Prompt 三范式的表格见第 88–92 行; 第 4 题可溯源到'## 四、实战 1：写一个 MCP Server'：'不能直接 python test_mcp_server.py 看输出'见第 129 行，@mcp.tool() 自动生成 schema/docstring 见第 106–125 行; 第 5 题可溯源到'## 五、实战 2：写一个 MCP Client'：协议流程四步（①启动 Server ②握手 ③发现 ④调用）见第 140–148 行，'不需要 import Server 的代码'的关键认知见第 151 行; 第 6 题可溯源到'## 六、关键认知：MCP 和 FC 的关系'：'MCP 不是 FC 的替代，是分层'小节（第 189–200 行）及'FC 是嘴，MCP 是手的标准化接口'（第 200 行）"
+          },
+          {
+            "text": "一个考点最多出一道题（两道题知识实质相同算重复）",
+            "passed": true,
+            "evidence": "6 道题逐题对应笔记的 6 个不同 H2 小节（一、二、三、四、五、六），无两题落在同一小节; 知识实质不重复：Q1 考 M×N 成本模型的解释，Q4 考 FastMCP 装饰器与 stdio 运行行为，Q5 考 Client 四步协议流程与子进程解耦，Q6 考 FC/MCP 分层关系——各题考查的知识点互不重叠; final_message 明确声明'每题对应不同小节、无重复考点'，且与 transcript 中提取的 17 个标题清单核对一致：Q1↔'一、本质'，Q2↔'二、架构'，Q3↔'三、三大原语'，Q4↔'四、实战 1'，Q5↔'五、实战 2'，Q6↔'六、关键认知'，一一对应无冲突"
+          },
+          {
+            "text": "认知层次混合：至少覆盖 2 个布鲁姆层次（记忆/理解/应用/分析），不全是记忆层",
+            "passed": true,
+            "evidence": "题目标注了混合的认知层次：第 1–3 题为【理解】，第 4 题为【应用】，第 5 题为【应用/分析】，第 6 题为【分析】，覆盖理解、应用、分析至少 3 个布鲁姆层次; 实际题干内容也符合层次标注而非仅贴标签：第 4 题是情境应用题（同事小李直接运行 server 以为代码坏了，需指出误解并说明原因），第 6 题是分析/评价题（评判'MCP 是 FC 升级版、学 MCP 不用学 FC'这一说法的错处），均非单纯记忆复述; 6 道题中无任何一道是纯记忆层题目（如'列出三个角色的名称'这类），即便是第 2、3 题也要求解释'各自干什么'、'对应哪个范式、举例'，属于理解层而非记忆层，满足'不全是记忆层'的要求"
+          },
+          {
+            "text": "出题时不附带答案或解析（\"答完我判分\"这类流程说明不算泄题）",
+            "passed": true,
+            "evidence": "final_message 开头明确声明'**先作答，我后判分**——现在不透露任何答案'，全文未给出任何一题的答案或解析; 结尾'写完（或逐题）发给我，我按题判分——答错的题我会先讲思路再给答案，并标对应笔记小节'属于流程说明（承诺判分方式），未泄露题目答案本身，符合'答完我判分这类流程说明不算泄题'的豁免; 逐题检查题干：第 2 题问'哪种已被废弃'（只提问未告知是 SSE）、第 4 题问'省掉了哪两样手写的东西'（只提问未说出 TOOLS_SCHEMA/TOOL_REGISTRY）、第 5 题问'为什么不需要 import'（只提问未解释解耦机制）、第 6 题引用'嘴'和'手'的比喻仅指明作答应使用的框架，未给出'FC 是嘴、MCP 是手'的答案内容; transcript 中 agent 出题前后的所有输出均无答案文本，判分承诺与 self-test skill 步骤 5'出完题先不公布答案'一致"
+          }
+        ],
+        "summary": {
+          "passed": 7,
+          "failed": 0,
+          "total": 7,
+          "pass_rate": 1
+        },
+        "judge_context": {
+          "profile": "standard",
+          "materialized_dir": "judge/context",
+          "manifest": {
+            "profile": "standard",
+            "materialized_dir": "judge/context",
+            "materials": [
+              {
+                "key": "final_message",
+                "mode": "include",
+                "path": "judge/context/final_message.txt",
+                "bytes": 2169,
+                "original_bytes": 2169
+              },
+              {
+                "key": "transcript",
+                "mode": "file_ref",
+                "path": "judge/context/transcript.json",
+                "bytes": 22634,
+                "original_bytes": 22634
+              },
+              {
+                "key": "workspace_diff",
+                "mode": "omit",
+                "bytes": 0
+              },
+              {
+                "key": "generated_files",
+                "mode": "omit",
+                "bytes": 0
+              }
+            ]
+          },
+          "prompt_delivery": "inline",
+          "prompt_bytes": 5588
+        }
+      },
+      "configuration": "with_skill",
+      "prompt": "考我 MCP，考全部，出 6 道题。（已确认：考全部内容、出 6 道题，中途无需再向用户确认，直接完成出题。）\n",
+      "response": "笔记已读完（`06-MCP.md`，17 个考点，核心 6 节），6 道题按布鲁姆认知层次混合出，每题对应不同小节、无重复考点。**先作答，我后判分**——现在不透露任何答案。\n\n---\n\n## 📝 MCP 自测 · 共 6 题\n\n### 第 1 题【理解】M×N → M+N\n笔记说 MCP 解决的核心问题是\"M×N 份适配代码变成 M+N\"。请解释：**M 和 N 分别指什么？在没有 MCP 的世界里，为什么成本是 M×N？MCP 又是怎么把它变成 M+N 的？**\n\n### 第 2 题【理解】三角架构与通信\n画出（或文字描述）MCP 的三角架构：**三个角色分别是什么、各自干什么？** 并回答两个细节：\n- a) Client 和 Server 是什么连接关系？\n- b) 传输层有哪两种方式，分别适用什么场景？哪种已被废弃？\n\n### 第 3 题【理解】三大原语\nMCP Server 能暴露三类原语。**请说出这三类分别是什么，并说明它们各自对应你已学的哪个范式、举一个例子。**\n\n### 第 4 题【应用】写 Server\n你用 FastMCP 写了一个 `test_mcp_server.py`，同事小李直接运行 `python test_mcp_server.py`，发现\"什么输出都没有\"，以为代码坏了。**请指出他的误解在哪里，并说明原因。** 另外对比 FC demo：`@mcp.tool()` 装饰器帮你省掉了哪两样手写的东西？schema 和 description 分别从哪里来？\n\n### 第 5 题【应用/分析】写 Client\n写 MCP Client 时有四个协议流程步骤。**请按顺序写出这四步分别做什么。** 并回答一个关键问题：Client 只给了 `command` 和 `args` 这种\"启动命令\"，**为什么不需要 `import` Server 的代码就能调用它的工具？这体现了什么本质？**\n\n### 第 6 题【分析】MCP 和 FC 的关系\n同事说：\"MCP 是 Function Calling 的升级版，学会 MCP 就不用学 FC 了。\"**这个说法哪里不对？** 请说明两者各自解决什么层面的问题，以及在真实工业 Agent 中两者如何配合（用笔记里\"嘴\"和\"手\"的比喻解释）。\n\n---\n\n写完（或逐题）发给我，我按题判分——答错的题我会先讲思路再给答案，并标对应笔记小节。",
+      "observed_version": "2.1.273"
+    },
+    {
+      "case_id": "case-0",
+      "title": "MCP 标准请求",
+      "status": "PASS",
+      "duration_ms": 44201,
+      "turns": 2,
+      "input_tokens": 28873,
+      "output_tokens": 1312,
+      "judge_duration_ms": 45320,
+      "judge_input_tokens": 31723,
+      "judge_output_tokens": 2044,
+      "grading": {
+        "status": "PASS",
+        "turns_executed": 2,
+        "turns_total": 1,
+        "assertion_results": [
+          {
+            "text": "expect.must_not_contain",
+            "passed": true,
+            "evidence": "all checks passed"
+          },
+          {
+            "text": "正好 6 道题（一题含多个小问仍算一道）",
+            "passed": true,
+            "evidence": "final_message 中恰好列出 6 道题：第 1 题至第 6 题，标题为「MCP 自测 · 共 6 题」，与用户要求的 6 道题一致; 每道题虽含多个小问（如第 2 题含角色、比例、协议层/传输层等多个子问），但仍各算一道题，总数为 6"
+          },
+          {
+            "text": "题目基于工作区中的 06-MCP.md，未混入其他笔记或笔记外知识",
+            "passed": true,
+            "evidence": "transcript 显示 agent 用 Glob 定位到 c:\\Users\\Administrator\\Desktop\\AI\\Studying\\06-MCP.md 并完整读取该笔记后才出题，题目全部对应 06-MCP.md 的第一至第六节; 第 3 题「对应你之前学过的哪三大范式」出自笔记第三节表格的「对应已学」列（FC / RAG / Prompt），属笔记内内容而非笔记外知识; 第 6 题问 Claude Code 的角色对应笔记第六节小节「你正在用的 Claude Code 就是 MCP 的 Host」，是笔记原文内容; 第 4 题的 search_notes(keyword) 是新任务场景（布鲁姆应用层出题法，references/bloom_taxonomy.md 明确示范「给个新场景让用户操作」），考察的知识点（FastMCP 装饰器、schema 自动生成、stdio 运行行为）均出自笔记第四节"
+          },
+          {
+            "text": "每道题可溯源到 06-MCP.md 真实小节，无笔记里不存在的内容",
+            "passed": true,
+            "evidence": "第 1 题对应笔记「一、本质：为什么需要 MCP（M×N → M+N）」小节，M×N/M+N 与 USB-C 类比均为该节原文; 第 2 题对应「二、架构：Host / Client / Server 三角」小节：三角色表、Client 与 Server 1:1、协议层 JSON-RPC 2.0、传输层 stdio/Streamable HTTP 及「教学首选，最简」均出自该节; 第 3 题对应「三、三大原语（Primitives）」小节的 Tools/Resources/Prompts 表格; 第 4 题对应「四、实战 1：写一个 MCP Server」的「代码结构：2 个必懂点」，包括「不能直接 python test_mcp_server.py 看输出」这一原文要点; 第 5 题对应「五、实战 2：写一个 MCP Client」的「协议流程四步」、解耦关键认知及「Windows 工程坑」小节（第一个坑 command=sys.executable 确实列在首位）; 第 6 题对应「六、关键认知：MCP 和 FC 的关系」小节的「MCP 不是 FC 的替代，是分层」和「你正在用的 Claude Code 就是 MCP 的 Host」两个小节"
+          },
+          {
+            "text": "一个考点最多出一道题（两道题知识实质相同算重复）",
+            "passed": true,
+            "evidence": "六道题逐题标注了不同考点：一（本质 M×N→M+N）、二（三角架构）、三（三大原语）、四（写 Server）、五（写 Client）、六（MCP 与 FC 的关系），与笔记六个 H2 小节一一对应，无两题落在同一小节; 知识实质不重复：第 1 题考 M×N 问题与 USB-C 类比，第 6 题考 FC 与 MCP 分层及 Claude Code 角色，虽都涉及 MCP 价值但考察的具体知识实质不同且分属笔记第一、六两节; 第 2 题与第 5 题虽都涉及 stdio，但第 2 题考传输层两种方式的选型场景，第 5 题考协议流程四步与解耦本质，知识实质不同"
+          },
+          {
+            "text": "认知层次混合：至少覆盖 2 个布鲁姆层次（记忆/理解/应用/分析），不全是记忆层",
+            "passed": true,
+            "evidence": "题目明确标注认知层次：第 1、2 题为「理解」，第 3 题为「记忆」，第 4、5 题为「应用」，第 6 题为「分析」，共覆盖 4 个布鲁姆层次; 并非全是记忆层：仅第 3 题为记忆层，其余 5 题为理解/应用/分析层次; 第 6 题要求反驳「MCP 就是 FC 换个名字」的说法并分析两层如何接起来工作，符合布鲁姆参考文件中分析层「问区别/联系/边界」的定义"
+          },
+          {
+            "text": "出题时不附带答案或解析（\"答完我判分\"这类流程说明不算泄题）",
+            "passed": true,
+            "evidence": "final_message 中每道题只提出问题，未给出任何答案或解析; 结尾「逐题作答即可，答完我按题判分、错的讲透（附对应笔记小节）」属于流程说明，明确表示判分和讲解在用户作答之后，符合「先问后判」要求; 第 4 题「终端里什么都没有——这是坏了吗？为什么？」只描述现象提问，未透露「server 在等 stdin 请求」的答案; 第 5 题虽引述「不需要 import Server 的代码」这一笔记原文事实作为题干前提，但问的是背后的「为什么」和「解耦解的是什么」，未附答案；问「第一个坑是什么」也未透露 sys.executable"
+          }
+        ],
+        "summary": {
+          "passed": 7,
+          "failed": 0,
+          "total": 7,
+          "pass_rate": 1
+        },
+        "judge_context": {
+          "profile": "standard",
+          "materialized_dir": "judge/context",
+          "manifest": {
+            "profile": "standard",
+            "materialized_dir": "judge/context",
+            "materials": [
+              {
+                "key": "final_message",
+                "mode": "include",
+                "path": "judge/context/final_message.txt",
+                "bytes": 2340,
+                "original_bytes": 2340
+              },
+              {
+                "key": "transcript",
+                "mode": "file_ref",
+                "path": "judge/context/transcript.json",
+                "bytes": 26361,
+                "original_bytes": 26361
+              },
+              {
+                "key": "workspace_diff",
+                "mode": "omit",
+                "bytes": 0
+              },
+              {
+                "key": "generated_files",
+                "mode": "omit",
+                "bytes": 0
+              }
+            ]
+          },
+          "prompt_delivery": "inline",
+          "prompt_bytes": 5759
+        }
+      },
+      "configuration": "without_skill",
+      "prompt": "考我 MCP，考全部，出 6 道题。（已确认：考全部内容、出 6 道题，中途无需再向用户确认，直接完成出题。）\n",
+      "response": "考点清单已提取（17 个标题，归并为 7 个核心考点），笔记已通读。你已确认考全部、出 6 题——按“每个考点最多一题”配好了覆盖面，认知层次混合出题。开考：\n\n---\n\n## 📝 MCP 自测 · 共 6 题\n\n**第 1 题**〔理解 ｜ 考点：一、本质 M×N → M+N〕\n用你自己的话说说：MCP 出现之前，M 个 Host 接 N 个工具的成本问题出在哪？MCP 是怎么把它变成 M+N 的？顺便解释一下为什么笔记里把 MCP 比作“USB-C 接口”——这个类比到底在比什么？\n\n**第 2 题**〔理解 ｜ 考点：二、Host / Client / Server 三角〕\n画出（或描述）MCP 的三角架构：三个角色各自负责什么？Client 和 Server 是几比几的关系？协议层和传输层分别指什么——传输层的两种方式各适用什么场景，其中 stdio 为什么被选为教学首选？\n\n**第 3 题**〔记忆 ｜ 考点：三、三大原语〕\nServer 能暴露哪三类东西？它们分别对应你之前学过的哪三大范式？各举一个例子。\n\n**第 4 题**〔应用 ｜ 考点：四、实战——写 MCP Server〕\n现在给你一个新任务：用 FastMCP 写一个 `search_notes(keyword)` 工具。对比 FC demo 的老写法，你需要手写哪几样东西、哪些是自动生成的？另外：写完这个 server 文件后，你直接 `python xxx.py` 运行它，终端里什么都没有——这是坏了吗？为什么？\n\n**第 5 题**〔应用 ｜ 考点：五、实战——写 MCP Client〕\n写出（或描述）Client 从零调用一个 Server 工具的协议流程四步。关键点：为什么 Client 只需要 `command + args`，**不需要 import Server 的代码**？这背后体现的“解耦”到底解的是什么？如果 Windows 上跑不起来，笔记里踩平的第一个坑是什么？\n\n**第 6 题**〔分析 ｜ 考点：六、MCP 与 FC 的关系〕\n同事说：“MCP 不就是 Function Calling 换个名字吗？学会一个另一个没用了。”请指出这句话错在哪——两者分别解决什么问题？在一个真实的工业版 Agent 里，这两层是怎么**接起来**工作的？最后：你正在用的 Claude Code 在这套架构里扮演什么角色？\n\n---\n\n逐题作答即可，答完我按题判分、错的讲透（附对应笔记小节）。开始吧 👇",
+      "observed_version": "2.1.273"
+    },
+    {
+      "case_id": "case-1",
+      "title": "Agent 换触发语",
+      "status": "PASS",
+      "duration_ms": 84903,
+      "turns": 1,
+      "input_tokens": 31871,
+      "output_tokens": 3363,
+      "judge_duration_ms": 42094,
+      "judge_input_tokens": 35154,
+      "judge_output_tokens": 2213,
+      "grading": {
+        "status": "PASS",
+        "turns_executed": 1,
+        "turns_total": 1,
+        "assertion_results": [
+          {
+            "text": "expect.must_not_contain",
+            "passed": true,
+            "evidence": "all checks passed"
+          },
+          {
+            "text": "正好 6 道题（一题含多个小问仍算一道）",
+            "passed": true,
+            "evidence": "final_message 标题明确写 'Agent 自测 · 共 6 题'，正文依次列出第 1 题到第 6 题，不多不少; 第 4 题包含 ①② 两个小问（user 角色拼回、JSON 解析容错），第 6 题包含 ①② 两个小问（闭环五步、md5 vs hash 排错），按规则各算一道题，总数仍为 6 道"
+          },
+          {
+            "text": "题目基于工作区中的 05-Agent.md，未混入其他笔记或笔记外知识",
+            "passed": true,
+            "evidence": "第 1 题对应笔记 §一 'Agent 是什么（和 FC / Workflow 的边界）' 的表格（谁决定流程/推理是否显式，05-Agent.md 第 20-24 行）及第 26 行原句 'FC 是 Agent 的腿，Agent 是长出脑子的 FC'，均为该笔记内容; 第 3 题对应 §二 '纯 Prompt ReAct vs FC 结构化版'（第 63-75 行），第 4 题对应 §三 '代码结构：4 个必懂点' 的 ③④ 两点（第 109-122 行），第 5 题对应 §四 三层记忆表（第 155-166 行），第 6 题对应 §五 闭环五步（第 174-195 行）和 md5/hash 警告（第 214 行），全部可在 05-Agent.md 中找到原文依据; 第 6 题② 的 md5 vs hash 排错题看似课外知识，但笔记第 214 行明确写有 'id 用 md5 不用 hash(text)：Python 3.3+ 默认 PYTHONHASHSEED 随机化，hash() 跨进程不一致……'，属于笔记原文，未混入其他笔记（如 10-多Agent与SubAgent.md）或笔记外知识"
+          },
+          {
+            "text": "每道题可溯源到 05-Agent.md 真实小节，无笔记里不存在的内容",
+            "passed": true,
+            "evidence": "第 1 题引用的 'FC 是 Agent 的腿，Agent 是长出脑子的 FC' 是笔记第 26 行的逐字原文；'谁决定流程'、'推理是否显式' 是边界表（第 20-24 行）的真实列名; 第 2 题的三要素（Thought/Action/Observation）与停止判断对应笔记第 57-61 行 ReAct 图示和第 61 行原文; 第 4 题①② 分别对应笔记第 111 行 'API 没有 observation 角色。惯例用 user 塞' 和第 116-122 行的 try/except JSON 容错代码; 第 5 题 '工作记忆在 ReAct 里是免费的' 是笔记第 163 行的逐字表述；第 6 题① 的五步闭环对应笔记第 174-193 行的 ①-⑤ 流程图; final_message 末尾的考点自查把 6 题分别映射到 §一至§五 的真实小节，与 extract_topics.py 输出的 16 个标题清单一致，无笔记中不存在的小节或内容"
+          },
+          {
+            "text": "一个考点最多出一道题（两道题知识实质相同算重复）",
+            "passed": true,
+            "evidence": "6 题分属 6 个不同考点：第 1 题考边界表概念辨析、第 2 题考 ReAct 循环机制、第 3 题考两种实现的工程权衡、第 4 题考手写代码的两个具体处理、第 5 题考三层记忆模型、第 6 题考长期记忆闭环流程与 id 生成细节，知识实质互不相同; final_message 自查明确标注 '第1题→§一 边界表｜第2题→§二 ReAct 循环｜第3题→§二 trade-off 子节｜第4题→§三 代码结构｜第5题→§四 三层记忆｜第6题→§五 长期记忆闭环。六题六节，无重叠'，且该标注与笔记实际章节结构核对无误; 第 3 题与第 4 题② 虽都涉及'纯 Prompt 解析脆弱'这一主题，但第 3 题考表格层面的优劣对比与学习策略，第 4 题考代码层面的具体容错写法（try/except 喂回 Observation），考察的知识实质不同，不构成重复出题"
+          },
+          {
+            "text": "认知层次混合：至少覆盖 2 个布鲁姆层次（记忆/理解/应用/分析），不全是记忆层",
+            "passed": true,
+            "evidence": "final_message 明确标注各题认知层次：第 1 题（理解·概念辨析）、第 2 题（记忆·核心循环）、第 3 题（分析·工程权衡）、第 4 题（应用·代码细节）、第 5 题（理解·模型辨析）、第 6 题（分析·闭环+排错）; 实际覆盖了布鲁姆的 4 个层次：记忆（第 2 题）、理解（第 1、5 题）、应用（第 4 题）、分析（第 3、6 题），远超'至少 2 个层次'的要求; 6 题中仅第 2 题一题属记忆层（'三要素是什么'），其余 5 题均为解释、权衡、排错等高阶层次，不全是记忆层，符合 self-test skill 步骤 3 '混合出题，别全出死记硬背' 的要求"
+          },
+          {
+            "text": "出题时不附带答案或解析（\"答完我判分\"这类流程说明不算泄题）",
+            "passed": true,
+            "evidence": "final_message 全文没有任何一题附上答案或解析：第 1 题只引用笔记原句要求解释，未给出'谁决定流程/推理是否显式'的答案；第 4 题只指出'有两个关键处理'并提问原因，未揭示 user 角色和 JSON 容错的具体做法; 第 6 题② 排错题只给出 md5 vs hash 的现象，未透露 PYTHONHASHSEED 随机化导致跨进程不一致的根本原因; final_message 开头的认知层次标注和末尾的'考点覆盖自查'只标示题型层次与对应小节位置，属于定位信息而非答案内容，不构成泄题; 结尾 '答完我逐题判分、讲透错因' 属于流程说明，符合判分约定中'答完我判分这类流程说明不算泄题'的豁免"
+          }
+        ],
+        "summary": {
+          "passed": 7,
+          "failed": 0,
+          "total": 7,
+          "pass_rate": 1
+        },
+        "judge_context": {
+          "profile": "standard",
+          "materialized_dir": "judge/context",
+          "manifest": {
+            "profile": "standard",
+            "materialized_dir": "judge/context",
+            "materials": [
+              {
+                "key": "final_message",
+                "mode": "include",
+                "path": "judge/context/final_message.txt",
+                "bytes": 2188,
+                "original_bytes": 2188
+              },
+              {
+                "key": "transcript",
+                "mode": "file_ref",
+                "path": "judge/context/transcript.json",
+                "bytes": 39005,
+                "original_bytes": 39005
+              },
+              {
+                "key": "workspace_diff",
+                "mode": "omit",
+                "bytes": 0
+              },
+              {
+                "key": "generated_files",
+                "mode": "omit",
+                "bytes": 0
+              }
+            ]
+          },
+          "prompt_delivery": "inline",
+          "prompt_bytes": 5611
+        }
+      },
+      "configuration": "with_skill",
+      "prompt": "自测一下 Agent，考全部，出 6 道题。（已确认：考全部内容、出 6 道题，中途无需再向用户确认，直接完成出题。）\n",
+      "response": "考点已从 `05-Agent.md` 提取（16 个标题），范围已确认为全部内容、6 道题。出题前我做了逐题考点标注查重——6 题分别落在 6 个不同小节，无重复轰炸；认知层次上按布鲁姆分类混合了记忆、理解、应用、分析四档。\n\n---\n\n## 🤖 Agent 自测 · 共 6 题\n\n**第 1 题**（理解·概念辨析）\nWorkflow、Function Calling、Agent 三者，在「**谁决定流程**」和「**推理是否显式**」这两个维度上分别怎么区分？请解释笔记里那句\"FC 是 Agent 的腿，Agent 是长出脑子的 FC\"。\n\n**第 2 题**（记忆·核心循环）\nReAct 的三要素是什么？请完整描述一次循环是怎么走的。另外——\"信息够了，该停了\"这件事由谁决定、在循环里怎么体现？\n\n**第 3 题**（分析·工程权衡）\n纯 Prompt ReAct 和 FC 结构化版各有什么优劣？工业界默认用哪个？既然如此，笔记为什么坚持先手写纯 Prompt 版——这背后的学习策略是什么？\n\n**第 4 题**（应用·代码细节）\n手写 ReAct Agent 的代码里有两个关键处理：\n- ① Observation 为什么用 `user` 角色拼回 messages，而不是用什么\"observation 角色\"？\n- ② 模型输出的 Action Input 不是合法 JSON 时，代码为什么不直接报错崩溃？正确的处理方式是什么？\n\n**第 5 题**（理解·模型辨析）\n三层记忆分别是什么？各自的实现方式和生命周期是什么？为什么说**工作记忆在 ReAct 里是\"免费的\"**——免费在哪？\n\n**第 6 题**（分析·闭环 + 排错）\n- ① 按顺序说出长期记忆闭环的五个步骤。\n- ② 排错题：`save_memory` 里 id 用 `md5(text)` 而不是 Python 内置的 `hash(text)`。如果当初用了 `hash()`，程序会出什么 bug？根本原因是什么？\n\n---\n\n📋 **考点覆盖自查**：第1题→§一 边界表｜第2题→§二 ReAct 循环｜第3题→§二 trade-off 子节｜第4题→§三 代码结构｜第5题→§四 三层记忆｜第6题→§五 长期记忆闭环。六题六节，无重叠。\n\n请开始作答，可以逐题答也可以一次性全答。答完我逐题判分、讲透错因。",
+      "observed_version": "2.1.273"
+    },
+    {
+      "case_id": "case-1",
+      "title": "Agent 换触发语",
+      "status": "PASS",
+      "duration_ms": 66225,
+      "turns": 2,
+      "input_tokens": 32794,
+      "output_tokens": 2013,
+      "judge_duration_ms": 47834,
+      "judge_input_tokens": 37335,
+      "judge_output_tokens": 3020,
+      "grading": {
+        "status": "PASS",
+        "turns_executed": 2,
+        "turns_total": 1,
+        "assertion_results": [
+          {
+            "text": "expect.must_not_contain",
+            "passed": true,
+            "evidence": "all checks passed"
+          },
+          {
+            "text": "正好 6 道题（一题含多个小问仍算一道）",
+            "passed": true,
+            "evidence": "final_message 中恰好列出第 1 题到第 6 题，标题为「📝 Agent 自测（共 6 题）」; 每题虽含多个小问（如第 2 题、第 5 题各有两三个小问），但均作为一道题编号，总题数为 6; 用户要求「考全部，出 6 道题」，final_message 开头确认「按已确认的范围——考全部、6 道题」"
+          },
+          {
+            "text": "题目基于工作区中的 05-Agent.md，未混入其他笔记或笔记外知识",
+            "passed": true,
+            "evidence": "transcript 显示 agent 用 extract_topics.py 提取 05-Agent.md 的 16 个标题作为考点清单，并完整 Read 了 c:\\Users\\Administrator\\Desktop\\AI\\Studying\\05-Agent.md; 第 1 题（ReAct 三要素）对应笔记「二、ReAct：让推理和行动交替」第 61 行「三要素：Thought -\u003e Action -\u003e Observation 循环」; 第 2 题（FC 循环 vs 自主规划）对应笔记「一、本质：从 FC 到 Agent」第 11-14 行，「查三城天气找最热算温差」例子直接来自笔记第 14 行原文; 第 3 题（Action Input 非法 JSON）对应笔记「三、实战：手写 ReAct Agent」第 4 小节解析容错的 try/except json.loads 代码（第 115-122 行）; 第 4 题（纯 Prompt vs FC 结构化版取舍）对应笔记第 63-75 行「纯 Prompt ReAct vs FC 结构化版」小节，含「为什么先手写纯 Prompt 版」原文; 第 5 题（三层记忆、工作记忆免费）对应笔记「四、三层记忆模型」第 155-166 行表格及「工作记忆在 ReAct 里是『免费的』」原文; 第 6 题（md5 vs hash）对应笔记「五、长期记忆闭环」第 203、214 行 save_memory 代码及「id 用 md5 不用 hash(text)」说明，未混入 10-多Agent与SubAgent.md 等其他笔记内容"
+          },
+          {
+            "text": "每道题可溯源到 05-Agent.md 真实小节，无笔记里不存在的内容",
+            "passed": true,
+            "evidence": "第 1 题可溯源到笔记第 61 行（三要素 + Final Answer 停止判断）; 第 2 题可溯源到笔记第 9-26 行（一、本质：从 FC 到 Agent 小节，含 FC 被动响应/Agent 目标导向对比表）; 第 3 题可溯源到笔记第 113-124 行（④ 解析容错，含「不报错崩溃，而是把『你格式错了』作为 Observation 喂回去」）; 第 4 题可溯源到笔记第 63-75 行（对比表 + 「先白盒理解，再工业封装」取舍逻辑）; 第 5 题可溯源到笔记第 151-166 行（三层记忆表格 + 工作记忆免费说明）; 第 6 题可溯源到笔记第 214 行（PYTHONHASHSEED 随机化导致 hash() 跨进程不一致、第二次运行会重复存储）; 题目中引用的 test_agent.py、save_memory、get_weather 均在笔记原文中出现，无笔记里不存在的内容"
+          },
+          {
+            "text": "一个考点最多出一道题（两道题知识实质相同算重复）",
+            "passed": true,
+            "evidence": "第 1 题落在「二、ReAct」的三要素考点；第 2 题落在「一、Agent 本质/FC 边界」考点；第 3 题落在「三、代码结构④解析容错」考点；第 4 题落在「二、纯 Prompt vs FC 结构化版取舍」考点；第 5 题落在「四、三层记忆模型」考点；第 6 题落在「五、save_memory 的 md5 id 设计」考点——6 题对应 6 个不同小节; 第 2 题考 Agent 与 FC 的概念边界（自主规划），第 4 题考两种 ReAct 实现方式的工程取舍，虽都提及 FC，但知识实质不同（笔记中也分列为不同小节）; 第 3 题考解析失败后的容错机制（喂回 Observation 自我纠正），第 4 题考为何先学脆弱版的教学/工业取舍，考查实质不重复; agent 在 final_message 中明确声明「已做考点查重：6 题分别落在不同小节，无重复覆盖」"
+          },
+          {
+            "text": "认知层次混合：至少覆盖 2 个布鲁姆层次（记忆/理解/应用/分析），不全是记忆层",
+            "passed": true,
+            "evidence": "6 题显式标注了认知层次：第 1 题（记忆）、第 2 题（理解）、第 3 题（应用）、第 4 题（分析）、第 5 题（记忆+理解）、第 6 题（分析）; 覆盖了记忆、理解、应用、分析共 4 个布鲁姆层次，远超「至少 2 个层次」的要求; 记忆层仅约 1.5 题（第 1 题、第 5 题前半），未全出死记硬背题；第 3 题给出新场景（单引号非法 JSON）要求迁移应用，第 4、6 题要求对比分析和推断 bug 成因"
+          },
+          {
+            "text": "出题时不附带答案或解析（\"答完我判分\"这类流程说明不算泄题）",
+            "passed": true,
+            "evidence": "final_message 中每道题只有题干和追问，未附任何答案、要点提示或解析; 第 3 题问「这时你的代码会发生什么？为什么……」和第 6 题问「会发生什么具体的 bug？背后的原因是什么？」，均以开放提问形式出题，未泄露结论; 结尾「逐题作答即可……我再逐题判分、讲透错题」属于先问后判的流程说明，符合判分约定，不构成泄题"
+          }
+        ],
+        "summary": {
+          "passed": 7,
+          "failed": 0,
+          "total": 7,
+          "pass_rate": 1
+        },
+        "judge_context": {
+          "profile": "standard",
+          "materialized_dir": "judge/context",
+          "manifest": {
+            "profile": "standard",
+            "materialized_dir": "judge/context",
+            "materials": [
+              {
+                "key": "final_message",
+                "mode": "include",
+                "path": "judge/context/final_message.txt",
+                "bytes": 1892,
+                "original_bytes": 1892
+              },
+              {
+                "key": "transcript",
+                "mode": "file_ref",
+                "path": "judge/context/transcript.json",
+                "bytes": 42301,
+                "original_bytes": 42301
+              },
+              {
+                "key": "workspace_diff",
+                "mode": "omit",
+                "bytes": 0
+              },
+              {
+                "key": "generated_files",
+                "mode": "omit",
+                "bytes": 0
+              }
+            ]
+          },
+          "prompt_delivery": "inline",
+          "prompt_bytes": 5315
+        }
+      },
+      "configuration": "without_skill",
+      "prompt": "自测一下 Agent，考全部，出 6 道题。（已确认：考全部内容、出 6 道题，中途无需再向用户确认，直接完成出题。）\n",
+      "response": "笔记已读完，考点清单已提取（16 个标题，归并为 8 个核心考点）。按已确认的范围——**考全部、6 道题**——出题如下。\n\n已做考点查重：6 题分别落在不同小节，无重复覆盖。\n\n---\n\n## 📝 Agent 自测（共 6 题）\n\n**第 1 题**（记忆）\nReAct 的三要素是什么？这个循环靠什么决定“什么时候停下来”？\n\n**第 2 题**（理解）\nFC demo 里模型明明已经会“决策 → 执行 → 回填 → 再决策”的循环了，为什么笔记说它还不算 Agent？差的“自主规划”具体指什么？用“查三城天气找最热算温差”的例子说明 FC 和 Agent 走这个任务时行为上有什么不同。\n\n**第 3 题**（应用）\n你的 `test_agent.py` 跑到某一步，模型输出的 Action Input 是这样：\n```\nAction Input: {'城市': '上海'}\n```\n（单引号，不是合法 JSON）。这时你的代码会发生什么？为什么不设计成直接报错崩溃，而是这么处理？\n\n**第 4 题**（分析）\n对比纯 Prompt ReAct 和 FC 结构化版：既然纯 Prompt 版解析那么脆弱，为什么本站还要先手写它、而不直接学 FC 版？工业上又为什么反过来默认用 FC 版？这背后的取舍逻辑是什么？\n\n**第 5 题**（记忆 + 理解）\n三层记忆分别是什么，各对应什么实现、什么生命周期？另外，为什么笔记说“工作记忆在 ReAct 里是免费的”——它“免费”在哪，不需要额外写什么代码？\n\n**第 6 题**（分析）\n`save_memory` 里给记忆条目生成 id 用的是 `md5(text)`，而不是 Python 自带的 `hash(text)`。如果图省事用 `hash()`，第二次运行程序时会发生什么具体的 bug？背后的原因是什么？\n\n---\n\n逐题作答即可（可以说“第 X 题：……”），全部答完或答到哪算哪，我再逐题判分、讲透错题。",
+      "observed_version": "2.1.273"
+    },
+    {
+      "case_id": "case-2",
+      "title": "Benchmark 口语匹配",
+      "status": "PASS",
+      "duration_ms": 51284,
+      "turns": 1,
+      "input_tokens": 34449,
+      "output_tokens": 2272,
+      "judge_duration_ms": 71753,
+      "judge_input_tokens": 40310,
+      "judge_output_tokens": 3889,
+      "grading": {
+        "status": "PASS",
+        "turns_executed": 1,
+        "turns_total": 1,
+        "assertion_results": [
+          {
+            "text": "expect.must_not_contain",
+            "passed": true,
+            "evidence": "all checks passed"
+          },
+          {
+            "text": "正好 6 道题（一题含多个小问仍算一道）",
+            "passed": true,
+            "evidence": "final_message 中恰好列出 6 道题：第 1 题（理解，equals 断言失效+根因）、第 2 题（记忆，两层分类）、第 3 题（理解，三阶段+数据飞轮）、第 4 题（应用，评分器选型）、第 5 题（应用，Promptfoo 断言）、第 6 题（评价，工具选型+劣势）; 第 4/5/6 题虽含 (a)(b)(c) 小问，但均归并在单一题干下，各算一道，总数仍为 6; 考点覆盖自查表也恰好列出 6 行（题号 1-6），与用户'出 6 道题'的要求一致"
+          },
+          {
+            "text": "题目基于工作区中的 12-应用层Benchmark评测.md，未混入其他笔记或笔记外知识",
+            "passed": true,
+            "evidence": "transcript 显示 Agent 先用 Glob 定位到 c:\\Users\\Administrator\\Desktop\\AI\\Studying\\12-应用层Benchmark评测.md，随后 Read 了该笔记全文（transcript turn 7），出题内容均出自该次读取; 第 1 题的'根因三条/equals 失效/评估驱动开发'对应笔记 §一；第 2 题两层分类对应 §2.1 表格；第 3 题三阶段与数据飞轮对应 §2.2; 第 5 题的 trajectory:tool-sequence、SKILL.md 读取（trajectory:step-count 带 pattern）、output_schema（is-json/contains-json）均见于笔记 §三 的 Agent/SKILL 表格；第 6 题的 LangSmith/Langfuse/Arize Phoenix/Braintrust 及自托管信息见于 §7.2 表格; 第 4/5/6 题的客服、search/write 工具、LangGraph 合规等具体场景仅为布鲁姆'应用/评价'层的新情境包装，被考知识点本身全部可回溯到笔记，未引入笔记外的新知识考查点，也未引用 01-11 号其他笔记的内容"
+          },
+          {
+            "text": "每道题可溯源到该笔记真实小节，无笔记里不存在的内容",
+            "passed": true,
+            "evidence": "第 1 题可溯源到 §一：笔记'根因：①…② LLM 输出非确定性，传统单元测试的 equals 思路直接失效；③…'及'评估驱动开发（eval-driven development）'; 第 2 题可溯源到 §2.1 两层分类表的'评测对象'与'价值'两列，'榜单选型对不上'对应 §一 症状表'选型错位'与根因①; 第 3 题可溯源到 §2.2 三阶段表（界定/衡量/改进）及改进行的'数据飞轮：记录输入/输出/结果 → 定期抽样日志 → 专家审查典型案例 → 更新 prompt/工具/模型…数据集资产'; 第 4 题可溯源到 §2.3 评分器三型表及使用准则'能编码→代码型；不能编码但能用语言描述好坏→模型型；…→人工型'；第 5 题三个考点在 §三 Agent/SKILL 表中逐条存在；第 6 题 (a) 溯源到 §7.2 四平台表，(b) '纯评测框架的边界'可由 §7.1 表中 Promptfoo 的'可观测性/Tracing ❌（纯评测）'与'生产监控/在线评测 ❌（部署前为主）'两行作答，属笔记真实内容"
+          },
+          {
+            "text": "一个考点最多出一道题（两道题知识实质相同算重复）",
+            "passed": true,
+            "evidence": "Agent 在 final_message 中给出逐题考点标注自查表，6 题分别落在 §一、§2.1、§2.2、§2.3、§三、§七+§六 六个不同小节，无两题锚定同一小节; 各题考查的知识实质互不相同：第 1 题考根因与非确定性/评估驱动开发，第 2 题考两层分类的评测对象与价值，第 3 题考流程三阶段与数据飞轮，第 4 题考评分器三型选择准则，第 5 题考 Promptfoo 具体断言指标名，第 6 题考平台选型与纯评测框架边界; 第 1 题要求'根因三条中至少两条'，第 2 题主体是 §2.1 分类表；两题核心知识分别为'问题根因'与'两层分类'，非知识实质相同的重复轰炸（仅'榜单 vs 业务场景'这一衔接点存在轻微呼应，但不是任一题的主要考点）"
+          },
+          {
+            "text": "认知层次混合：至少覆盖 2 个布鲁姆层次（记忆/理解/应用/分析），不全是记忆层",
+            "passed": true,
+            "evidence": "final_message 对 6 题分别标注认知层次：第 1 题理解、第 2 题记忆、第 3 题理解、第 4 题应用、第 5 题应用、第 6 题评价，共覆盖记忆/理解/应用/评价 4 个布鲁姆层次，远超'至少 2 个'的要求; 仅第 2 题为记忆层（占 1/6），其余 5 题均为理解及以上层次，不全是记忆层; 第 4 题给出客服场景让用户迁移评分器选择准则、第 5 题要求给出具体指标名、第 6 题要求做选型判断并说明排除理由，符合 bloom_taxonomy.md 中'应用--给个新场景让用户操作'与'评价--判断好坏做选择'的定义；transcript 也显示 Agent 出题前读取了该参考文件"
+          },
+          {
+            "text": "出题时不附带答案或解析（\"答完我判分\"这类流程说明不算泄题）",
+            "passed": true,
+            "evidence": "final_message 全文只包含题干、场景描述和作答方式说明，未出现任何一题的参考答案或解析：如第 5 题只问'可以用哪些断言/指标'而未给出 trajectory:tool-sequence 等答案，第 4 题只列三种需求而未标注哪个选代码型/模型型/人工型; 结尾'请逐题作答，可以一次性答完，也可以一题一题来。答完后我会逐题判分，错的题讲清楚错在哪、对应笔记哪一节'属于'答完我判分'式流程说明，按标准不算泄题; 考点覆盖自查表仅标注每题对应的笔记小节（如'§2.1 两层分类'），是出题人的溯源标注而非答案内容，未直接泄露任何一题的答案"
+          }
+        ],
+        "summary": {
+          "passed": 7,
+          "failed": 0,
+          "total": 7,
+          "pass_rate": 1
+        },
+        "judge_context": {
+          "profile": "standard",
+          "materialized_dir": "judge/context",
+          "manifest": {
+            "profile": "standard",
+            "materialized_dir": "judge/context",
+            "materials": [
+              {
+                "key": "final_message",
+                "mode": "include",
+                "path": "judge/context/final_message.txt",
+                "bytes": 2899,
+                "original_bytes": 2899
+              },
+              {
+                "key": "transcript",
+                "mode": "file_ref",
+                "path": "judge/context/transcript.json",
+                "bytes": 44709,
+                "original_bytes": 44709
+              },
+              {
+                "key": "workspace_diff",
+                "mode": "omit",
+                "bytes": 0
+              },
+              {
+                "key": "generated_files",
+                "mode": "omit",
+                "bytes": 0
+              }
+            ]
+          },
+          "prompt_delivery": "inline",
+          "prompt_bytes": 6337
+        }
+      },
+      "configuration": "with_skill",
+      "prompt": "检验一下我学没学会 Benchmark 评测，考全部，出 6 道题。（已确认：考全部内容、出 6 道题，中途无需再向用户确认，直接完成出题。）\n",
+      "response": "笔记已找到：`12-应用层Benchmark评测.md`，共 17 个标题考点。已按你的确认执行：**考全部、出 6 道**。出题时我做了逐题考点查重——6 题分别落在 6 个不同小节，无重复轰炸。\n\n---\n\n## 📝 Benchmark 评测自测（6 题）\n\n**第 1 题**（理解）\n传统软件有单元测试，为什么这套\"equals 断言\"的思路在 LLM 应用里直接失效？笔记把\"改了不知道变好还是变坏\"的根因归纳为三条，请说出其中**至少两条**，并用一句话解释\"评估驱动开发\"是什么意思。\n\n**第 2 题**（记忆）\nBenchmark 分哪两层？请分别说出这两层的**评测对象**和**核心价值**各是什么。为什么按公开榜单选出来的模型，落到自己业务场景上表现可能对不上？\n\n**第 3 题**（理解）\n评测流程的三阶段是什么？请重点讲讲\"**数据飞轮**\"是怎么转起来的——从\"记录日志\"到\"黄金数据集成为越用越厚的资产\"，中间每一步发生了什么？\n\n**第 4 题**（应用）\n你负责一个客服 LLM 应用，有三个断言需求，请为每个需求选择评分器类型（代码型 / 模型型 / 人工型），并说明选择依据：\n- (a) 输出必须是合法 JSON，且包含 `order_id` 字段\n- (b) 回复语气是否友好、周到（有无数种正确说法）\n- (c) 涉及退款政策的回复是否符合公司法务合规要求（需领域专家把关）\n\n**第 5 题**（应用）\n用 Promptfoo 评测一个 Agent，你除了想知道\"任务最终成没成\"，还想验证以下三件事，分别可以用哪些断言/指标实现？（每条至少给出一个具体指标名）\n- (a) Agent 是否**按预期顺序**先调用了 search 工具再调用 write 工具\n- (b) Agent 是否**真的读取了** SKILL.md 文件\n- (c) 最终输出符合 `output_schema` 强制的 JSON 结构\n\n**第 6 题**（评价）\n你们团队已用 LangGraph 开发，需要一套\"离线评测 + 线上生产监控 + 人工标注\"全生命周期的方案，且因数据合规必须支持自托管。\n- (a) 在 LangSmith / Langfuse / Arize Phoenix / Braintrust 中你会选哪个？说明理由，并说出被你排除的某两个工具各自的定位特点；\n- (b) 笔记指出 Promptfoo 这类纯评测框架有哪两条明显的\"边界/劣势\"？\n\n---\n\n**考点覆盖自查**（6 题对应 6 个不同小节）：\n\n| 题号 | 认知层次 | 对应笔记考点 |\n|---|---|---|\n| 1 | 理解 | §一 问题与根因 |\n| 2 | 记忆 | §2.1 两层分类 |\n| 3 | 理解 | §2.2 界定→衡量→改进 |\n| 4 | 应用 | §2.3 四要素·评分器三型 |\n| 5 | 应用 | §三 Promptfoo 断言体系（Agent/Skill） |\n| 6 | 评价 | §七 工具对比 + §六 劣势与边界 |\n\n请逐题作答，可以一次性答完，也可以一题一题来。答完后我会逐题判分，错的题讲清楚错在哪、对应笔记哪一节。",
+      "observed_version": "2.1.273"
+    },
+    {
+      "case_id": "case-2",
+      "title": "Benchmark 口语匹配",
+      "status": "PASS",
+      "duration_ms": 68361,
+      "turns": 2,
+      "input_tokens": 34046,
+      "output_tokens": 2206,
+      "judge_duration_ms": 81303,
+      "judge_input_tokens": 38660,
+      "judge_output_tokens": 3361,
+      "grading": {
+        "status": "PASS",
+        "turns_executed": 2,
+        "turns_total": 1,
+        "assertion_results": [
+          {
+            "text": "expect.must_not_contain",
+            "passed": true,
+            "evidence": "all checks passed"
+          },
+          {
+            "text": "正好 6 道题（一题含多个小问仍算一道）",
+            "passed": true,
+            "evidence": "final_message 中恰好包含 6 道编号题：第 1 题【记忆】四要素、第 2 题【理解】选型错位与两层 Benchmark、第 3 题【理解】界定→衡量→改进与数据飞轮、第 4 题【应用】评分器三型选择、第 5 题【分析】评测工具选型、第 6 题【评价】自动化评估缺口的批判分析; 第 4 题虽含 ①②③ 三个小问、第 5 题含三个子需求，但各自合并为一道题呈现（标题均为单数“第 N 题”），未拆成多道独立题，符合“一题含多个小问仍算一道”; transcript 显示用户要求“出 6 道题”（turn 1），最终输出与该数量完全一致"
+          },
+          {
+            "text": "题目基于工作区中的 12-应用层Benchmark评测.md，未混入其他笔记或笔记外知识",
+            "passed": true,
+            "evidence": "transcript（turn 5-7）显示 agent 运行 extract_topics.py 提取的正是 c:\\Users\\Administrator\\Desktop\\AI\\Studying\\12-应用层Benchmark评测.md 的 17 个标题，并完整 Read 了该笔记后才出题; 第 1 题四要素对应笔记 2.3 节（数据集、评分器、评测指标、评测框架）；第 2 题选型错位对应第一节症状表“选型错位”行及 2.1 两层分类表；第 3 题对应 2.2 节表格与数据飞轮描述; 第 4 题对应 2.3(2) 评分器三型表（代码型/模型型/人工型、判分依据、使用准则）及 2.3(3)/第三节 Promptfoo 确定性指标（regex 等）与模型辅助指标（llm-rubric 等）；第 5 题三个子需求分别对应 7.1/7.2 表中 mcp-eval（MCP Server + Agent）、DeepEval（Python/pytest、多轮/多模态/MCP 全家族）、LangSmith（LangChain/LangGraph 生态、生产监控+在线评测）的原有表述; 第 6 题对应“附：相关概念备忘”的评测方法四件套表（自动化评估/生产监控/A/B 测试/用户反馈）及第六节“劣势与边界”（假信心风险：自动化评估可能脱离真实用法，需配合生产监控/用户反馈校准）; 题面中的“客服 Agent”“订单号格式”“医疗报销政策”“CI 全绿、通过率 95%”仅为应用/分析层题的场景设定，考点的知识实质均出自该笔记，未混入其他笔记（如 RAG、MCP 章节）或笔记外知识"
+          },
+          {
+            "text": "每道题可溯源到该笔记真实小节，无笔记里不存在的内容",
+            "passed": true,
+            "evidence": "第 1 题可溯源到笔记 H3“2.3 四要素”（笔记第 241 行：四要素 = 数据集、评分器、评测指标、评测框架）; 第 2 题可溯源到 H2“一、问题”选型错位行（笔记第 23 行）与 H3“2.1 Benchmark 两层分类”表（笔记第 36-45 行，含“重心在应用层”）; 第 3 题可溯源到 H3“2.2 整体评测流程：界定 → 衡量 → 改进”（笔记第 47-53 行，数据飞轮：记录→抽样→专家审查→更新，形成数据集资产）; 第 4 题可溯源到 2.3(2) 评分器三型表及使用准则（笔记第 65-73 行），Promptfoo 断言指标部分可溯源到 2.3(3)（第 76-77 行：equals/contains/regex/is-json 等确定性指标，llm-rubric 等模型辅助指标）; 第 5 题可溯源到 H2“七、类似工具对比”的 7.1 一句话选型（笔记第 221 行）与 7.2 平台表（笔记第 227 行 LangSmith 适合“已用 LangChain/LangGraph 的团队”）; 第 6 题可溯源到“附：相关概念备忘”评测方法四件套（笔记第 275-284 行）与 H2“六、劣势与边界”（笔记第 185-192 行），未发现笔记中不存在的考点内容"
+          },
+          {
+            "text": "一个考点最多出一道题（两道题知识实质相同算重复）",
+            "passed": true,
+            "evidence": "第 1 题考点 = 2.3 四要素的整体记忆（四个要素及职责）；第 4 题考点 = 2.3(2) 评分器三型的选用准则及 Promptfoo 断言指标分类，二者知识实质不同：一题考“四要素是什么”的回忆，另一题考“给定需求选哪型评分器”的迁移应用，不构成同一考点重复; 第 2 题（选型错位 + 两层分类区别/重心）与第 3 题（界定→衡量→改进 + 数据飞轮）分别对应笔记不同小节（第一节+2.1 vs 2.2），无知识重叠; 第 5 题（工具选型，对应第七节）与第 6 题（评测方法四件套+劣势边界，对应附节+第六节）各占独立考点；第 2 题虽涉及选型问题，但第 6 题聚焦假信心风险与评测方法组合，考查的知识实质不同; 6 道题分别落在：四要素、两层分类、评测流程、评分器选型、工具对比、评测方法边界，覆盖 6 个不同考点，无两题同考一个知识点"
+          },
+          {
+            "text": "认知层次混合：至少覆盖 2 个布鲁姆层次（记忆/理解/应用/分析），不全是记忆层",
+            "passed": true,
+            "evidence": "final_message 中 6 道题显式标注了布鲁姆层次标签且逐题不同：第 1 题【记忆】、第 2 题【理解】、第 3 题【理解】、第 4 题【应用】、第 5 题【分析】、第 6 题【评价】; 实际认知层次与标注相符：第 1 题问“是什么”（四要素是哪四个）；第 2、3 题问“为什么”（为何选型错位、数据飞轮为何越用越厚）；第 4 题给新场景做迁移（给定三个客服 Agent 评测需求选评分器）；第 5 题做对比选择（三个需求分别选什么工具并说明理由）；第 6 题做批判判断（CI 全绿但用户投诉，分析缺了什么）; 覆盖记忆/理解/应用/分析/评价共 5 个布鲁姆层次，远超“至少 2 个层次”的要求，且仅 1 道纯记忆层题目，不全是记忆层"
+          },
+          {
+            "text": "出题时不附带答案或解析（\"答完我判分\"这类流程说明不算泄题）",
+            "passed": true,
+            "evidence": "final_message 全文仅含 6 道题的题干与场景描述，未出现任何题目的参考答案、判分要点或解析; 题干中出现的“四要素”“界定 → 衡量 → 改进”“数据飞轮”“评测方法四件套”等均为笔记原有术语名词的引用（作为提问对象），不构成答案泄露; 结尾“逐题作答即可……答完我逐题判分、讲透错误原因并对应到笔记小节”属于流程说明（先问后判），符合“答完我判分”类的允许范围，未附带任何答案; 各题标注的【记忆】【理解】【应用】【分析】【评价】是认知层次标签而非答案提示，不泄露考查内容的具体结论"
+          }
+        ],
+        "summary": {
+          "passed": 7,
+          "failed": 0,
+          "total": 7,
+          "pass_rate": 1
+        },
+        "judge_context": {
+          "profile": "standard",
+          "materialized_dir": "judge/context",
+          "manifest": {
+            "profile": "standard",
+            "materialized_dir": "judge/context",
+            "materials": [
+              {
+                "key": "final_message",
+                "mode": "include",
+                "path": "judge/context/final_message.txt",
+                "bytes": 2134,
+                "original_bytes": 2134
+              },
+              {
+                "key": "transcript",
+                "mode": "file_ref",
+                "path": "judge/context/transcript.json",
+                "bytes": 44858,
+                "original_bytes": 44858
+              },
+              {
+                "key": "workspace_diff",
+                "mode": "omit",
+                "bytes": 0
+              },
+              {
+                "key": "generated_files",
+                "mode": "omit",
+                "bytes": 0
+              }
+            ]
+          },
+          "prompt_delivery": "inline",
+          "prompt_bytes": 5572
+        }
+      },
+      "configuration": "without_skill",
+      "prompt": "检验一下我学没学会 Benchmark 评测，考全部，出 6 道题。（已确认：考全部内容、出 6 道题，中途无需再向用户确认，直接完成出题。）\n",
+      "response": "笔记读完，考点已确认（你之前已确认：考全部、6 道题，直接出）。6 道题按布鲁姆认知层次混合设计，覆盖笔记全部核心考点，每题对应不同小节，无重复：\n\n---\n\n## Benchmark 评测自测 · 共 6 题\n\n**第 1 题【记忆】**\nBenchmark 评测体系的“四要素”是哪四个？每个用一句话说明它的职责。\n\n**第 2 题【理解】**\n你们团队按公开榜单第一名选了模型，落到自己的客服业务链路上表现却对不上。为什么会出现这种“选型错位”？模型层 Benchmark 和应用层 Benchmark 的区别是什么，为什么工程重心要放在应用层？\n\n**第 3 题【理解】**\n“界定 → 衡量 → 改进”三个阶段分别做什么？其中“数据飞轮”是怎么运转的，为什么说它能让黄金数据集成为“越用越厚的数据资产”？\n\n**第 4 题【应用】**\n假设你要评测一个客服 Agent，有三个需求：\n- ① 验证回复中的订单号格式是否正确\n- ② 判断回复的语气是否友好、内容是否全面\n- ③ 判断回复在某个专业领域（如医疗报销政策）的表述是否准确，模型裁判信不过\n\n这三个需求分别该用哪型评分器？各自的判断依据是什么？如果落到 Promptfoo 里，①② 大致能用哪类断言指标？\n\n**第 5 题【分析】**\n你们团队的三个不同需求，分别该选什么评测工具？说明理由：\n- ① 专门评测自研 MCP Server 与 Agent 的交互\n- ② 团队全部用 Python + pytest 生态，要覆盖多轮/多模态/MCP 的全家族指标\n- ③ 已深度使用 LangChain/LangGraph，且上线后需要生产监控 + 在线评测\n\n**第 6 题【评价】**\n团队用 Promptfoo 搭了自动化评估，CI 里全绿、通过率 95%，结果上线后用户投诉不断。从“评测方法四件套”和 Benchmark 的“劣势与边界”角度分析：这套评估可能缺了什么？你会怎么补？\n\n---\n\n逐题作答即可（可以一次答完，也可以一题一题来）。答完我逐题判分、讲透错误原因并对应到笔记小节。现在开始吧 👇",
+      "observed_version": "2.1.273"
+    }
+  ],
+  "total_tokens": 201460,
+  "judge_tokens": 230539,
+  "overall_tokens": 431999
+}

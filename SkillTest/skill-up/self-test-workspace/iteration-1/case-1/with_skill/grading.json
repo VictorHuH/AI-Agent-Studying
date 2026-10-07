@@ -1,0 +1,81 @@
+{
+  "expectations": [
+    {
+      "text": "expect.must_not_contain",
+      "passed": true,
+      "evidence": "all checks passed"
+    },
+    {
+      "text": "正好 6 道题（一题含多个小问仍算一道）",
+      "passed": true,
+      "evidence": "final_message 标题明确写 'Agent 自测 · 共 6 题'，正文依次列出第 1 题到第 6 题，不多不少; 第 4 题包含 ①② 两个小问（user 角色拼回、JSON 解析容错），第 6 题包含 ①② 两个小问（闭环五步、md5 vs hash 排错），按规则各算一道题，总数仍为 6 道"
+    },
+    {
+      "text": "题目基于工作区中的 05-Agent.md，未混入其他笔记或笔记外知识",
+      "passed": true,
+      "evidence": "第 1 题对应笔记 §一 'Agent 是什么（和 FC / Workflow 的边界）' 的表格（谁决定流程/推理是否显式，05-Agent.md 第 20-24 行）及第 26 行原句 'FC 是 Agent 的腿，Agent 是长出脑子的 FC'，均为该笔记内容; 第 3 题对应 §二 '纯 Prompt ReAct vs FC 结构化版'（第 63-75 行），第 4 题对应 §三 '代码结构：4 个必懂点' 的 ③④ 两点（第 109-122 行），第 5 题对应 §四 三层记忆表（第 155-166 行），第 6 题对应 §五 闭环五步（第 174-195 行）和 md5/hash 警告（第 214 行），全部可在 05-Agent.md 中找到原文依据; 第 6 题② 的 md5 vs hash 排错题看似课外知识，但笔记第 214 行明确写有 'id 用 md5 不用 hash(text)：Python 3.3+ 默认 PYTHONHASHSEED 随机化，hash() 跨进程不一致……'，属于笔记原文，未混入其他笔记（如 10-多Agent与SubAgent.md）或笔记外知识"
+    },
+    {
+      "text": "每道题可溯源到 05-Agent.md 真实小节，无笔记里不存在的内容",
+      "passed": true,
+      "evidence": "第 1 题引用的 'FC 是 Agent 的腿，Agent 是长出脑子的 FC' 是笔记第 26 行的逐字原文；'谁决定流程'、'推理是否显式' 是边界表（第 20-24 行）的真实列名; 第 2 题的三要素（Thought/Action/Observation）与停止判断对应笔记第 57-61 行 ReAct 图示和第 61 行原文; 第 4 题①② 分别对应笔记第 111 行 'API 没有 observation 角色。惯例用 user 塞' 和第 116-122 行的 try/except JSON 容错代码; 第 5 题 '工作记忆在 ReAct 里是免费的' 是笔记第 163 行的逐字表述；第 6 题① 的五步闭环对应笔记第 174-193 行的 ①-⑤ 流程图; final_message 末尾的考点自查把 6 题分别映射到 §一至§五 的真实小节，与 extract_topics.py 输出的 16 个标题清单一致，无笔记中不存在的小节或内容"
+    },
+    {
+      "text": "一个考点最多出一道题（两道题知识实质相同算重复）",
+      "passed": true,
+      "evidence": "6 题分属 6 个不同考点：第 1 题考边界表概念辨析、第 2 题考 ReAct 循环机制、第 3 题考两种实现的工程权衡、第 4 题考手写代码的两个具体处理、第 5 题考三层记忆模型、第 6 题考长期记忆闭环流程与 id 生成细节，知识实质互不相同; final_message 自查明确标注 '第1题→§一 边界表｜第2题→§二 ReAct 循环｜第3题→§二 trade-off 子节｜第4题→§三 代码结构｜第5题→§四 三层记忆｜第6题→§五 长期记忆闭环。六题六节，无重叠'，且该标注与笔记实际章节结构核对无误; 第 3 题与第 4 题② 虽都涉及'纯 Prompt 解析脆弱'这一主题，但第 3 题考表格层面的优劣对比与学习策略，第 4 题考代码层面的具体容错写法（try/except 喂回 Observation），考察的知识实质不同，不构成重复出题"
+    },
+    {
+      "text": "认知层次混合：至少覆盖 2 个布鲁姆层次（记忆/理解/应用/分析），不全是记忆层",
+      "passed": true,
+      "evidence": "final_message 明确标注各题认知层次：第 1 题（理解·概念辨析）、第 2 题（记忆·核心循环）、第 3 题（分析·工程权衡）、第 4 题（应用·代码细节）、第 5 题（理解·模型辨析）、第 6 题（分析·闭环+排错）; 实际覆盖了布鲁姆的 4 个层次：记忆（第 2 题）、理解（第 1、5 题）、应用（第 4 题）、分析（第 3、6 题），远超'至少 2 个层次'的要求; 6 题中仅第 2 题一题属记忆层（'三要素是什么'），其余 5 题均为解释、权衡、排错等高阶层次，不全是记忆层，符合 self-test skill 步骤 3 '混合出题，别全出死记硬背' 的要求"
+    },
+    {
+      "text": "出题时不附带答案或解析（\"答完我判分\"这类流程说明不算泄题）",
+      "passed": true,
+      "evidence": "final_message 全文没有任何一题附上答案或解析：第 1 题只引用笔记原句要求解释，未给出'谁决定流程/推理是否显式'的答案；第 4 题只指出'有两个关键处理'并提问原因，未揭示 user 角色和 JSON 容错的具体做法; 第 6 题② 排错题只给出 md5 vs hash 的现象，未透露 PYTHONHASHSEED 随机化导致跨进程不一致的根本原因; final_message 开头的认知层次标注和末尾的'考点覆盖自查'只标示题型层次与对应小节位置，属于定位信息而非答案内容，不构成泄题; 结尾 '答完我逐题判分、讲透错因' 属于流程说明，符合判分约定中'答完我判分这类流程说明不算泄题'的豁免"
+    }
+  ],
+  "summary": {
+    "passed": 7,
+    "failed": 0,
+    "total": 7,
+    "pass_rate": 1
+  },
+  "judge_context": {
+    "profile": "standard",
+    "materialized_dir": "judge/context",
+    "manifest": {
+      "profile": "standard",
+      "materialized_dir": "judge/context",
+      "materials": [
+        {
+          "key": "final_message",
+          "mode": "include",
+          "path": "judge/context/final_message.txt",
+          "bytes": 2188,
+          "original_bytes": 2188
+        },
+        {
+          "key": "transcript",
+          "mode": "file_ref",
+          "path": "judge/context/transcript.json",
+          "bytes": 39005,
+          "original_bytes": 39005
+        },
+        {
+          "key": "workspace_diff",
+          "mode": "omit",
+          "bytes": 0
+        },
+        {
+          "key": "generated_files",
+          "mode": "omit",
+          "bytes": 0
+        }
+      ]
+    },
+    "prompt_delivery": "inline",
+    "prompt_bytes": 5611
+  }
+}

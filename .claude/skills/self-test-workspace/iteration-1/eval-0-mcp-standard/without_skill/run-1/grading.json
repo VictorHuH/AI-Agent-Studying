@@ -1,0 +1,42 @@
+{
+  "eval_name": "mcp-standard",
+  "configuration": "without_skill",
+  "expectations": [
+    {
+      "text": "正好 6 道题",
+      "passed": true,
+      "evidence": "输出含第 1-6 题共 6 道题，编号连续：第1题本质、第2题架构+通信（含a/b小问算一道）、第3题三大原语、第4题写Server（a/b/c小问）、第5题写Client+关键认知（四步流程+三个为什么）、第6题WorkBuddy落地（a/b/c小问）。开头也明示'MCP 全量自测，6 道题'。"
+    },
+    {
+      "text": "题目基于正确笔记（06-MCP.md）",
+      "passed": true,
+      "evidence": "输出第1行声明'范围覆盖 06-MCP.md 的全部内容'，第1-5题均针对06-MCP.md真实小节出题，主体基笔记正确；但第6题延伸到笔记外的WorkBuddy内容，该问题由断言3单独判定。"
+    },
+    {
+      "text": "每道题可溯源到 06-MCP.md 真实小节，无笔记里不存在的内容",
+      "passed": false,
+      "evidence": "第1-5题均可溯源：第1题→'一、本质'（笔记12-35行TOOLS_SCHEMA/TOOL_REGISTRY、M×N→M+N）；第2题→'二、架构'（笔记50-80行三角架构、JSON-RPC、tools/list与tools/call、stdio/Streamable HTTP取代SSE）；第3题→'三、三大原语'（笔记84-96行）；第4题→'四、实战1'（笔记106-129行@mcp.tool、schema自动生成、不能直接跑看输出）；第5题→'五、实战2'+‘六’（笔记139-151行四步流程与不import、笔记189-209行FC决策→MCP执行、Claude Code是Host、零代码改动）。但第6题FAIL：a)'mcp.json里能配几个Server？远程和本地各怎么配'——笔记208行仅提到'.mcp.json/claude_desktop_config.json是装外部MCP Server的入口'，无任何配置数量/远程本地配置方式的内容；b)'MCP+Skill方案里SKILL.md还负责什么'——笔记237-241行下一站钩子仅说Skill带prompt/资源/tools，无'MCP+Skill互补方案'的论述；c)'印证FC站学到的哪条原则'——指向FC站笔记而非06-MCP.md。且题干'你在WorkBuddy连接器里真实交付过flashcards-mcp'、开头'延伸到你在WorkBuddy连接器里的真实落地'均来自14-WorkBuddy连接器等其他材料，06-MCP.md中不存在。"
+    },
+    {
+      "text": "一个考点最多出一道题",
+      "passed": true,
+      "evidence": "各题考点不重复：第1题考'M×N问题与MCP解法'（笔记一）、第2题考'三角架构+两层通信'（笔记二）、第3题考'三大原语与范式对应'（笔记三）、第4题考'FastMCP写Server'（笔记四）、第5题考'Client四步流程+FC/MCP分层+Claude Code角色'（笔记五、六）、第6题考WorkBuddy配置落地（笔记外）。第5题b小问的'FC出决策→MCP执行'在第6题c中虽再提FC原则，但第6题c问的是'印证哪条原则'（元认知定位），考测点不同，不构成同一考点重复考。"
+    },
+    {
+      "text": "认知层次混合，至少覆盖 2 个布鲁姆层次，不全是记忆层",
+      "passed": true,
+      "evidence": "逐题判定：第1题=理解（说明写法核心问题及MCP解法）；第2题=记忆/理解（描述架构角色、列举方法名与传输方式属记忆，解释适用场景属理解）；第3题=记忆（列举三类原语并对应范式）；第4题=应用（手写FastMCP Server代码）；第5题=应用（写Client代码）+分析（回答三个为什么）；第6题=应用/分析（综合WorkBuddy落地场景）。覆盖记忆/理解/应用/分析，非全记忆层。"
+    },
+    {
+      "text": "出题时不附带答案或解析",
+      "passed": true,
+      "evidence": "六道题均为纯题干，无'参考答案'/'答题要点'。第6题b小问'MCP的schema已经声明了有什么工具'与c小问引用'工具名称、描述、参数要清晰稳定'均属题干前提铺垫而非答案；结尾'答完我按笔记逐题判分+补漏'属判分说明，不算泄题。"
+    }
+  ],
+  "summary": {
+    "pass_rate": 0.8333,
+    "passed": 5,
+    "failed": 1,
+    "total": 6
+  }
+}

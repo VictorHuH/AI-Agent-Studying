@@ -1,0 +1,70 @@
+# yaml-language-server: $schema=https://promptfoo.dev/config-schema.json
+description: self-test Skill 新旧版对照评测 v2（swap-only + 区分性断言：skill-used/题量/不泄答案/考点查重/可溯源）
+
+prompts:
+  - '{{request}}'
+
+providers:
+  - id: anthropic:claude-agent-sdk
+    label: v1-旧版skill
+    config:
+      working_dir: ./fixtures/v1
+      setting_sources: ['project'] # 扫描 working_dir 下的 .claude/skills/
+      skills: ['self-test'] # 只放行这个 skill（自动 allow Skill 工具）
+      apiKeyRequired: false # 用本机 Claude Code 会话认证，不走 ANTHROPIC_API_KEY
+      append_allowed_tools: ['Bash'] # skill 要跑 scripts/extract_topics.py
+  - id: anthropic:claude-agent-sdk
+    label: v2-新版skill
+    config:
+      working_dir: ./fixtures/v2
+      setting_sources: ['project']
+      skills: ['self-test']
+      apiKeyRequired: false
+      append_allowed_tools: ['Bash']
+
+tests:
+  - vars:
+      request: '考我 MCP，考全部，出 6 道题。（已确认：考全部内容、出 6 道题，中途无需再向用户确认，直接完成出题。）'
+      # 笔记原文喂给 LLM judge（不进 agent 的 prompt）
+      note: file://./fixtures/06-MCP.md
+
+defaultTest:
+  # LLM 断言的判分模型：openai 兼容接口打 Ark coding 端点（沿用 2026-07 验证过的配置）
+  options:
+    provider:
+      id: openai:chat:ark-code-latest
+      config:
+        apiBaseUrl: https://ark.cn-beijing.volces.com/api/coding/v3
+        apiKeyEnvar: ANTHROPIC_AUTH_TOKEN
+  assert:
+    # ---- 基础断言（非区分性，验证流程）----
+    # 触发证据：一等公民 tool call 元数据，不是模型自报
+    - type: skill-used
+      value: self-test
+    # 执行质量：正好 6 道题
+    - type: javascript
+      value: |
+        const m = (output || '').match(/第\s*[0-9一二三四五六七八九十]+\s*题/g) || [];
+        if (m.length >= 6) {
+          return { pass: true, score: 1, reason: `共 ${m.length} 道题` };
+        }
+        return { pass: false, score: 0, reason: `只有 ${m.length} 道题` };
+    # 执行质量：先问后判——题目正文里不应直接给出答案标记
+    - type: not-contains
+      value: '参考答案'
+    # ---- 区分性断言（LLM-as-judge，v1/v2 的真正分水岭）----
+    # 考点不重复（对应 skill 新增的"考点查重"步骤）
+    - type: llm-rubric
+      value: |
+        你在评测一份自测出题的输出。判据：各道题的考点必须互不重复——
+        任意两道题不得考查同一个知识点/笔记小节（问法不同但知识实质相同也算重复）。
+        请逐题归纳考点再判断：若发现任意两题实质重复，判定 FAIL 并指出是哪两题、重复的考点是什么；否则判定 PASS。
+    # 可溯源（对应 skill 的"不编造/不越界"护栏）
+    - type: llm-rubric
+      value: |
+        你在评测一份自测出题的输出。判据：每道题考查的知识点必须能在下面的笔记原文中找到，
+        不得出现笔记里没有的内容（即使是真实的技术知识，不在笔记里也算越界）。
+        请逐题核对笔记后判断：若任何一题考了笔记里不存在的内容，判定 FAIL 并指出是哪一题、越界内容是什么；否则判定 PASS。
+
+        笔记原文（06-MCP.md）：
+        {{note}}

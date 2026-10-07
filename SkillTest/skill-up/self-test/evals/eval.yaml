@@ -1,0 +1,35 @@
+schema_version: v1alpha1
+environment:
+    type: none
+    workspace_mount: /workspace
+mcp:
+    servers: []
+skills:
+    - source: local_path
+      path: .
+engine:
+    name: claude_code
+    model:
+        provider: ""
+        name: ""
+cases:
+    files:
+        - evals/cases/case-0.yaml
+        - evals/cases/case-1.yaml
+        - evals/cases/case-2.yaml
+    defaults:
+        timeout_seconds: 600
+        max_turns: 20
+    parallelism: 1
+judge:
+    type: agent_judge
+    criteria:
+        - Imported Anthropic eval cases define their own case-level criteria.
+benchmark:
+    enabled: true
+report:
+    formats:
+        - json
+        - html
+    artifacts:
+        - transcript

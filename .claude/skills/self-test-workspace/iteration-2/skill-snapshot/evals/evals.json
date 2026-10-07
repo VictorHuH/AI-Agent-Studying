@@ -1,0 +1,23 @@
+{
+  "skill_name": "self-test",
+  "evals": [
+    {
+      "id": 0,
+      "prompt": "考我 MCP，考全部，出 6 道题。",
+      "expected_output": "基于 06-MCP.md 的 6 道自测题：题目可溯源到笔记真实标题、考点不重复、认知层次混合、不含答案",
+      "files": ["06-MCP.md"]
+    },
+    {
+      "id": 1,
+      "prompt": "自测一下 Agent，考全部，出 6 道题。",
+      "expected_output": "基于 05-Agent.md 的 6 道自测题，标准同上",
+      "files": ["05-Agent.md"]
+    },
+    {
+      "id": 2,
+      "prompt": "检验一下我学没学会 Benchmark 评测，考全部，出 6 道题。",
+      "expected_output": "正确对应到 12-应用层Benchmark评测.md 并产出 6 道自测题，标准同上（此条额外考验笔记名匹配：口语'Benchmark 评测' vs 笔记标题'应用层Benchmark评测'）",
+      "files": ["12-应用层Benchmark评测.md"]
+    }
+  ]
+}

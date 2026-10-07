@@ -1,0 +1,24 @@
+id: case-2
+title: Benchmark 口语匹配
+description: 正确对应到 12-应用层Benchmark评测.md 并产出 6 道自测题，标准同 case-0（额外考验口语'Benchmark 评测'与笔记标题'应用层Benchmark评测'的匹配）
+tag: functional_test
+input:
+    prompt: |
+        检验一下我学没学会 Benchmark 评测，考全部，出 6 道题。（已确认：考全部内容、出 6 道题，中途无需再向用户确认，直接完成出题。）
+context:
+    files:
+        12-应用层Benchmark评测.md: 12-应用层Benchmark评测.md
+constraints: {}
+expect:
+    must_not_contain:
+        - 参考答案
+judge:
+    type: agent_judge
+    model: anthropic/glm-5.3[1M]
+    criteria:
+        - 正好 6 道题（一题含多个小问仍算一道）
+        - 题目基于工作区中的 12-应用层Benchmark评测.md，未混入其他笔记或笔记外知识
+        - 每道题可溯源到该笔记真实小节，无笔记里不存在的内容
+        - 一个考点最多出一道题（两道题知识实质相同算重复）
+        - 认知层次混合：至少覆盖 2 个布鲁姆层次（记忆/理解/应用/分析），不全是记忆层
+        - 出题时不附带答案或解析（"答完我判分"这类流程说明不算泄题）

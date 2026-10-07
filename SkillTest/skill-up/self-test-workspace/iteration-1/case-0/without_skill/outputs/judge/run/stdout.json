@@ -1,0 +1,42 @@
+```json
+{
+  "results": [
+    {
+      "criterion_id": "criterion-1",
+      "passed": true,
+      "evidence": ["final_message 中恰好列出 6 道题：第 1 题至第 6 题，标题为「MCP 自测 · 共 6 题」，与用户要求的 6 道题一致", "每道题虽含多个小问（如第 2 题含角色、比例、协议层/传输层等多个子问），但仍各算一道题，总数为 6"],
+      "failures": []
+    },
+    {
+      "criterion_id": "criterion-2",
+      "passed": true,
+      "evidence": ["transcript 显示 agent 用 Glob 定位到 c:\\Users\\Administrator\\Desktop\\AI\\Studying\\06-MCP.md 并完整读取该笔记后才出题，题目全部对应 06-MCP.md 的第一至第六节", "第 3 题「对应你之前学过的哪三大范式」出自笔记第三节表格的「对应已学」列（FC / RAG / Prompt），属笔记内内容而非笔记外知识", "第 6 题问 Claude Code 的角色对应笔记第六节小节「你正在用的 Claude Code 就是 MCP 的 Host」，是笔记原文内容", "第 4 题的 search_notes(keyword) 是新任务场景（布鲁姆应用层出题法，references/bloom_taxonomy.md 明确示范「给个新场景让用户操作」），考察的知识点（FastMCP 装饰器、schema 自动生成、stdio 运行行为）均出自笔记第四节"],
+      "failures": []
+    },
+    {
+      "criterion_id": "criterion-3",
+      "passed": true,
+      "evidence": ["第 1 题对应笔记「一、本质：为什么需要 MCP（M×N → M+N）」小节，M×N/M+N 与 USB-C 类比均为该节原文", "第 2 题对应「二、架构：Host / Client / Server 三角」小节：三角色表、Client 与 Server 1:1、协议层 JSON-RPC 2.0、传输层 stdio/Streamable HTTP 及「教学首选，最简」均出自该节", "第 3 题对应「三、三大原语（Primitives）」小节的 Tools/Resources/Prompts 表格", "第 4 题对应「四、实战 1：写一个 MCP Server」的「代码结构：2 个必懂点」，包括「不能直接 python test_mcp_server.py 看输出」这一原文要点", "第 5 题对应「五、实战 2：写一个 MCP Client」的「协议流程四步」、解耦关键认知及「Windows 工程坑」小节（第一个坑 command=sys.executable 确实列在首位）", "第 6 题对应「六、关键认知：MCP 和 FC 的关系」小节的「MCP 不是 FC 的替代，是分层」和「你正在用的 Claude Code 就是 MCP 的 Host」两个小节"],
+      "failures": []
+    },
+    {
+      "criterion_id": "criterion-4",
+      "passed": true,
+      "evidence": ["六道题逐题标注了不同考点：一（本质 M×N→M+N）、二（三角架构）、三（三大原语）、四（写 Server）、五（写 Client）、六（MCP 与 FC 的关系），与笔记六个 H2 小节一一对应，无两题落在同一小节", "知识实质不重复：第 1 题考 M×N 问题与 USB-C 类比，第 6 题考 FC 与 MCP 分层及 Claude Code 角色，虽都涉及 MCP 价值但考察的具体知识实质不同且分属笔记第一、六两节", "第 2 题与第 5 题虽都涉及 stdio，但第 2 题考传输层两种方式的选型场景，第 5 题考协议流程四步与解耦本质，知识实质不同"],
+      "failures": []
+    },
+    {
+      "criterion_id": "criterion-5",
+      "passed": true,
+      "evidence": ["题目明确标注认知层次：第 1、2 题为「理解」，第 3 题为「记忆」，第 4、5 题为「应用」，第 6 题为「分析」，共覆盖 4 个布鲁姆层次", "并非全是记忆层：仅第 3 题为记忆层，其余 5 题为理解/应用/分析层次", "第 6 题要求反驳「MCP 就是 FC 换个名字」的说法并分析两层如何接起来工作，符合布鲁姆参考文件中分析层「问区别/联系/边界」的定义"],
+      "failures": []
+    },
+    {
+      "criterion_id": "criterion-6",
+      "passed": true,
+      "evidence": ["final_message 中每道题只提出问题，未给出任何答案或解析", "结尾「逐题作答即可，答完我按题判分、错的讲透（附对应笔记小节）」属于流程说明，明确表示判分和讲解在用户作答之后，符合「先问后判」要求", "第 4 题「终端里什么都没有——这是坏了吗？为什么？」只描述现象提问，未透露「server 在等 stdin 请求」的答案", "第 5 题虽引述「不需要 import Server 的代码」这一笔记原文事实作为题干前提，但问的是背后的「为什么」和「解耦解的是什么」，未附答案；问「第一个坑是什么」也未透露 sys.executable"],
+      "failures": []
+    }
+  ]
+}
+```

@@ -1,0 +1,100 @@
+[
+  {
+    "role": "user",
+    "content": "考我 MCP，考全部，出 6 道题。（已确认：考全部内容、出 6 道题，中途无需再向用户确认，直接完成出题。）",
+    "turn": 1
+  },
+  {
+    "role": "tool_call",
+    "turn": 1,
+    "tool_call": {
+      "id": "call_69b902628c3845faa0bb5472",
+      "name": "Skill",
+      "arguments": {
+        "args": "考我 MCP，考全部内容，出 6 道题，中途无需再向用户确认，直接完成出题",
+        "skill": "self-test"
+      }
+    }
+  },
+  {
+    "role": "tool_result",
+    "turn": 2,
+    "tool_result": {
+      "call_id": "call_69b902628c3845faa0bb5472",
+      "status": "success",
+      "content": "Launching skill: self-test"
+    }
+  },
+  {
+    "role": "user",
+    "content": "Base directory for this skill: C:\\Users\\Administrator\\AppData\\Local\\Temp\\skill-up-2987376316\\.claude\\skills\\self-test\n\n# 学习自测出题\n\n## 何时用\n用户想用问答方式复习已学内容。典型触发语：\n- \"考我 RAG\"\n- \"自测一下 Agent\"\n- \"出 3 道题检验 Prompt Engineering\"\n- \"检验一下我学没学会 MCP\"\n\n## 前置\n- 笔记根目录：`c:\\Users\\Administrator\\Desktop\\AI\\Studying`\n- 用户没指定主题时，先列出可考的笔记文件让他选\n- 找不到对应笔记时，直接问用户要考哪个主题，别瞎猜\n\n## 步骤\n1. **列考点**：运行 `python scripts/extract_topics.py \u003c笔记路径\u003e`，提取该笔记的所有标题作为考点清单\n2. **确认范围**：把考点清单给用户看，问\"要考全部还是挑某几节？出几道题？\"\n3. **按认知层次出题**：参考 `references/bloom_taxonomy.md` 的认知层次（记忆 / 理解 / 应用 / 分析……），混合出题，别全出死记硬背的题\n4. **考点查重（出完必做）**：逐题在草稿里标注该题对应的小节/考点，若两道题落在同一考点（哪怕问法不同），合并成一题或换掉一题。原因：重复轰炸浪费题量、答对一道等于答对两道，覆盖面是虚的\n5. **先问后判**：出完题先不公布答案，等用户逐题作答\n6. **判分 + 讲透**：用户答完后逐题判分；错的题讲清楚为什么错、正确答案是什么、对应笔记的哪一节\n\n## 注意（Rule 护栏）\n- 一个考点最多出一道题——别只当口号：靠步骤 4 的逐题标注自查来保证，两题同节就合并/换题\n- 出题后**绝不**先透露答案\n- 用户答错时，先讲思路再给答案，别直接甩结论\n- 用户回答模糊时，追问澄清，别擅自假设对错\n- 笔记里没有的内容，明确说\"笔记未涉及\"，不要编题——超范围的题用户没法对照笔记复习，等于考了没学过的东西\n\n\nARGUMENTS: 考我 MCP，考全部内容，出 6 道题，中途无需再向用户确认，直接完成出题",
+    "turn": 3
+  },
+  {
+    "role": "tool_call",
+    "turn": 3,
+    "tool_call": {
+      "id": "call_be87f3ae0b674a0589da8c23",
+      "name": "Glob",
+      "arguments": {
+        "path": "c:\\Users\\Administrator\\Desktop\\AI\\Studying",
+        "pattern": "**/*MCP*"
+      }
+    }
+  },
+  {
+    "role": "tool_result",
+    "turn": 4,
+    "tool_result": {
+      "call_id": "call_be87f3ae0b674a0589da8c23",
+      "status": "success",
+      "content": "c:\\Users\\Administrator\\Desktop\\AI\\Studying\\06-MCP.md\nc:\\Users\\Administrator\\Desktop\\AI\\Studying\\SkillTest\\promptfoo\\fixtures\\06-MCP.md\nc:\\Users\\Administrator\\Desktop\\AI\\Studying\\SkillTest\\skill-up\\self-test\\06-MCP.md"
+    }
+  },
+  {
+    "role": "tool_call",
+    "turn": 4,
+    "tool_call": {
+      "id": "call_740eb90a248146b6a59e8b80",
+      "name": "PowerShell",
+      "arguments": {
+        "command": "python \"C:\\Users\\Administrator\\AppData\\Local\\Temp\\skill-up-2987376316\\.claude\\skills\\self-test\\scripts\\extract_topics.py\" \"c:\\Users\\Administrator\\Desktop\\AI\\Studying\\06-MCP.md\"",
+        "description": "提取 MCP 笔记的标题考点清单"
+      }
+    }
+  },
+  {
+    "role": "tool_result",
+    "turn": 5,
+    "tool_result": {
+      "call_id": "call_740eb90a248146b6a59e8b80",
+      "status": "success",
+      "content": "考点清单（共 17 个标题）：\r\n\r\nH1  🔌 MCP 教程（阶段3笔记）\r\n  H2  一、本质：为什么需要 MCP（M×N → M+N）\r\n    H3  和已学知识的钩子兑现\r\n  H2  二、架构：Host / Client / Server 三角\r\n  H2  三、三大原语（Primitives）-- 三大范式在这里重逢\r\n  H2  四、实战 1：写一个 MCP Server\r\n    H3  代码结构：2 个必懂点\r\n  H2  五、实战 2：写一个 MCP Client\r\n    H3  协议流程四步\r\nH1  ① 告诉 Client \"怎么启动 Server\"（不 import server 代码！只起子进程）\r\n    H3  真实运行结果（2026-07-19 跑通 ✅）\r\n    H3  Windows 工程坑（已踩平）\r\n  H2  六、关键认知：MCP 和 FC 的关系 + 和 Claude Code 的关系\r\n    H3  MCP 不是 FC 的替代，是分层\r\n    H3  你正在用的 Claude Code 就是 MCP 的 Host\r\n  H2  七、MCP 站总收尾\r\n    H3  工具体系进化位置"
+    }
+  },
+  {
+    "role": "tool_call",
+    "turn": 5,
+    "tool_call": {
+      "id": "call_6c80ceff63774b6ea27cf3f6",
+      "name": "Read",
+      "arguments": {
+        "file_path": "c:\\Users\\Administrator\\Desktop\\AI\\Studying\\06-MCP.md"
+      }
+    }
+  },
+  {
+    "role": "tool_result",
+    "turn": 6,
+    "tool_result": {
+      "call_id": "call_6c80ceff63774b6ea27cf3f6",
+      "status": "success",
+      "content": "1\t# 🔌 MCP 教程（阶段3笔记）\n2\t\n3\t\u003e 学习日期：2026-07-19\n4\t\u003e 定位：阶段 3 框架与工具链。**工具体系进化链的关键一环** -- 把\"工具\"从 Agent 代码里解耦成标准服务。\n5\t\u003e 路线位置：RAG ✅ -\u003e Prompt ✅ -\u003e FC ✅ -\u003e Agent ✅ -\u003e **MCP** ✅ -\u003e Skill -\u003e LangChain\n6\t\u003e 协议版本：本机验证为 `2025-11-25`（最新稳定版，2024-11 初版，2025-06 第二版，2025-11 第三版）\n7\t\n8\t---\n9\t\n10\t## 一、本质：为什么需要 MCP（M×N → M+N）\n11\t\n12\t回看 FC demo（`test_function_calling.py`）：工具是怎么接进来的？\n13\t\n14\t```\n15\t手写 TOOLS_SCHEMA（JSON Schema，给模型看）\n16\t手写 TOOL_REGISTRY（函数派发表，给代码用）\n17\t两个都得自己维护，schema 和函数实现散在两处\n18\t```\n19\t\n20\t这套写法的问题不在\"难写\"，在**绑死**：`get_weather` 这个工具写死在 FC demo 这一个应用里。换个应用（Cursor、Claude Desktop、另一个 Agent）想用它？**得把 schema 和函数再抄一遍**。\n21\t\n22\t放大看：**M 个 Host（宿主应用）× N 个工具 = M×N 份适配代码**。每出一个新工具，要给每个 Host 重写一遍接入。\n23\t\n24\tMCP（Model Context Protocol，Anthropic 2024-11 推出）解的就是这个：\n25\t\n26\t```\n27\tHost 不再自己接工具，而是通过统一的 Client 协议去连\"工具服务\"。\n28\t工具实现成独立的 Server，任何 Host 都能用同一套协议发现并调用。\n29\t```\n30\t\n31\t- M 个 Host：各实现一次 Client（接入协议）→ M 份\n32\t- N 个工具：各实现一次 Server（暴露能力）→ N 份\n33\t- 总成本：**M + N**，不是 M×N\n34\t\n35\t\u003e 🎯 **一句话**：MCP 是 AI 工具的\"USB-C 接口\"。USB-C 不关心你插的是硬盘还是显示器，只规定\"插上就能被识别\"。MCP 不关心工具内部怎么实现，只规定\"工具怎么被发现、怎么被调用\"。HTTP 标准化了 Web 通信，MCP 标准化了 AI 调工具。\n36\t\n37\t### 和已学知识的钩子兑现\n38\t\n39\tAgent 站埋的钩子今天兑现第一半：\n40\t\n41\t| 钩子（Agent 站留的） | 今天兑现 |\n42\t|---|---|\n43\t| \"Agent 的工具是手写 Python 函数\" | MCP 把工具从代码里**解耦**成独立进程/服务 |\n44\t| \"Function -\u003e Tool -\u003e Skill 进化链\" | 本站走完 **Function → Tool** 这一段；Skill 是下一站 |\n45\t\n46\tFC demo 的 `get_weather` 是 **Function**（函数 + 手写 schema，绑死在应用里）。本站把它升级成 **Tool**（MCP Server，标准化、可复用）。下一站 Skill 再包一层\"怎么用\"。\n47\t\n48\t---\n49\t\n50\t## 二、架构：Host / Client / Server 三角\n51\t\n52\t```\n53\t┌─────────────────────────────┐\n54\t│  Host（宿主应用）            │   跑 LLM、做决策的应用\n55\t│  ┌─────────┐  ┌─────────┐  │   例子：Claude Desktop、Cursor、\n56\t│  │ Client  │  │ Client  │  │         Claude Code、你自己的 Agent\n57\t│  └────┬────┘  └────┬────┘  │\n58\t└───────┼────────────┼──────┘\n59\t        │ JSON-RPC   │ JSON-RPC     统一协议，每个 Client 1:1 连一个 Server\n60\t        ▼            ▼\n61\t   ┌─────────┐  ┌─────────┐\n62\t   │ Server  │  │ Server  │       独立进程，暴露工具/资源/提示词\n63\t   │ 天气     │  │ 数据库   │       例子：天气 Server、GitHub Server、你的 RAG\n64\t   └─────────┘  └─────────┘\n65\t```\n66\t\n67\t三个角色：\n68\t\n69\t| 角色 | 是什么 | 你已见的例子 |\n70\t|---|---|---|\n71\t| **Host** | 跑 LLM 的应用，装着若干 Client | Claude Desktop、Claude Code、你的 Agent |\n72\t| **Client** | Host 内部 1:1 连一个 Server 的连接器 | 本站 `ClientSession` |\n73\t| **Server** | 暴露能力的独立进程 | 本站 `test_mcp_server.py` |\n74\t\n75\t通信两层：\n76\t\n77\t- **协议层：JSON-RPC 2.0**。请求-响应模型，方法名如 `tools/list`、`tools/call`。和 FC 的 `tools` 参数完全不同维度：FC 是\"模型怎么表达要调工具\"，MCP 是\"工具怎么跨进程被发现和调用\"。\n78\t- **传输层：stdio / Streamable HTTP**。\n79\t  - **stdio**：本地子进程，server 通过标准输入/输出收发 JSON-RPC。**教学首选，最简**。\n80\t  - **Streamable HTTP**：远程，2025-03 起取代旧版 SSE（SSE 已废弃）。一次 HTTP 请求即可升级成流式，适合生产远程场景。\n81\t\n82\t---\n83\t\n84\t## 三、三大原语（Primitives）-- 三大范式在这里重逢\n85\t\n86\tServer 能暴露三类东西，正好对上你已学的三大范式：\n87\t\n88\t| 原语 | 是什么 | 对应已学 | 例子 |\n89\t|---|---|---|---|\n90\t| **Tools** | 模型可调用的函数 | **FC** 的 tools（`test_function_calling`） | `get_weather`、`calculate` |\n91\t| **Resources** | 可读的数据源（模型按需读） | **RAG** 的知识库 | 简历 PDF、数据库表、文件 |\n92\t| **Prompts** | 预定义提示词模板（用户触发） | **Prompt** Engineering 的模板 | \"总结这份文档\"模板 |\n93\t\n94\t\u003e 🎯 **一句话**：FC / RAG / Prompt 这三大范式，在 MCP 里以 Tools / Resources / Prompts 三大原语的形式重逢了。这不是巧合 -- MCP 就是把\"给模型加能力\"这件事拆成三个标准维度。\n95\t\n96\t本站实战聚焦 **Tools**（最常用，和 FC 直接对应）。Resources / Prompts 思路一致，留给后续。\n97\t\n98\t---\n99\t\n100\t## 四、实战 1：写一个 MCP Server\n101\t\n102\t见 `Code/test_mcp_server.py`。把 FC demo 的两个工具搬过来，但用 FastMCP 装饰器重写。\n103\t\n104\t### 代码结构：2 个必懂点\n105\t\n106\t**① `@mcp.tool()` -- 函数即工具，schema 自动生成**\n107\t\n108\t```python\n109\tfrom mcp.server.fastmcp import FastMCP\n110\tmcp = FastMCP(\"studying-mcp-server\")\n111\t\n112\t@mcp.tool()\n113\tdef get_weather(city: str) -\u003e str:\n114\t    \"\"\"获取指定城市的当前天气。用于查询实时天气信息。\"\"\"\n115\t    return fake.get(city, \"...\")\n116\t```\n117\t\n118\t对比 FC demo 要手写的 `TOOLS_SCHEMA`（一大段 JSON）+ `TOOL_REGISTRY`（派发表）：\n119\t\n120\t| | FC demo | MCP Server |\n121\t|---|---|---|\n122\t| schema | 手写 JSON Schema | 类型注解自动生成 |\n123\t| description | 写在 schema 里 | 函数 docstring 自动取用 |\n124\t| 派发 | 自己写 `TOOL_REGISTRY[fn](**args)` | 协议自动派发，代码不出现 |\n125\t| 复用 | 绑死在这个应用 | 任何 Host 都能连 |\n126\t\n127\t**② `mcp.run(transport=\"stdio\")` -- 启动服务**\n128\t\n129\tstdio 传输：server 在自己的子进程里跑，靠标准输入/输出收发 JSON-RPC。所以 server 文件**不能直接 `python test_mcp_server.py` 看输出**（它没东西打印，只是在等 client 通过 stdin 发请求）--它是个\"被调用的服务\"。\n130\t\n131\t---\n132\t\n133\t## 五、实战 2：写一个 MCP Client\n134\t\n135\t见 `Code/test_mcp_client.py`。不经过任何 LLM，纯协议验证：拉起 server 子进程 → 发现工具 → 调用工具。\n136\t\n137\t### 协议流程四步\n138\t\n139\t```python\n140\t# ① 告诉 Client \"怎么启动 Server\"（不 import server 代码！只起子进程）\n141\tserver_params = StdioServerParameters(command=sys.executable, args=[\"test_mcp_server.py\"])\n142\t\n143\tasync with stdio_client(server_params) as (read, write):       # 拉起子进程\n144\t    async with ClientSession(read, write) as session:         # 建会话\n145\t        await session.initialize()                             # ② 握手\n146\t        tools = (await session.list_tools()).tools             # ③ 发现\n147\t        result = await session.call_tool(\"get_weather\",        # ④ 调用\n148\t                                         {\"city\": \"上海\"})\n149\t```\n150\t\n151\t**关键认知**：Client 只需要\"怎么启动 Server\"（command + args），**不需要 import Server 的代码**。这就是解耦的本质 -- 工具实现和工具调用彻底分开，跨进程、跨语言都行（Server 用 Rust 写、Client 用 Python 连，照样通）。\n152\t\n153\t### 真实运行结果（2026-07-19 跑通 ✅）\n154\t\n155\t```\n156\t① 启动 MCP Server（stdio 子进程）并建立会话...\n157\t✅ 会话已初始化。Server: studying-mcp-server\n158\t   协议版本: 2025-11-25\n159\t\n160\t② 发现 2 个工具（list_tools）：\n161\t   - get_weather(city)\n162\t     获取指定城市的当前天气。用于查询实时天气信息。\n163\t   - calculate(expression)\n164\t     精确计算数学表达式。用于大数乘除、复杂运算等模型可能算错的场景。\n165\t\n166\t③ 调用工具（call_tool）：\n167\t   🔧 call_tool(get_weather, {'city': '上海'})  -\u003e 32℃，晴\n168\t   🔧 call_tool(get_weather, {'city': '广州'})  -\u003e 35℃，雷阵雨\n169\t   🔧 call_tool(calculate, {'expression': '1234 * 5678'})  -\u003e 1234 * 5678 = 7006652\n170\t\n171\t✅ MCP 协议闭环跑通：Client 发现并调用了 Server 的工具。\n172\t```\n173\t\n174\t三个看点印证：\n175\t1. **协议版本 `2025-11-25`**：握手时 client 和 server 协商出的最新稳定版。\n176\t2. **schema 自动生成**：`get_weather(city)` 的 `city` 参数是 FastMCP 从 `city: str` 注解推出来的，没手写一个字的 JSON Schema。\n177\t3. **`1234 * 5678 = 7006652`**：FC demo 里这个数被模型口述成\"700万66652\"（多 1 个 6），这里 Python 算对了。**工具补短板，不代替思考** -- 钩子再次兑现。\n178\t\n179\t### Windows 工程坑（已踩平）\n180\t\n181\t- **`command=sys.executable`**：Windows 下用 `\"python\"` 可能找不到（PATH/版本问题），用 `sys.executable`（当前解释器完整路径）最稳。\n182\t- **编码 UTF-8**：跑之前设 `PYTHONUTF8=1 PYTHONIOENCODING=utf-8`，避免中文输出乱码（Python 3.14 默认 UTF-8，但 Windows 控制台不一定）。\n183\t- **FastMCP 的 INFO 日志**：默认会打 `Processing request of type ListToolsRequest`，是日志不是报错。生产可调日志级别关掉。\n184\t\n185\t---\n186\t\n187\t## 六、关键认知：MCP 和 FC 的关系 + 和 Claude Code 的关系\n188\t\n189\t### MCP 不是 FC 的替代，是分层\n190\t\n191\t容易混淆的点：MCP 和 FC 是一回事吗？不是，是**两个层面**：\n192\t\n193\t| | 解决什么 | 例子 |\n194\t|---|---|---|\n195\t| **FC（Function Calling）** | 模型怎么**表达**\"我要调工具\" | 模型输出 `tool_call(get_weather, {city:\"上海\"})` |\n196\t| **MCP（Model Context Protocol）** | 工具怎么被**发现和调用**（跨进程标准） | Client 通过 JSON-RPC 连 Server 调 `get_weather` |\n197\t\n198\t一个 Host 可以**同时用两者**：用 FC 让模型决策调哪个工具，用 MCP 去真正执行（连对应的 Server）。本站 Client demo 是\"代码指定调哪个\"（跳过 FC 决策）；真实 Agent 里这两层会接起来：**FC 出决策 → MCP 执行**。\n199\t\n200\t\u003e 🎯 **一句话**：FC 是\"嘴\"（说要调啥），MCP 是\"手\"的标准化接口（怎么调到）。FC + MCP = 模型决策 + 标准化执行，这才是工业版 Agent 的完整形态。Agent 站留的钩子\"工业版用 FC 的 tools 参数\"今天补全另一半。\n201\t\n202\t### 你正在用的 Claude Code 就是 MCP 的 Host\n203\t\n204\t正反馈来了 -- 你这两天的学习环境本身就在用 MCP：\n205\t\n206\t- **Claude Code 是 Host + Agent**（Agent 站已学：Claude Code = Harness + Agent，Harness 不做决策只执行）。\n207\t- 它的每个内置工具（`Bash`、`Read`、`Edit`、`Grep`...）背后都是 tool（可以理解成内置 Server）。\n208\t- 配置文件（`.mcp.json` / `claude_desktop_config.json`）就是装外部 MCP Server 的入口。\n209\t- **装一个 MCP Server = 给 Claude Code 加新能力，零代码改动**。这就是 M+N 的现实样子。\n210\t\n211\t\u003e 试着搜一下\"awesome mcp servers\" -- 已经有几百个现成的 Server（GitHub、Slack、数据库、文件系统…）。这就是标准化的网络效应：写一次，到处可用。\n212\t\n213\t---\n214\t\n215\t## 七、MCP 站总收尾\n216\t\n217\t带走五件事：\n218\t\n219\t1. **MCP = AI 工具的 USB-C**。把工具从应用代码里解耦成独立服务，M+N 替代 M×N。\n220\t2. **三角架构**：Host（跑 LLM）/ Client（连接器）/ Server（暴露能力），JSON-RPC 2.0 通信，stdio（本地）/ Streamable HTTP（远程）传输。\n221\t3. **三大原语 = 三大范式重逢**：Tools（FC）/ Resources（RAG）/ Prompts（Prompt Engineering）。\n222\t4. **MCP 和 FC 是分层不是替代**：FC 是嘴（决策调啥），MCP 是手的标准化接口（怎么调到）。真实 Agent = FC 决策 + MCP 执行。\n223\t5. **`@mcp.tool()` 让函数即工具**：schema 从注解自动生成，docstring 就是给模型看的 description（和 FC 同理：给工具写 Prompt）。\n224\t\n225\t### 工具体系进化位置\n226\t\n227\t```\n228\tFunction Calling             ← 函数 + 手写 schema，绑死在应用 ✅\n229\t        │  解耦成独立服务 + 标准协议\n230\t        ▼\n231\tTool / MCP                   ← 标准化工具服务，跨 Host 复用 ✅（本站）\n232\t        │  再包一层\"怎么用\"的说明书（prompt + 资源）\n233\t        ▼\n234\tSkill                        ← 能力封装包，下一站\n235\t```\n236\t\n237\t\u003e 🔗 **下一站钩子（Skill）**：\n238\t\u003e - MCP 的 Tool 是\"一个动作\"；Skill 是\"一整套能力的封装包\"-- 带 prompt（怎么用）、资源（依赖什么）、tools（能干啥）。\n239\t\u003e - 类比：Tool 是一把螺丝刀，Skill 是\"组装这台电脑\"的技能卡（告诉你用哪几把螺丝刀、按什么顺序）。\n240\t\u003e - 你正在用的 Claude Code 的 Skill（`/skill-name`）就是工业实现 -- 它能把多个 tool + 一段 prompt 打包成一个可复用技能。\n241\t\u003e - Skill 也讲 SubAgent（一个 Agent 派生子 Agent 干特定任务）的关系 -- 暂留作后续。\n242\t\u003e\n243\t\u003e MCP 站完成。下一站：**Skill**（或先 LangChain 把 Agent + MCP 工程化封装）。\n244\t"
+    }
+  },
+  {
+    "role": "assistant",
+    "content": "笔记已读完（`06-MCP.md`，17 个考点，核心 6 节），6 道题按布鲁姆认知层次混合出，每题对应不同小节、无重复考点。**先作答，我后判分**——现在不透露任何答案。\n\n---\n\n## 📝 MCP 自测 · 共 6 题\n\n### 第 1 题【理解】M×N → M+N\n笔记说 MCP 解决的核心问题是\"M×N 份适配代码变成 M+N\"。请解释：**M 和 N 分别指什么？在没有 MCP 的世界里，为什么成本是 M×N？MCP 又是怎么把它变成 M+N 的？**\n\n### 第 2 题【理解】三角架构与通信\n画出（或文字描述）MCP 的三角架构：**三个角色分别是什么、各自干什么？** 并回答两个细节：\n- a) Client 和 Server 是什么连接关系？\n- b) 传输层有哪两种方式，分别适用什么场景？哪种已被废弃？\n\n### 第 3 题【理解】三大原语\nMCP Server 能暴露三类原语。**请说出这三类分别是什么，并说明它们各自对应你已学的哪个范式、举一个例子。**\n\n### 第 4 题【应用】写 Server\n你用 FastMCP 写了一个 `test_mcp_server.py`，同事小李直接运行 `python test_mcp_server.py`，发现\"什么输出都没有\"，以为代码坏了。**请指出他的误解在哪里，并说明原因。** 另外对比 FC demo：`@mcp.tool()` 装饰器帮你省掉了哪两样手写的东西？schema 和 description 分别从哪里来？\n\n### 第 5 题【应用/分析】写 Client\n写 MCP Client 时有四个协议流程步骤。**请按顺序写出这四步分别做什么。** 并回答一个关键问题：Client 只给了 `command` 和 `args` 这种\"启动命令\"，**为什么不需要 `import` Server 的代码就能调用它的工具？这体现了什么本质？**\n\n### 第 6 题【分析】MCP 和 FC 的关系\n同事说：\"MCP 是 Function Calling 的升级版，学会 MCP 就不用学 FC 了。\"**这个说法哪里不对？** 请说明两者各自解决什么层面的问题，以及在真实工业 Agent 中两者如何配合（用笔记里\"嘴\"和\"手\"的比喻解释）。\n\n---\n\n写完（或逐题）发给我，我按题判分——答错的题我会先讲思路再给答案，并标对应笔记小节。",
+    "turn": 6
+  }
+]

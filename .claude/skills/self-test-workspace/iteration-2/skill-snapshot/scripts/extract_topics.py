@@ -9,10 +9,6 @@ LLM 负责出题的智能，脚本负责把笔记结构化成考点 -- 工具补
 import sys
 import re
 
-# Windows GBK 控制台下 print emoji 标题会 UnicodeEncodeError，强制 stdout 用 utf-8
-if hasattr(sys.stdout, "reconfigure"):
-    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
-
 
 def extract_topics(md_text):
     """提取 markdown 标题行，返回 [(level, title), ...]。

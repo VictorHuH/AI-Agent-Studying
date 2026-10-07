@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>skill-up Report: self-test</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f7f8fa; --surface: #ffffff; --border: #e5e7eb;
+      --text: #0f172a; --text-muted: #94a3b8;
+      --accent: #1051fe; --accent-hover: #0d42d4;
+      --green: #10b981; --green-bg: #d1fae5;
+      --red: #dc2626; --red-bg: #fee2e2;
+      --skip: #ca8a04; --skip-bg: #fef9c3;
+      --error-color: #ea580c; --error-bg: #fff7ed;
+      --header-bg: #0f172a; --header-text: #ffffff;
+      --radius: 6px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--text); height: 100vh; display: flex; flex-direction: column; }
+
+    .header { background: var(--header-bg); color: var(--header-text); padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
+    .header-brand { display: flex; align-items: center; gap: 0.75rem; }
+    .header-brand .logo { width: 48px; height: 48px; border-radius: 10px; flex-shrink: 0; object-fit: contain; }
+    .header-brand .title-block { display: flex; flex-direction: column; }
+    .header h1 { font-family: 'Inter', system-ui, -apple-system, sans-serif; font-size: 1.25rem; font-weight: 600; line-height: 1.2; }
+    .header .meta { font-size: 0.8rem; opacity: 0.7; margin-top: 0.25rem; }
+    .header .progress { font-size: 0.875rem; opacity: 0.8; text-align: right; }
+
+    .summary-bar { display: flex; gap: 1rem; padding: 0.75rem 2rem; background: var(--surface); border-bottom: 1px solid var(--border); flex-wrap: wrap; flex-shrink: 0; }
+    .summary-card { text-align: center; min-width: 80px; }
+    .summary-card .label { font-family: 'Inter', system-ui, -apple-system, sans-serif; font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+    .summary-card .value { font-size: 1.25rem; font-weight: bold; margin-top: 0.1rem; }
+    .clr-pass { color: var(--green); } .clr-fail { color: var(--red); }
+    .clr-skip { color: var(--skip); } .clr-error { color: var(--error-color); }
+
+    .view-tabs { display: flex; gap: 0; padding: 0 2rem; background: var(--bg); border-bottom: 1px solid var(--border); flex-shrink: 0; }
+    .view-tab { font-family: 'Inter', system-ui, -apple-system, sans-serif; padding: 0.625rem 1.25rem; font-size: 0.8125rem; font-weight: 500; cursor: pointer; border: none; background: none; color: var(--text-muted); border-bottom: 2px solid transparent; transition: all 0.15s; }
+    .view-tab:hover { color: var(--text); }
+    .view-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+    .view-panel { display: none; }
+    .view-panel.active { display: flex; flex-direction: column; flex: 1; overflow: hidden; }
+
+    .cases-layout { display: flex; flex: 1; overflow: hidden; min-height: 0; }
+    .cases-main { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
+
+    .case-sidebar { width: 280px; background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; flex-shrink: 0; transition: width 0.2s ease, min-width 0.2s ease; }
+    .case-sidebar.collapsed { width: 40px; min-width: 40px; }
+    .case-sidebar.collapsed .sidebar-header-title,
+    .case-sidebar.collapsed .case-list { display: none; }
+    .sidebar-header { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; padding: 0.75rem 1rem; border-bottom: 1px solid var(--border); background: var(--bg); flex-shrink: 0; }
+    .sidebar-header-title { font-family: 'Inter', system-ui, -apple-system, sans-serif; font-size: 0.75rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); display: flex; align-items: center; gap: 0.5rem; flex: 1; min-width: 0; }
+    .sidebar-header-title .count { background: var(--bg); border: 1px solid var(--border); color: var(--text); padding: 0.05rem 0.4rem; border-radius: 9999px; font-size: 0.65rem; font-weight: 600; }
+    .sidebar-toggle { background: none; border: 1px solid var(--border); color: var(--text-muted); width: 22px; height: 22px; border-radius: 4px; cursor: pointer; font-size: 0.7rem; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.15s; }
+    .sidebar-toggle:hover { color: var(--text); border-color: var(--text-muted); background: var(--surface); }
+    .case-sidebar.collapsed .sidebar-header { padding: 0.75rem 0.25rem; justify-content: center; }
+    .case-list { flex: 1; overflow-y: auto; padding: 0.5rem 0; }
+    .case-item { display: flex; align-items: center; gap: 0.6rem; padding: 0.55rem 1rem; cursor: pointer; border-left: 3px solid transparent; font-size: 0.8125rem; transition: background 0.12s; }
+    .case-item:hover { background: var(--bg); }
+    .case-item.active { background: var(--bg); border-left-color: var(--accent); }
+    .case-item .case-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; background: var(--text-muted); }
+    .case-item .case-dot.dot-pass { background: var(--green); }
+    .case-item .case-dot.dot-fail { background: var(--red); }
+    .case-item .case-dot.dot-skip { background: var(--skip); }
+    .case-item .case-dot.dot-error { background: var(--error-color); }
+    .case-item .case-name { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text); }
+    .case-item .case-index { font-family: 'Inter', system-ui, -apple-system, sans-serif; font-size: 0.7rem; color: var(--text-muted); flex-shrink: 0; }
+
+    .main { flex: 1; overflow-y: auto; padding: 1.5rem 2rem; display: flex; flex-direction: column; gap: 1.25rem; }
+    .section { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); flex-shrink: 0; }
+    .section-header { font-family: 'Inter', system-ui, -apple-system, sans-serif; padding: 0.75rem 1rem; font-size: 0.75rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); border-bottom: 1px solid var(--border); background: var(--bg); display: flex; align-items: center; gap: 0.75rem; }
+    .section-body { padding: 1rem; }
+
+    .status-badge { display: inline-block; padding: 0.2rem 0.625rem; border-radius: 9999px; font-family: 'Inter', system-ui, -apple-system, sans-serif; font-size: 0.6875rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.03em; }
+    .status-badge.sb-pass { background: var(--green-bg); color: var(--green); }
+    .status-badge.sb-fail { background: var(--red-bg); color: var(--red); }
+    .status-badge.sb-skip { background: var(--skip-bg); color: var(--skip); }
+    .status-badge.sb-error { background: var(--error-bg); color: var(--error-color); }
+
+    .case-info { display: flex; gap: 1.5rem; align-items: center; flex-wrap: wrap; font-size: 0.875rem; }
+    .case-info .info-item { display: flex; align-items: center; gap: 0.25rem; }
+    .case-info .info-label { color: var(--text-muted); font-size: 0.75rem; }
+    .case-header { flex-wrap: wrap; }
+    .case-header-metrics { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; font-family: 'Inter', system-ui, -apple-system, sans-serif; font-size: 0.7rem; font-weight: 400; text-transform: none; letter-spacing: normal; color: var(--text-muted); }
+    .compact-metrics { display: inline-flex; align-items: center; gap: 0.3rem; white-space: nowrap; }
+    .compact-metrics strong { color: var(--text); font-size: 0.7rem; font-weight: 600; }
+    .compact-metrics.delta { opacity: 0.8; }
+    .metrics-divider { opacity: 0.6; }
+
+    .error-box { background: var(--error-bg); border: 1px solid var(--error-color); border-radius: 4px; padding: 0.75rem; color: var(--error-color); font-size: 0.875rem; white-space: pre-wrap; }
+
+    .grades-toggle { display: flex; align-items: center; cursor: pointer; user-select: none; }
+    .grades-toggle:hover { color: var(--accent); }
+    .grades-toggle .arrow { margin-right: 0.5rem; transition: transform 0.15s; font-size: 0.75rem; }
+    .grades-toggle .arrow.open { transform: rotate(90deg); }
+    .grades-content { display: none; margin-top: 0.75rem; }
+    .grades-content.open { display: block; }
+    .grades-summary { font-size: 0.875rem; margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.5rem; }
+    .grade-badge { display: inline-block; padding: 0.125rem 0.5rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; }
+    .grade-pass { background: var(--green-bg); color: var(--green); }
+    .grade-fail { background: var(--red-bg); color: var(--red); }
+    .assertion-list { list-style: none; }
+    .assertion-item { padding: 0.625rem 0; border-bottom: 1px solid var(--border); font-size: 0.8125rem; }
+    .assertion-item:last-child { border-bottom: none; }
+    .assertion-status { font-weight: 600; margin-right: 0.5rem; }
+    .assertion-status.a-pass { color: var(--green); }
+    .assertion-status.a-fail { color: var(--red); }
+    .assertion-evidence { color: var(--text-muted); font-size: 0.75rem; margin-top: 0.25rem; padding-left: 1.5rem; }
+
+    .prompt-box { background: #f8fafc; border: 1px solid var(--border); border-radius: 4px; padding: 0.75rem 1rem; font-size: 0.875rem; color: #555; margin-bottom: 0.5rem; }
+    .prompt-box strong { color: var(--text); }
+    .response-box { background: #f8f8f8; border: 1px solid #e8e8e8; border-radius: 6px; padding: 0.75rem 1rem; font-size: 0.85rem; white-space: pre-wrap; word-wrap: break-word; max-height: 300px; overflow-y: auto; }
+    .turn-card { border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 1rem; overflow: hidden; }
+    .turn-card:last-child { margin-bottom: 0; }
+    .turn-header { background: var(--bg); padding: 0.5rem 1rem; font-size: 0.75rem; font-weight: 600; color: var(--text-muted); display: flex; align-items: center; gap: 0.5rem; border-bottom: 1px solid var(--border); }
+    .turn-header .turn-badge { background: var(--accent); color: white; padding: 0.1rem 0.5rem; border-radius: 9999px; font-size: 0.65rem; }
+    .turn-header .turn-status { margin-left: auto; font-size: 0.7rem; font-weight: 500; }
+    .turn-header .turn-status.ts-completed { color: var(--green); }
+    .turn-header .turn-status.ts-skipped { color: var(--skip); }
+    .turn-header .turn-status.ts-failed { color: var(--red); }
+    .turn-header .turn-status.ts-error { color: var(--error-color); }
+    .turn-prompt { padding: 0.75rem 1rem; background: #f0f4ff; border-bottom: 1px solid var(--border); }
+    .turn-prompt-label { font-size: 0.7rem; font-weight: 600; color: var(--accent); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 0.25rem; }
+    .turn-prompt-content { font-size: 0.85rem; color: var(--text); white-space: pre-wrap; word-wrap: break-word; }
+    .turn-response { padding: 0.75rem 1rem; background: var(--surface); }
+    .turn-response-label { font-size: 0.7rem; font-weight: 600; color: var(--green); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 0.25rem; }
+    .turn-response-content { font-size: 0.85rem; color: var(--text); white-space: pre-wrap; word-wrap: break-word; max-height: 250px; overflow-y: auto; }
+    .turn-skipped-msg { padding: 0.75rem 1rem; background: var(--skip-bg); color: var(--skip); font-size: 0.8rem; font-style: italic; }
+    .comparison { display: grid; grid-template-columns: 1fr 1fr; gap: 0; }
+    .config-col { padding: 1rem; }
+    .config-col:first-child { border-right: 1px solid var(--border); }
+    .config-col h3 { font-family: 'Inter', system-ui, -apple-system, sans-serif; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); margin-bottom: 0.75rem; }
+    .config-col h3 .rate { font-weight: bold; margin-left: 0.5rem; }
+
+    .feedback-textarea { width: 100%; min-height: 100px; padding: 0.75rem; border: 1px solid var(--border); border-radius: 4px; font-family: inherit; font-size: 0.9375rem; line-height: 1.5; resize: vertical; color: var(--text); }
+    .feedback-textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
+    .feedback-status { font-size: 0.75rem; color: var(--text-muted); margin-top: 0.5rem; min-height: 1.1em; }
+
+    .benchmark-view { padding: 1.5rem 2rem; overflow-y: auto; flex: 1; }
+    .benchmark-table { border-collapse: collapse; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); font-size: 0.8125rem; width: 100%; margin-bottom: 1.5rem; }
+    .benchmark-table th, .benchmark-table td { padding: 0.625rem 0.75rem; text-align: left; border: 1px solid var(--border); }
+    .benchmark-table th { font-family: 'Inter', system-ui, -apple-system, sans-serif; background: var(--header-bg); color: var(--header-text); font-weight: 500; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.04em; }
+    .bm-pos { color: var(--green); font-weight: 600; }
+    .bm-neg { color: var(--red); font-weight: 600; }
+    .benchmark-empty { color: var(--text-muted); font-style: italic; text-align: center; padding: 3rem; }
+
+    .nav { display: flex; justify-content: space-between; align-items: center; padding: 1rem 2rem; border-top: 1px solid var(--border); background: var(--surface); flex-shrink: 0; }
+    .nav-btn { font-family: 'Inter', system-ui, -apple-system, sans-serif; padding: 0.5rem 1.25rem; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); cursor: pointer; font-size: 0.875rem; font-weight: 500; color: var(--text); transition: all 0.15s; }
+    .nav-btn:hover:not(:disabled) { background: var(--bg); border-color: var(--text-muted); }
+    .nav-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .done-btn { font-family: 'Inter', system-ui, -apple-system, sans-serif; padding: 0.5rem 1.5rem; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); color: var(--text); cursor: pointer; font-size: 0.875rem; font-weight: 500; transition: all 0.15s; }
+    .done-btn:hover { background: var(--bg); border-color: var(--text-muted); }
+    .done-btn.ready { border: none; background: var(--accent); color: white; font-weight: 600; }
+    .done-btn.ready:hover { background: var(--accent-hover); }
+
+    .done-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 100; justify-content: center; align-items: center; }
+    .done-overlay.visible { display: flex; }
+    .done-card { background: var(--surface); border-radius: 12px; padding: 2rem 3rem; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.3); max-width: 500px; }
+    .done-card h2 { font-size: 1.5rem; margin-bottom: 0.5rem; }
+    .done-card p { color: var(--text-muted); margin-bottom: 1.5rem; line-height: 1.5; }
+    .done-card button { padding: 0.5rem 1.25rem; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); cursor: pointer; font-size: 0.875rem; }
+    .done-card button:hover { background: var(--bg); }
+
+    .toast { position: fixed; bottom: 5rem; left: 50%; transform: translateX(-50%); background: var(--header-bg); color: var(--header-text); padding: 0.625rem 1.25rem; border-radius: var(--radius); font-size: 0.875rem; opacity: 0; transition: opacity 0.3s; pointer-events: none; z-index: 200; }
+    .toast.visible { opacity: 1; }
+  </style>
+</head>
+<body>
+  <div id="app" style="height:100vh; display:flex; flex-direction:column;">
+    <div class="header">
+      <div class="header-brand">
+        <img class="logo" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAAAAXNSR0IArs4c6QAAANhlWElmTU0AKgAAAAgABQEaAAUAAAABAAAASgEbAAUAAAABAAAAUgEoAAMAAAABAAIAAAEyAAIAAAAUAAAAWodpAAQAAAABAAAAbgAAAAAAAABgAAAAAQAAAGAAAAABMjAyNjowNToxMiAyMDowMToxNAAABZADAAIAAAAUAAAAsJAEAAIAAAAUAAAAxKABAAMAAAABAAEAAKACAAQAAAABAAAAgKADAAQAAAABAAAAgAAAAAAyMDI2OjA1OjEyIDE5OjQ5OjM1ADIwMjY6MDU6MTIgMTk6NDk6MzUA7DChwwAAAAlwSFlzAAAOxAAADsQBlSsOGwAABKJpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IlhNUCBDb3JlIDYuMC4wIj4KICAgPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4KICAgICAgPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIKICAgICAgICAgICAgeG1sbnM6dGlmZj0iaHR0cDovL25zLmFkb2JlLmNvbS90aWZmLzEuMC8iCiAgICAgICAgICAgIHhtbG5zOmV4aWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20vZXhpZi8xLjAvIgogICAgICAgICAgICB4bWxuczpwaG90b3Nob3A9Imh0dHA6Ly9ucy5hZG9iZS5jb20vcGhvdG9zaG9wLzEuMC8iCiAgICAgICAgICAgIHhtbG5zOnhtcD0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wLyIKICAgICAgICAgICAgeG1sbnM6ZGM9Imh0dHA6Ly9wdXJsLm9yZy9kYy9lbGVtZW50cy8xLjEvIj4KICAgICAgICAgPHRpZmY6WVJlc29sdXRpb24&#43;OTY8L3RpZmY6WVJlc29sdXRpb24&#43;CiAgICAgICAgIDx0aWZmOlJlc29sdXRpb25Vbml0PjI8L3RpZmY6UmVzb2x1dGlvblVuaXQ&#43;CiAgICAgICAgIDx0aWZmOlhSZXNvbHV0aW9uPjk2PC90aWZmOlhSZXNvbHV0aW9uPgogICAgICAgICA8ZXhpZjpQaXhlbFhEaW1lbnNpb24&#43;MTAyNDwvZXhpZjpQaXhlbFhEaW1lbnNpb24&#43;CiAgICAgICAgIDxleGlmOkNvbG9yU3BhY2U&#43;MTwvZXhpZjpDb2xvclNwYWNlPgogICAgICAgICA8ZXhpZjpQaXhlbFlEaW1lbnNpb24&#43;MTAyNDwvZXhpZjpQaXhlbFlEaW1lbnNpb24&#43;CiAgICAgICAgIDxwaG90b3Nob3A6RGF0ZUNyZWF0ZWQ&#43;MjAyNi0wNS0xMlQxOTo0OTozNTwvcGhvdG9zaG9wOkRhdGVDcmVhdGVkPgogICAgICAgICA8eG1wOk1vZGlmeURhdGU&#43;MjAyNi0wNS0xMlQyMDowMToxNDwveG1wOk1vZGlmeURhdGU&#43;CiAgICAgICAgIDx4bXA6Q3JlYXRlRGF0ZT4yMDI2LTA1LTEyVDE5OjQ5OjM1PC94bXA6Q3JlYXRlRGF0ZT4KICAgICAgICAgPGRjOnRpdGxlPgogICAgICAgICAgICA8cmRmOkFsdD4KICAgICAgICAgICAgICAgPHJkZjpsaSB4bWw6bGFuZz0ieC1kZWZhdWx0Ij5sb2dvPC9yZGY6bGk&#43;CiAgICAgICAgICAgIDwvcmRmOkFsdD4KICAgICAgICAgPC9kYzp0aXRsZT4KICAgICAgPC9yZGY6RGVzY3JpcHRpb24&#43;CiAgIDwvcmRmOlJERj4KPC94OnhtcG1ldGE&#43;CqvVu80AADuUSURBVHgB7X0JvF1Vee&#43;659wpd8jNHEKABAgBlEkxVkWtFbWT1OdIxaFoa/uor/oqfba2DrEO5Tk&#43;nlpbrYgW24rVpz99tfqsUCXV8gNFVOYhCQEyQ6Y7nuH9//9vfXuvfYZ7zwlTEly5Z6/pm79vDXvtfU5C&#43;EX6hQV&#43;YYHHrwV6Hq&#43;qr1y58ldKpdKTe3p6Ltu8efMDj1c7PO4C4Nhjjz2xXq//OT6vRQD09vTUbw218N7NW7b8A4Kg9ngLhMdNACxatGj&#43;vHnz3ggHvwWjfgkCICC3DxrrIXwH9fWYDTY8noLgcREAmO5fAUXfASefljqXAeBJwRB6pmv1cHlvpfRXG7du3Oh9R3KeW&#43;AI1PKoo456arnc&#43;y6M79&#43;gr2sc9fjHlDrfVVcQALBWq23H8vDhiYmJv96xY8d&#43;7z8S8yMyADDij8EU/2dw2O/CqYOa4KPjUycqGBotgDrbGQyg8RMEwns2bdr05RTvSCo3qn9Y63b00UcPwWm/31Mq/Q8odjTXeSU5laVcXStlHQYnEJ8jCrPEN9DF/cH1OeCRUcotcpjrs3z58vMwat&#43;FEXt2S1WoKeLBRz1HOFOdjYwT1Nni7Rj&#43;1kY4Ax0H3KcRVB&#43;455577iPukZBMtcNYk2XLlp1ZLpffCRVe0qSGfNesIp3Mj5yfIRVHPmcP&#43;l7ej3R6SijUwxY0/k/g/93GjRsnM/TDtNBsncNEETh&#43;eakULg6hdBGcMaJBnMqeaZY71rsLARARHUpoCg4f&#43;I7FCcEChzk2itcifzf2B/&#43;SQxx&#43;pcxMh5Ho/ZjuL4Tx34bP6mydhwJ0TGNq1UYYtROcARCTw4pKfrFI4IrAtUDtER94wLmyWq2&#43;B8vCz5zO4ZRHdQ4PkeH450HS9XDCOT5iU8nNZ80qWQuuaZeqeUOhlFeEk/LyICFflmN9L6qfmJyc/OjWrVt3pDId6uVU1UNW1iVLlpyMdf4dEPCVMHhJ63PBm&#43;iBJlKmcRbgyLW1OwKYmqkjNQsklij0CTyGgPOIzFK4EpeFerirFOrvX7Rkyeevv/76GeN0aF8TtQ89QcfGxhYODAy8uadef1MolRamEprg&#43;UaODsBwTEE0vWdNKNjGLoVJxjbRiZ0hFEk5pLodhgi&#43;NAg1mxG&#43;V6vX1mN/cFWRyqFXS61xKElXxibvlRDo7RhlJxfWeR99lNYdUZDcXcX&#43;pAPlpEcd1h2B2I8P/JnBpQEj3AhK5Gz0G4LhxH7cijLYqgD7Asrvveuuu24nzqGYEpUODfGWLl36TBh3PQQ7l7Ztldz45v&#43;iCnkNpbySkXFcn/azOiEIH5mqPTrXkYuwCImkv9hnQVTqKWFZqO3qqfdcWu&#43;pfwy3jQ86rUMlb2Gix0Y0bPCOx6h5G7hfCEf0&#43;ainYfnP6y6dDO4OEwx64uGNe94CBO0OF5Hz0QwPRlzzZW4O0U8cTNSCk0XWliDJGJkJBWTEg0hkgT0I5L8ZtfcgCL6I/JB57JxrTGEfg4QN3iimyYtgINzTh2VuZD&#43;kkfvduH60C0Bt7FxeWh0pd2ysE48axn5rRZPoyVXelMNF5xFGQRfrDujyGTeTUuTsInYOm&#43;WgwT1KfBT17VoZ&#43;4M7Nv0g638MCzTPY5aWLlr0smC7&#43;zMyIVwid6oMm/snhcMNAaoAbOVg0sl8nI3HHF10MwAFhc0ygHUZCI2ynB55kBKmc1wjEIBV8ir7DU0BRFwPGraXeEcSwhRaPwt&#43;l9x9992b2PBYpSj2o8seo/4p4PgufF6okaTFlDK0F0dGZHd0BL3UDtoNToqeBJ0ixHIjlQIuYJr6M64QJDqX80AKl5UTfgDNoNgfl4WtkO9D4&#43;Pjf7Nt27YDLuujmSciPvJsFy9evBJc3gr13wBDz/NpXpwzSdx8yNlGh2d9gjTDxyL75QABeyNxnA7RI4GUjsObHxNEohogs8y1koPtLJAmLwZnxaTMBkBIPzSTP2lyhkllYVtsvwHL4LvvvPPOrwr1UbzkUj&#43;CTI855ph5U1NTv4fzczr/GLFqwzkzPkyVpViUAWm0pK8w&#43;hIU4goObWw2/xUBUjriFbtdBrU5HVJIHC7qCbmMFtrSstPwPOtjA2ELNMPXyrXyu&#43;/YdMePHf6RzhMVHhlWuK37DTh&#43;PaivIwczgNwhA7AtTW4g2SUxDp3P5Aaj4NZiZEQxgRcdB6KhZW2RKFycH7vT5HzYRpiWswz7Is&#43;MflQtoxVlSPmIVSKreKAuWvVwAOw&#43;hecLH8RB0v0ZnUeo0KD2w8cFt3WnQ4l34D745Ro8tHDk1soAztkNRWNoCkWHyukdQELL8Zi7M1R2GDgkcx6NnCBkchAGlbyPzgBggzOFnQOJkrelvJsQAVnsb1F37qBvdwxhM9AuwdJw2R133DElZo/ApUGdh84B7&#43;EtnanOvAV3um&#43;ETqMyYguyjQZxELb7VO9tjbkbvaP2qKFwgGC4DZ4lIcA5TOr4Jl5JEKV9LjfpGLmiaR02gyNLRZnBJ9zRgL0CThOjTD8E3HoEwbcc8uHMyw8XsbPPPruvUqm8rlKrfA7ynweFBzLarexdUD6DtIKcwWLRiCmUjNeiW4ZuhRodJ5RG3hmdiJ3VjWPGK7ZnPBgyDss87ff22EwTeH&#43;ai1ZiH9LjbKTZT0iB7ze&#43;Cq&#43;1n4JN9M27d&#43;9&#43;WJ82JmJSwoNLmO6fW61V12Otf5YomOANER5pk6MrjLw4ChKYrNhCxNiUOyICe4b&#43;jG6UhUZ3eBnZeTv5DM6hMgFUED3CRDoZ/YQniwaCWYx0ySP2y6k1PB6oVEO5rw8jPI493hkIKEI6QsSjNOTFY2UExR5MDB8vl/s&#43;esstt&#43;yKIA8pe0gzAN6&#43;XTs4OPiRSrXyQUTpammfiCNTpgqlZcA19RPXYdwhbDILsTdPDocW0cl7RMPbos/Um9LJjE46Dby43UhZZrDkpQqoJ/yddQ1tNnqNJG/6angmVKvMhDqeFQ8dfVRY9fznhXq1GiZ27NRa77jUWyQzwsYg00OBwjece56NvdVLMCPse&#43;DMB34WNj60Y2XjkknRWWH16tULcHjxJkz5bwbGotmwUqO3gpOCiRQO77t&#43;4jTCpHRa9pklzaAJcA5rHmY9DZC8gp5EpugZUWKz02G5LkBtM23Us40RNFNhKQwuXRIWnXF6WPaMp4UFZ5wWRpYvDzf&#43;5fvDln&#43;7OvT2D4iP4CM/0SYP0qVwMRWOvtEV&#43;69Gzv3Bvztct3lvNwjr168vffKTn/zt/fv2vR3T/akunzutQCt2ai1DR0sYtPtaV&#43;h3wpGgqjYCCixYYV/6VC4HUE&#43;smlnzFjOueKMICjkaa8WqOTyBcJ3ofJZdPk7v9Vot9M&#43;fHxacdUpY/qxnhMVnnxn6liwJfDZcxUwwPTERapgBiMsZgxO76Z5LJ3lQJWWKYvRNLs1OaGXQAO856PzOmjVr/h5g70Mg3JmI2VGxQdX2ODi&#43;XQuGH8f083xwN6GA7RErTEmKUguqPmoMMfJxuEgnKmWdCS2CqSr4AsdIiMZxYllTUbasG/h&#43;9KyFOsEtwLShQ1kAl31m4Fo4tHd4OCw4eW046ulPC4vXPSn0rjgqhF48DuZMgKCQTaBEb29/uPmSD4X7v78hlPr7EADoQrvLLxu4AaM83gcgfr1JtNwKbCrZfmInvPLR6enpT3bzbeeOZ4Cp8ann9Pb3Pl9miYLRK/iTXIV2VYoXhYxkd62SftEhJaSYuQ3SJva5n90AMRSFWry4kM2tHEWe7NkMGxL4ZEpJQOX0GoTgGs5P77x5YcEpJ4Wlv7QOTj87DK86LoSBXoz0CmKiEuoVwy4ltCU3nRgTnwuTM95zU4tLQb1MR29BtwvOPBqCWNiAIwhKS/B538jIyJPQ9HIR6&#43;DScQBwAquHMvg2rJv0ShxJ4pfI244/ZTd1myHY7k5u7qUNomHgpHY0DE&#43;UVMyMSb5uxEg8p4FSRMELHCoSL1vjYeQaHFvu7Qsjxx4Lpz81LDvnaWH4xONDaWAgVGdmwgycHibxiQr4yBVL0Gaz6U5eOT/OAp5MBF49QYa0imYGhvQgPfxjwpKsHJflXugk7zgAuIb5LYOxzMmnBs5bm0vEIyzFbpfa9&#43;QYrWi4Y93oBm2QGWbBkK052aoLORlgVYx3OL2nXA7DK48OS9Y9OSyB44dPPimURkewlldCBet&#43;adK/HwIGGgzIG6OYXkSb6NZr2LqTUx0jH9IRh&#43;KwjJwZU6OTrbV4pYYeBIRHINBVHaeOA2A2ihJAgufCtIKXflR0lpS6zBVrBd7OOBYIwEwMKeMmRDxI3NDsIl9t6ugcjGYexw5i87bojDPC0mc/M4ydfkoojc3XEszbutrUpNZuG71RKWUJVTjW44A&#43;1qDHxWUkpH1wdTTmGTki8c86c7kdGKAgbMFELbpPXQcAhWl0jAtIyRP5W0pjojfTaAQmj1lpRSM14lndJHKDNcKYAyJkpMM1Hbe1YXDxkrAEt21Lnv5LYQy3bWUEASfXSmUar3FMYtNGpxoSnco&#43;n8ILIrmP4sxMHAUB4N1ehC/goM6GOFmwVkiUW3RkGXO&#43;08oirYAxd6XrAEi94gKJjbzlWjepNbckDhFRpZhozkZrtj4aMgm0jK4bHRyiuHT&#43;yKrV4fiXvSSMnnV66F26ONRw5MYdfH0ahzjaFAI4YWe605kWBN7lubmZOAzlvJVq8lBIuWXqjcVMJhKmDYTr6MjJt4EcSCG4YnCIcBcXD94uUADq0grLKrxKOO/zvJGyAA2W8MJJYWJ/xmNWOhG/FYzTkVw5PzAUT9qRBqYzqthA7dhyb7jrhhvD/nF8CRi3BlwG6tz49XAIkxhMVfddEAW2GcrZEIp&#43;Jd00kQdXfN09RN4WT4YpGShH7DNeOQX1O9ECbY8Kg/Ua4btJBxUAqVAZOwjpkS5lOhEkQ55NZAAJrj3wbEpbgAEiGthzPKbGrVo1zMDRU1PTOJrdHjZ&#43;8Yvh&#43;2/843DzF/45TO/fH8q4T5ebwZpO091Bna96U14OR77/T8fjojbcK6HQMhAEAxsRDryViIuCarkH0U95CWdgvJoe4Eo49eGSwaAQl6UUJ8duXzqoACiQi3KoLRPIIFzoRvhCHRU5JZXc6UTa5mCzELuyFCtuu6x9loIHAE/satjlV7GL54cPZ3p6e8P09q3h5g9/JHz/D98S7rl6A4KE7qEEkRmzpEhWDHzXgXAMggjC7iyxDd9yMnx3GHAZMKThA8gQIoWYOREFBisik3ZamXNNN&#43;mhB4CEMeZuBGmfytZOotRzhHcctvsn4rrjbGjExojvaAWzOz3kxJXBkKuIC2&#43;bOf0Lh3RoCfFEoVwK&#43;2&#43;9JVx38VvDLZ&#43;5An3sdC6Es7KJ6IgcyQ5jknBmsE8R3eQBLAiozG7K5vhOhnUyQfKNp4OoEd2O43ph86KuTi/dQXdKNRE8Q3GlokJZ&#43;0EUqGzBEKzKAtGQ0ZhmUmPshrKBR8tZO8Xho9ZefHRip6NBE/LYZ54T1r7w1yVhTgt9tXLGXqOf/IFvI9j2BgwGzQSSFdhAI1UtEYg&#43;OdxEEP3CxdhnPNhn8EBgn&#43;NFuAJulzNAV3cBMjKYarKCJVVPuSeCu2wpDAdOJns2BeYE5KSoY7am5d1JyamwyTkl3W2KTt&#43;9oVEFOfSkjQ4kKewJ8Mti4QkX/k5Y87rXhnp/P5YK3AJCcroUp0LSnzToVFMIBfzxpJTXnh64OQZYDUr7HEGp2V7nHoC4hoy8aEt1RfuIDslLZQZXrjvhIhsSO6jURQD42hKFgBy6J20jAQW1EZHLRdFb&#43;D0HiCVTsRk/BZTxSS9tbCiTl4knzpm9TTZcaViMeHLi&#43;Vl1eiqMLjsqPOnii8PS5z47zPCwB4c&#43;JTide3md4skB0Iwk8bFbRJeCBN2Zqb0iLBD0WodVUTMdPVhc/Cb9yUedRZuojfzQ5xJEQCc1Z95xANQUx6RXFKItBwkdYTPpXJFE4FYEIjwNk619reDIgzaXVMgLlsBMjbqRMiOlJAjKj17iQKmK49xlZ5wVnvSnfxaG1pwQKhNT4M2xi9HshIkAWAYDIicLAqNEQQAgGC0mBEY98sbtJGVhzWRip0vHsiWi&#43;yBR2Tu8nxHtBECbTzY50NRsDBowZq92HADZZgH8FblZpEcGmVBFhoSVUZJ&#43;CYy6NxUxUKPmHSdwiPDMSDtP1pLJwA6HBZjWY57347PmxS8La//g93XGX9HZPo1LBN7q4S5Ba7yNXy0FouPrPunGEa&#43;gIaKfGRhDup/YrrViCtW8xeAAEGUEDfz57FAYCBFJ4olGxFUWyyI096XjAEhJFYxMKciTH0mUQiblVC7HyeDbI7c0ANkBRegpXbUnDQAoOB/9cLd9QKA6PR36BofDKRe9Iaw877xQ4cEPTv6SyS6&#43;toXwJz/RY5Gc6VJS59BgjlZORwgEBotgCAYoZXI/oMDX7j7QgzIda3QIiwQ&#43;fCYhnHwKs770KjhyIU90EEERa9xS0NnKBxUAUtZEBHPnnqvK/tkSUfRShs/fswKjM9GpwHs2PPa5GBKR06TdllXhpMrkRBhddWI47c1/HMbOPNPWewxLngLSkZSvjpw&#43;4F2CZOBvPqCsus0fBQlcb47ucj9mAAaC3hICnmSwWYHnDxbYdB867C9XU/Xo3MhB8NEOluHaAKfgEqOCWLNWDioASNEUMNruTDfArBwhNNdKjxtFcCsEwikJocCPfApTooM25pGG5MKtF9wAh2KUT02FFc94TjjlD98U&#43;pYtwXqPx7l4Liu67gbgyjkYVZSVkz1v9WyEU&#43;oy5gB3LADEC&#43;04TOLIvvMfrgzj&#43;/aHE15yHt4DXIbZhkfLOKbBhlIEZQA6OSbUScL0yp1PO2tgA9JhGZhqE0&#43;QY8ThT7ixzcnOlXceADo5oYTNJKmLRXLsbAHTjEU7mLQU3BRtgWjaN6O7oi1QDNg6OOFXo3GrM9O4i&#43;sNa1/1hnDcy87H7TyOdbHZs1k8EqLBQZuTE62skzvkpKGTArTzGYHdDuLugHBc/4FTHhwM0zt2hJ9d&#43;vGw6Zv2PY4t3/p2OOGV54dVLzg3zFswho2H3SLyuEF7AhCIZiBD0ZH8LLIjNiETHHMBiTGK1mCtgHebqqGDS8cBkN8FtKZKfygIUolagza1utAKAuInSjUDo1tBQY7RKKjb&#43;CEqkKNxtN7DKDyNq05PhsFFS8Opb3hTWHzOL&#43;MNHtzb6wgYdAgfcSgDR5TO/TWsyMREIj2VeFvI5YDzAvDqOCnsxXODXf95bbjxo5eGB26/k69oic74pk3hZ5d8IGz8ylfDia94SVjza88PpT4zO1gZcc8YeVF5nhV4N3Wifsppm7zDgiLqL91Jq4vUcQBw02Oc23tH4kMJU6MNXEOznE6HGpJnyDn1NQBTMYLSckmX6lFp4tFUHPl0PA3J9X7RE5&#43;Ezd5bwuCq1WEGde3qOQzxQEfMbbE3NbkcxGmAYqkfsqhJdeBxKscSUMJLnnwF/PbPfTbcevnnQXsy9OKLHyYTJInbh/233RZufO8lYedV3w99eNDEFzmpggeBT992yykmdkn1lGbkLYkyoMyGbIk3I1nnHIUuAsCYJvK0JC2DyZm6tIRRIwmZdaOxqJc1yiizMUr66O48WQdWeVm2WsW6iw3Xcb/20nDCq38vhOEh3O9jGRAbbsTAkR7Shg78zRswIgII3tbeBr01IGi6FiO0x9miNDgvTG3aHH72sU/gLd/vIxh6Q/88/jo9ZYJkFIPkkfp6&#43;hAYvWHypp&#43;HKt4h5Hf/PHCbl0Bq5eM5VzYvGc3GK&#43;l1&#43;zCo8wCIijQyTeuZyyWpiVuITgKz2eyToqrssKn6TUANDW4mmzA53cv0mOKnsCaPhJMu&#43;INw1At&#43;Ew9/MGXjtk87cwrBgxk4iAbTFzEZNG52KcKpPQ8COoSJswAfFnGKv/f//mu49VOfDlPbt8Hx89TvFzmXoz/OYvihSwVAL14qZQQyRowiuHrgOTJxBODaWQdZO2Kxx2g4LyfTSd55AGAMZBK3oSxdZbwWSjmOtPBKcy5j0DKAS0d3UTl0RsMKTjR1PCNjVnGEO3rcmrD29y4OI6eejuP9CUqv6djmSBqYY9qCQHxIj80a&#43;SyYbMoQKXo7GDBlPBuYeeDBcPtll4VNX/86bgnxrj82f5RPMkY8YltAk28ZAYNZRPsCdLS4vyd7xQFyMCO68Jmbs0GYQDFxebOqECIMdiXg0U3qPABmuQvIGLrynseOzKmoN0ZuhpsWgJ87n4bNjUEnKYmHADV2aVOO8jrO7o962vPCCa95Y&#43;jF&#43;321SRzpwvh0NqdkW5PpUAY0jcUgAFEObTJijpFPPlwiRBxgNGxvX3944Ec3hJ9/7NKw7/bb5fgSZgN3vnQDSpqyPshQCBCwyHQRgiOahbJbPfTltiASGwiLsudqxEXicibrPHUeAJGmopqcXN7OeUnm7vFMaR8d9I&#43;tj9auWzx08mtXPdiQnfCy14eVv3k&#43;Bjicjjd95FQ6Hs6mIfUkjhQYDQoMMybNToqqoYtrt/YEcn4/3g2cCnf94xXhzn/6Am4dx0P/0JBIaw8BJDscIn40jGcIqiwI8l5woiIAinCZGaGLLTexnx0OYyqLb95omIYFwO78H7oLALcQ&#43;Nj05pJl4kuvTOCkWdZl3Wmkfe3KEVbOj7hmA6pLUnZSV5mawCvcK8LJv3NxmH/m03F3h40eZiwb7USknDFsuMHTCIel8PIEnWMHPOwHXToMDDkrcEIoY9SP37M53PI3Hw/bf/iD0DuAzZy&#43;1Jk4ljjkEc3hDncbkU6WTAHBRvUkW4asfvAHkmnJnpQANIkGaeTp8BmvDgrdBUAHBBtkbcKgkBzFlnKjeYty7y/qnYOgn3Q4&#43;qszk2HRqevCmt/549C/YlWo4pSPMmh2Jx2MdPtmLQ3KhE6&#43;0AEhergLZCI9rgYssIl8MTuUsHHb&#43;t1/C7d8&#43;pM44Nke&#43;rDD5/cFuGl0J5uIaHMvWwOJWZvqdBX/JYlOREP0JTpMOmZyvjpUKQ42tRsld7jDk4MHR8Jp1mLHAaANDKSzWyAT1plJtYJ2bXi6jhksGqRj1pAjtmgirCvNr2mR3LHPOz8c&#43;&#43;LXhZ7&#43;QX1ZQ1ZmB0c6MvpFr2GTHtdhbQdBBdOvdvn0uIAITyC81oFRP7MfG70rLg9bvomNHtp64fzM6QyC&#43;AECsIBHVJV5ySvqU49URYlcwIv4sZ2ZZgu2qBGSo1/7AIeRMqwkWLEoXPIkTJep4wBwunZQkQjhHZ3kc6G5ki3gPNio5AxO9XqHx8KaV/y3sOQZv6o3dvjihtkGyPgTPEYLxn80GQzP0a2RHkGxBPh9uhwDI5awy3/w5z8Nt33mE2HPLT/H00I4Ph3xdByNHWUUda&#43;yPUnOOWmyImcfEiAttJjzzX9cfnTHgVx8IrICXw6OVFNWKEtfz5sYtm/oOAD45UPeyzIZs1w9Fy4VuD3L5h4zAEcglIaSUU8DjHU3VAWbsXkrTwonvfZPwtCJp&#43;mRrrwI7/LgBv&#43;dBPAALQSj6V5nE29m5D9UBInlIOAVrp4&#43;5LiL2PzPXwx3X/k5bfT6cG/vI53LiMqUSuR5IcWYkmLWbxwMAP3SD51RQhoyoUECsmQG0dquxI6ye95qMymouS8dB0BGyvhro9RogEyxDLhFgYZgdNNKSTLVOWJlX9lG3ZEf2ysY&#43;fPXnI37&#43;3eE0oLFeIqH&#43;3ss9nRMXV/a4HfxSQBIJA&#43;nWTKquv1GgJC7y8paL5aPifvvCbd99hNh1/Ub9A1gbvQ4W3DNp56e53LnJfEgXJQ1MkXm/M21wsibBOa2MP0NxchwMABDdK2X&#43;CzR3&#43;RlOqAS6wk70e7k0n0AOFUKliZJnamhHgmfwsRyg&#43;kSCOvRMkMtOR1SUWzkqvhu3uAKHO68/p2hPH8R1nv7GraHjG7zGAQczTQS5ZFMJG/G1NQaA0Sy9eI8Hk7eds2/hTuu&#43;Nswuf2&#43;0DfQuNYDnbri43IX9GIXLU9eyJR7GdXWiYB5yqxWbAYpEMp0YBGVAoxVFESN/sjJz1o6&#43;ACYlax1poJR&#43;MxQs&#43;FCJz1ho&#43;7mfctLvWHViy6C83G4oyNdgyMp0vbXtupa17nygwCcrbsBDGUd&#43;SbW68G5fPXAvnD3l7HR&#43;/b/wWvhdaz3mPJBjw4ufsglWr7R0HRQ7CJLJg8Uq6khKxqMXCkeeQdKEZ8ZZxwFMQGcvoo2CzTykK0I22V6RAOAsqSC6dYr1aaVsNDeHE9klvGoBuv&#43;wjOfG8ZOWYfbPHuYQ8fSUJm5eVzLd/c4b8c1kSuBLwkataSHkzs&#43;rdt7y0/D7Z&#43;/NOy9&#43;xYc7w7I4DSqTfWgapEQjW8eKIx88SZc4p3Y1pRRjhZgbpuUBttcVtfQkRU2prQ3NbF65B4GNbFqbpDwrqkUbtCcDsA/GtrGQNRD0e6aGV3S0oduhrcXP&#43;lc&#43;BK79jqmfi0PGCXwNSkYJioKAjKJ1mYEoJyd6GHU1/GQ6J5vfinc/Y0vhOr4Xvy6Bzd6BMMFfKrIcbyE931IgzMHDoMkMwOLspAnMuWxYk2zX01IwycdTyCUOR1t5E6F7G5LRfFNgyQqLAqZHUmHHRS4i3TQMwCFZvJodUFS3jpLh1CNwgs22o5U&#43;KqUJw8OwlgQ4Ld4RheHececrG/sanmg46krp3g6mb6RZ&#43;A23uvFrb4mAvTTmL29A2F629Zwxz99Imy77ru43RvQ5o9OFw1OKfIqBMOzfknEohxEqVgRWxNVwWDB7LIzB0jbJEcLglCyQgafBoEI0DAGRlWR/BoHUBKM6kVdMgq288tBB4Cz8EBQXUJHQZG54w0migelol5OopDLLMD17&#43;3xAU/f8MJQHhqzNmzlNc2TiBLqccSrSV4386qOaYK3rzt&#43;eHW4/cq/DlO778NjYp7jQx46nH8KAgZCJJnlLGDWQYYFBmXMDShTE84SRGD8qa4nTcQXAAvNCV3Uj/CkxuR1lUVLzbq4bd2O3pPhOBHQ9eQ4Xp8rf8gBUGAgBfMWdyZbEhkLyqsPhqTgHtT86jZx2cYA6OnDs3Y&#43;vvVhiRGuZ/iRH&#43;HgPjlDU7m4AQa7/MqeXeHOr18e7v3e1zQz8HWsOp8VwOl80cOMC/4qRzkzYVlgH6XMk9mduGgDnVLZfvrVwXhnwkmqXbK7HOtlMOTJbMAmyRUdTP08CAit5ojGvsygOaGOSw9vADSyjQpIyVRPKZEIjj4povacCNv0QX&#43;N7&#43;/xHy2LD4NEo69MwvZcgBs4OkX3z2jft3EXdvjfDgc27wrzT/h1TPvzNBtw78C3d/goFwu8bQABb4c9kAuEefRNXqTOx8Pss7eA8ciZj53xCTiXqB14MExs2xIm9&#43;zGu34IBCApHOm0dp6R6tE4iC7TINbJj8mr1MlarJntaHB7JV0HVewuAEzS2Rm1gOFoLqoRSUTNUmXkcMBrDoiK8rUu/pgDaZTgKI52PbOH8fhuphwPZxFXjgL89us2hR0/3Ybp/qww9uRfxrN7PMXD1K/7/P4e7AlAZQAfWAB3mMDDSO4FvgIB8vVUrF0ywuEIAn7Rkz8QVcFGcgYPoWYOjON3gybC8mHQ2HZTuOObX8YvgY7ry6XyH0enq0pdvJLlJI5WRm1DJ23GxCBnKZsR0OCgsmkkIeCDuHQXAM65HaNZhMmc3AImJUv1BMtGzgBwNjeT1Qrv7eEIOh8hAH8rl&#43;3QpFY4dWLH3rDt2nvDga3joXdoVA9xyhjt/MZvmbeJdUz/9T6bQUDTvvgpUjKslhkYuacEXggk0dfxcgXLEQIAyw&#43;Po2cmx8MMTiIn9h4IO/D/QZ607mnhnL94arju0veFfdvvR6Di&#43;wFcHmzdAoNE8Uzh3JnURikBY10WgBCZ/YhLGLs0BQ57uklmx44xMslbY8zRLaRGGNbjSGk0hzUDAH94vxPnAfg1D3zBooK3cGv42cp6lR1wFkGQ77ppW7jn23eFqR1TYWB0FI9vEQCY9vnzrGXcBZT68MHrWRjkmuL1Zi6dDQPbRhA5mDLQ5HiUaHg9TeQpI28wsBTxmz24XxRPOriMts3X3hoGjz8tPP3id4eB4fnAifuYaCnpBjkVZbHNM3duBuMdMfd&#43;VeX8HEA2It2YkqI3zZp3GQAN3Gcl3UEnHZdYJFOU7dRMzoChaxU8AZzBIRCcjyPgKgKAM0KNHzhgcu94uG/DprDzR9sx0ofwY81jeHEDjtetHpwe13tO7wDAdM5FBGU6Xv8YBHQ8m2ASjTjuOCEdLcqRjwDjR3zx&#43;8AMuDqCso6grFcw0vtHcUJZCUNrzwin/Nb5kBGdoEh0pazAmjhFfiybvpJJtfwi&#43;RiNnkhHH8oWK7FbLNTmwHPnXQbA3AS7gSg4H1rJANICVDJFMB4n94Xqvgfxfv8Upl/sB/CpIBhm8Nm/ZW/Y&#43;cP7w8yOahgcmY&#43;3c4flfH5Lh&#43;/wlfAWbhl3A2Vt6qCu1nhYrEynwxVoxyV3VWprOJ5icBbncsAAqDPoEAA1OR7tM/2QqxyWn3QM3v0uh/HxqbD82b8ahhbip&#43;Y0CxhB6mpBbbpZaxIgak5hLEwUJdGoxE8/DATRabJZROgg634PkBioib4L0glMI7LjMo9lGo1emtm3M0w9sC30LVzJZz3mDBQq27EL31HH7zMPhfoCvuVjo5ejXD/6xC9fYKdfZs4ng3Q&#43;ZWPYI1cAYF7XKGM/&#43;8jbc1a520ebfusHUz1ngOoMAxCz0CRkmKyFo09fE44&#43;63j82hhOKYE8uGBpWHjSE8K9135PB042UtGVJLWJZTEICEK9KZPMkA2EBBlF6weE7lEFCX0oeHep4wDgLrxXG5tZmMzSlYlFGMpt6mXNKpgehTYqWpnaHya23hHCEH4HeRK/2AFH9u7BD3NP4F370XmhjimebuSkjQw24YkgvAzH87yYRb7Lb2s9KMJQmvIpS/yYyUUB3qbx&#43;eESw6kfOUazlhw4v4YZaOYAfi4W5dXrTgorTl0h3vytaNKt4sxibPWacO9//ru0pFpkw2TOlQnQBh4tHExYwQnRMYWeXMxYbkfSOpjUcQCQuJiBb8tIS7WcTRJOY7P1Rz30yhaVgkE5OA/c&#43;Z&#43;hd8kTgIv/kKE&#43;Eobxo9gDC3HPzYMdDGn&#43;2CNmbNFmMHA24Ef39lz7GQQa5WRA96bJJLIrnYIP&#43;NA53PnbnoObP/w49BR&#43;W3Ac//3L2Fg46okr8JMyw2GaZxRkwXMF8OBSUcYdCIUhTQsu8kv5eL0oibfmuUsFOBYjuLUSyhJlbekXB2iTdxwA/jYQ6XggSGsyplTNejSznMv5CYZGKOBJmN/ond6GX/G86Tuhb8UTw8j8BZhmx/D4FhswOJmnhbhrQxBgtjAMXPluAI2CDBc7IQQ9eYpAsYyiPXhB2KBJywjbUNbI57SPka6fgx/nrq&#43;E9X5FWLh6TGcIFewHSBIEtTQx528LKgjZDDq8EERFVmNF6rHPCLCnOTkScGh3yhgZNsFawMZZrKm3dUPHASB0KYqSC2UamEJJsxTyPrajbE5IgFD05HOCL2dOXoo6HezEDtz&#43;L6F//MEwcvrKMG/hCLrHdUBUn&#43;EcwKNdXjmCQRlGzabFdOTz1TEpEJWRRQEPJPsyKV82xSgGP633nO4x6itY7wdHhsKSE5eGwbEBLQkBgcFA1bN70uGKA/vrjgG5BZZpYzq6AV1zy2mfLAEkkztrNBuy6tQE4&#43;QS9ASlo2J3AZCQJG/yteh19cy05gEHIFBUgEiOiGJj8i4OCNHGhc6INUQ/pt8t14RtOIIdwLS&#43;4sQzcZo3hN0&#43;Rj&#43;GPv&#43;HDjcmc8MFPicDHBJx&#43;JTKPDoESZ4EggZPAVnnlI9hLkL6IQccFlWqJRz44AsnCKylxy8Lw8tGAFvXr4pTby4vlJNjjmdFWjYoPGcA1LPYQj/h/OoPr9TU4mKSU&#43;82ibzQ7fTbQHXUfNABYArRAF6KzlcLjEMh8S&#43;LZtfHwAvCEcbpmL&#43;JbwgcRbwN04im0dFc3Xktjl1vDFvGjg8jS9aEwfkrAOD7ADLgx&#43;UBAhyluwC20/kkDY/pbV/dBqLONV9n/GAG71X4&#43;0GjS8NR684NY6uW4oEUqGKfwafNXE74NjGDrMT9AmTUewTsw78e3CkYE9K15IFpAwZtJqJ353nL9laN4IRmt53TdT45wdlL3QVAkxxoYBuSpjsYQ4LENtpZAqlAqKzASptkKsnTgKC/eAZvifhI2OWXalNhcudN&#43;lijXR3S2yKGV13crN6usOy0c8Kx5z4/zFu9DDrAoZxdAKxNJUvycR5kClgEBmXlXYDehciYJwMBqAoS2aIN9xQGNOTojFbEoTBMaM8Gi0WEtXd47TgAcBfI22tKL6at6UvyrMtlFI5as5a2dKQnLxpZxkpfSkmUk8K8v6c8SkLIiyxFVsz0rj3HCsCsWRN&#43;NrMIHGsIR/jYcaeFVb/2&#43;rDwjGdp5uAXUGRk4AofcjBESakHx8F0OINfD6Q4a5EHXxqg/FEMPUogk0JCL/9IKiajGyvqc15sI7UE2MFoFyZkPgtYQ2fXjgOA66gEaJZBnOgURnYUp4E7kRp6GujYzOH45iyOfmKxz3tEmI345A5lKwiahwSiKi6agUgISbSQkzUf2spPnO7xxvG8seVh1bkXhuXnnKd9BR/4cPqhY0WXWGUO&#43;0QSzAzs53sFDAS7cwEcGOn/GqKMChigMVEAJgOxMmHIw1MCwyaf0s3P7DTbpLQc9WDyjgPA/W8iNLNKzFLolPNcqUJPiwoMATsqcVQVRgStFo0vc3FnjxR9K6PKKA3GzIwLcI020pc1ebs2jVlkMByz7kVh5XNeHQaXH4fRO4VvFeMnYvGPM38Nw1cjWOw9ECEb6NgqQMebU2zgs68eJh/A//HMACERJREw1qhncqFMJ6d1gVNOU1FVu0SLRBslHXlxtr4cKit1HAAZhumRVecqSDkacy5A749K&#43;4ySGSY6zev0s9NkWQ4TDbRmQYByBhQZoM4DHe7SF699ZjjmOa8Lw6tPxynfdHyWT2J0KBwfg8CCEfjwMPcANg/wdpJ6mcC8alZhGx5W7dt8O/eeSiZCFCS2WU9yjd1qaQcDbg5mdmCtLXBCvH2xywA4OIa52O0FaeqBXjRwnliO6nNX7x1eQJf53RsAEANBWBz&#43;eKOYvw42uOTEsPJZF4YFZz5Pr43xF0MlI&#43;jyMKkE5xOcB4gk4Tv&#43;jD8b8dHhUhQJDZKIj5hndtwXDmy6RQdYNgDYRRyBKCc/r/rJowc31TTRHSLiJZnhs58CRDgWM3kS4FmKXQZAe4HEw&#43;WZhaHLOqugLei0MgjbEvVbcqWZ&#43;Ty/VpnA8ewi/EDky8PSp74UXy5diCUA/wsYXykCIWNpsHxcbKOZ2MaEswAdxYdRbJKzuP5gfTAH2oxRKveHnT/411DZz1fE8PUyJMlIBkzGSEX3FbhGc5g2VkuCXNDNF8dij8jjkrY1YzS3dBwAOBDFPpA7AdekmVjUokVH0uRaJ01dFxMRuBa3TjAr&#43;moVrOmlvrDotBeG5c94TehfdgKWgGk8UsY6D&#43;fV4FT9t62g2YNA0T0&#43;5nj&#43;xxtyARhkPEhQkUimWCAYWFy/aRY2weH7br0hbNvwFT2GbpSLIIRz8bMRr3bwJoCYOQQ75kjCmQNmlu6OA8CcPwulTrqol6wwC3BB9xYIaX8bWmyu4VSP/0v3yLFPxs7&#43;d8Po6rPBmk/yJuRETvFyBqzO1ZyDmbbnu3/E596NP&#43;zEKVx9bEOZy4Hw&#43;MoYQ0SEgDvQHya23BXu/Mf345vF&#43;7G04OSoITVqQ3qMhpZjnbKQg019DZRQpZAxySSsZ5HqPXPnHQcASAGWCs9NtC1EJ7gFGFRYl4aRaqG/kROncDyrx6gfWHhcWLbuVWHBE38VI3NQa78O/aIXRIbbdiYoRWfyj2f5cjKa&#43;QhYiwH7cQSoW0KJhDrghILDCP5Y5N6brw8bv/SBML1rM75qht8KbJMiR/XS8eSsQHB40G/ncwdpzB2fYQxcW3cagdrUOw6Aaql0XX1m5kb8zt0Z3QrYhvcczTYuuPbOmTAKCVWtYE3Hq1nLznpFWPKU80N5BF8k5XcA8BYvR1IccCgTOrpCjkQf/Z8NdeMoB/F2QX3Gg1iihbyE9wwr&#43;3aHrd//Utjxg6/glyvwRjCWgUjZiMQrHU0maZ90oyiNydsATOea7NbYNCOgWf7ABf/z6fR0pfb1RnKz1VN5ZoPzvpF5A/MuwkOUi3E619X/Uu0E5KmEK4uubwajQgyAlr20TA7N6Z6PcUePf1ZY9pTXhIGjTsHajIc4GMGcv82xoAc0HdYwGKIM3OmzQ7d6CgDeBRh5GV5tdAI&#43;PBBAXsKrZrzX3/WTq8KW73wW/9XcXaEP7x/yLST3sKSPPFzS1P0MiCZnRsBWuBkNKkHdSZvioM4nl5itvj41NfVXExMTP3DYTvIGETtBCWFwcHA1IN&#43;GFyAuxA804Mdyu0gufBcoTaBxjq7hZVE6f3DZqZjuLwzDxz9To7xO58tZZiCNeN46wlgWAKRoQWDLAswQZxp9L4BVQHCF4FkA/xQgiJZevPc3ue1uOP7ysPvn30UX3grGEuA/VCFEUqejCil3P01A76UwLOdTObqb8IWkSxYgCMKZSuUW/OeX74Ljr8whOi81Stk5JiB7e3vPwWc9XhZ5XqpMV0TmBKaIZjLzBGpQvIp1vnd4WVh8&#43;svC/FPPw4ugY3AFZgJA03ayHx/9quzOt86sn7w5Q5BFhFOetDlBfqWsNrEnbL/2y2Hrf3wp1MYf0G0e9c4&#43;QiZR0iTRPLn7tRSwmd2uFqsRnnCaHQRTpKGmyAOv6O3GlP&#43;/9&#43;/ffynaH2TfwaRmDt1TKfUP9l9Q7im/HYFwcqNi3ZNzDLcQ52AmmAUG421dT&#43;9gGDvp18OiM1&#43;JR7ZHaxbwUc7bOBlTUzbQ&#43;PyWbYUZgTDsi6MQZcenA/QXg8Cn9T23bQj3fvfTYfz&#43;m23E40UCdzwReMfgyaZ3zR3eVDSLQHkBf/yjXuZ/1RQXXs8IoEB&#43;mOrxfKryhenp6fdiyr8t7T&#43;Yci71wWAXcRYODg2&#43;CW/gvhmCLlRXEuFF0LlqZhx5QgaCSWu4rYMvh49eh98KeC3W&#43;TO1Sy/jdI/G0qkcC3Q0ncEiyhKBVXy4xXenWd1AJQ2XADRySSAuy/zhiKkdm8J9//5ZfOnk/yGWKnK&#43;aADIaBGbZXMnr9bi7Ta1EzZLLBqYaGTtLEQwhkKaNOtVqxsw8tcfOHDgO2nfQykXuTwUShF3YGDgZJyX/wUC4QK8SYNdUdS0U9qypIlFTL6kwVHfv2gtpvvXhOFVz8avfODmhes8YH1&#43;EEZ0vE7n2KFRTCrmLM4GnAnkOIcFInHlH5aBwy951vDdv90//ka4f8Pfh&#43;m99&#43;vWTi&#43;cAdCdqZ&#43;HJQ6RSQSsYshF97ERSd0&#43;tcc268loxaplGRoRMeqrlY3T1dpfje/bdzkA8Pu3D18qSvPw0eVG8VzcKazH55ldkYUHOCXyRpvrfHlwcVh4ykvD2Mn/JfQMLsKLl5MY7Ty6McO7M6wue/GHQHUvT7/Y41wQzABiECAA3HHuvx5&#43;nwDvGRzY9GN8nfwzYf/m6/AKGb5FrOmeJHLnZ3yB7OWWepIvEnEbk1rIvFVCM46w92PkfxJT/ocx6re1AnuobW24P1SyGX7f4NAQ7hRwx1AqHT/3ZGDrYaU2Dcf14/TuBWHhE14ZesfwmBb38xzBHHW6hYPkFF4fjuasDMOhqp//Uyf/eyfUcXLXwzNbtvG0h7Qw39N5fOePo76yb3vY9oMvhJ03fBX88OxAZ/nsJxpzIltZdFj2tpgLoNUl0ki7RK2AZ7MVp3t89ewrlVrlL&#43;H4n6Q4D3fZNHq4qTbTWzZv3ryLsUm8CGYc9WmyCKapDve01TBv2dlh0RNeHQaWPzlOqVjnUZKz5Gxak6LbyGZJ7/zFTZ16uP4TFh9ux&#43;p8iqPpPy4a2g/wnh7371hm9uCV863/cTme49&#43;tn4rVN4tIt8HBDAT9kQkLSXLYpKmpaPjEo7MtGQujhT3e9fi8e9&#43;&#43;fV0d6DitbvOiBt1idwnf3z98en9vz7vgkZemqHznjt&#43;7752/Oiw89YIwfMyvwHn4ifa4zmstBwINJWPhImOrwiDw4IgwcgxuFTngEQAKHDJUUNjOm7u9Mt4Mntp2a7j/msvCvruvsfUfv/ZhDqaraB7iE1kl9ansMqgHF/cnYVmOON6d5qKb9FM&#43;jPr7sMn94N69D34KsPjhgUcnJWI8OgzJZWho6IVQ&#43;l34PIX/r0&#43;pbyyMnfhbYfTEF&#43;FXu/ilSt7P06mwIy86rqPjYh0F34BxurfDHTqKH/MEjczzIj7V08jnPEBYBgUe1PCeftePrsR0fyV&#43;dPJByMDfBCYWuUQ&#43;njPG2KwLe61fslk1DwBJnuN7t&#43;dO35QBXKhPVus9n5mZmroEhzlbHO7Ryk3bR4tbkQ9WhYE3DB99zlsXnf5fV5aHj8NuF&#43;/h8SlLts7HINBxnYwFCmyztdvex4N34GQqwrrOAQDD2Z8Oq2rUswjTc0OH9gN3/0fY9sO/CxPbf67Htmynb&#43;V&#43;FoRqucqknldVdkcqZ5/FXXS/8SNuu0R5cIT7TSCs37t377Xt4B7p9lStR5pXS/pn/NGWYyZ3bnwrHP8GOGKQR7tM8oOPZlQ02ugHShxzM34MAHWwC50KCOJwH2B7gR48uJnZfXfYcd3nwt47cRuN8wM&#43;xRM54uqPF1GQDCaH1aN/czhyInJM3Lj5jMDZywPC2xyOOOj9GS7v2bNnz0Ed3zqthyNPVHg4yB08jbXnX72up9y3Hlb8DRkby4BSXN9ZljG1pgMCklN4OcELWRtnAsWBdvdVPKV74OavYbrnj0Pu0FM8fSlE8IYkNzc4Xzw1laBEoQDKizIWkVIHa9mKvR4E3s8cL4/sxPUj5XLfJ3bv3r3XKDy211SXx1aSyP3kC65&#43;ea1efid&#43;eu00nv7ZkoDRFR1hu33zBY3qCsjhGO3q4cyBMyjev0/c/yP8YNSn8JtBN6AJbfxJN0Ixcuwv4rDq1GI/ZWJT5vwiDLuVRCfH9eYkx5cLwufxeT9G/Z1J&#43;2NenFXqx0q6k19/zWh9IrwRxn8LHLa0hsMfeiFzGoPB/uIIjGro1g5dmO6r&#43;7eGXT/9h7Dntm/gnnoc6z9u9zxgmAsld7loJwo7Lzmf7YRHIKg9CQi1J3gEjNJ461U8vsVDm&#43;95w6GUN8h6KIkWwtoLvnMCXnD5c1j0tRy69gOPEJl/PiNAZHMWDK&#43;T5&#43;mw965vh103fj5M77sH7/3jUS3bHY65VXglcoPDUI9WIV2u7WlqCgDRwCWCsZ//sATcjvv59&#43;F&#43;/gr08lXSQzJFVQ9J2TKh1r766mfhSfx6ePi5WhL8TV5s9ph4wsepfWrXzWHXDTjCvZf39Hyww/fyzKFynGBzlb2NNDzRefxjYn/LALDupqtwQ9gD3h/DqP9fcP6uJqBDrCG3xiEmWJM4L7&#43;yvHZgxatgZDxo6l9bxy2jnglguud9/J6bvxweuA3P6adxT8/pHreOFh/mUCnqQxvEU0envDwoPG8KgCRAUjyUOQf8E0b9ezDd39zQd8hWD58AiCZ84sv/dVGtb&#43;S/Y5T9EXyxYP&#43;WDWHnT/4uTO&#43;5ze7pMRvQefoXtXNnuhca62xvCggGS8P0b3AETs3Gcp2vYb0b9/PfIszhlFJNDie5w&#43;m/f&#43;Mp23/40XfsuumK3&#43;7pqWKDzyNcc7wNUrm0wVmstlY5bZdLYY1IASXd1Mk&#43;GZwBbUb9EuzsL0MnTrEOv9TaGoeRHgMDvS/oKfXxWPkZjcpkznJ9FCDmWL9nd9dmsCCSO94RAZVs8gBwADB/g8e0H8LTuq0OdTjmjTY7HHWgzP1DI0Ovw0uBb4MjVzUp0cKpmcMjsAVC6nqUo3U8SATaE76K19/&#43;8sEHH/xxE5/DsOFICQCZfnh4mK&#43;q/wkcdhEcjN/w9pQ61tqaAiAO8cZ2BYFFwo/xggYf037NqR4J&#43;REVAO4QBMJZeI37nXD7i5td3zoAHLdFfj/aPoQnmH&#43;7bdu2Ay36D&#43;umIzIA3CNDo0O/VaqXuD94Mtv0wIYFad1edQYNZpEp4F2Gd&#43;75mHYz0Y7EZEdkR6Jm0Am/MH7rkiVLroATd8GjZ&#43;Bx8agt7K2cb2284qHNt/C62IW4rftbbPT2HKHmkVqtLHFE6ouXD47t6&#43;v7M8wCv4sBPqBjm0RTGgLbgJsw&#43;t&#43;zd//eL7KadP&#43;ieKRYYP78&#43;U8bnT//m6Ojo3V&#43;5o/OZ75z/sjI2xcuXDh2pOj5Cz1mt0DPyNjY&#43;XD8DaOj8z&#43;PoFgzO/gveo9UC3T1Xfo5jPC4WU7nsMMj371&#43;/frSNddcc8FVV12Frwg9tunKK6/s37Bhw59ed911Q4&#43;tJAfH/f8DquSt0fZ8PWMAAAAASUVORK5CYII=" alt="skill-up logo">
+        <div class="title-block">
+          <h1>Eval Report: <span id="skill-name"></span></h1>
+          <div class="meta" id="header-meta"></div>
+        </div>
+      </div>
+      <div class="progress" id="progress"></div>
+    </div>
+
+    <div class="summary-bar" id="summary-bar"></div>
+
+    <div class="view-tabs" id="view-tabs" style="display:none;">
+      <button class="view-tab active" data-view="cases" onclick="switchView('cases')">Cases</button>
+      <button class="view-tab" data-view="benchmark" onclick="switchView('benchmark')">Benchmark</button>
+    </div>
+
+    <div class="view-panel active" id="panel-cases">
+      <div class="cases-layout">
+        <aside class="case-sidebar" id="case-sidebar">
+          <div class="sidebar-header">
+            <div class="sidebar-header-title">
+              <span>Cases</span>
+              <span class="count" id="case-count">0</span>
+            </div>
+            <button type="button" class="sidebar-toggle" id="sidebar-toggle" onclick="toggleSidebar()" title="Toggle sidebar" aria-label="Toggle sidebar">&#9664;</button>
+          </div>
+          <div class="case-list" id="case-list"></div>
+        </aside>
+        <div class="cases-main">
+      <div class="main">
+        <div class="section">
+          <div class="section-header case-header">Case <span class="status-badge" id="case-badge"></span><span class="case-header-metrics" id="case-header-metrics"></span></div>
+          <div class="section-body"><div class="case-info" id="case-info"></div></div>
+        </div>
+        <div class="section" id="prompt-section" style="display:none;">
+          <div class="section-header">Prompt</div>
+          <div class="section-body"><div class="prompt-box" id="prompt-text"></div></div>
+        </div>
+        <div class="section" id="error-section" style="display:none;">
+          <div class="section-header">Error</div>
+          <div class="section-body"><div class="error-box" id="error-text"></div></div>
+        </div>
+        <div class="section" id="response-section" style="display:none;">
+          <div class="section-header">Response</div>
+          <div class="section-body" id="response-body"></div>
+        </div>
+        <div class="section" id="grades-section" style="display:none;">
+          <div class="section-header">
+            <div class="grades-toggle" onclick="toggleGrades()">
+              <span class="arrow" id="grades-arrow">&#9654;</span> Formal Grades
+            </div>
+          </div>
+          <div class="grades-content" id="grades-content"></div>
+        </div>
+        <div class="section">
+          <div class="section-header">Your Feedback</div>
+          <div class="section-body">
+            <textarea class="feedback-textarea" id="feedback" placeholder="What do you think of this result? Any issues, suggestions, or things that look great?"></textarea>
+            <div class="feedback-status" id="feedback-status"></div>
+          </div>
+        </div>
+      </div>
+      <div class="nav">
+        <button class="nav-btn" id="prev-btn" onclick="navigate(-1)">&#8592; Previous</button>
+        <button class="done-btn" id="done-btn" onclick="showDoneDialog()">Submit All Reviews</button>
+        <button class="nav-btn" id="next-btn" onclick="navigate(1)">Next &#8594;</button>
+      </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="view-panel" id="panel-benchmark">
+      <div class="benchmark-view" id="benchmark-content">
+        <div class="benchmark-empty">No benchmark data available.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="done-overlay" id="done-overlay">
+    <div class="done-card">
+      <h2>Review Complete</h2>
+      <p>Your feedback has been saved.</p>
+      <div><button onclick="closeDoneDialog()">OK</button></div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    var DATA = {"skill_name":"self-test","engine_name":"claude_code","model_name":"","protocol":"anthropic","requested_model":"","applied_model":"","observed_model":"","requested_version":"","applied_version":"","observed_version":"2.1.273","start_time":"2026-10-06T23:34:51+08:00","evaluation_wall_time":"678.7s","agent_tokens":201460,"judge_tokens":230539,"overall_tokens":431999,"summary":{"total":3,"passed":3,"failed":0,"skipped":0,"errors":0,"pass_rate":"100%"},"cases":[{"id":"case-0","title":"MCP 标准请求","status":"PASS","agent_duration_ms":25725,"agent_duration":"25.7s","input_tokens":27437,"output_tokens":824,"agent_tokens":28261,"judge_duration_ms":47328,"judge_duration":"47.3s","judge_input_tokens":30385,"judge_output_tokens":2445,"judge_tokens":32830,"turns":1,"grading":{"expectations":[{"text":"expect.must_not_contain","passed":true,"evidence":"all checks passed"},{"text":"正好 6 道题（一题含多个小问仍算一道）","passed":true,"evidence":"final_message 中恰好包含 6 道题：第 1 题（M×N → M+N）、第 2 题（三角架构与通信）、第 3 题（三大原语）、第 4 题（写 Server）、第 5 题（写 Client）、第 6 题（MCP 和 FC 的关系），编号连续为 1–6; 第 2 题含 a/b 两个小问（连接关系、传输层），第 4、5 题也各含多个小问，但均各自归为一道题，总题数仍为 6 道，符合'一题含多个小问仍算一道'的规则; 标题明确写'📝 MCP 自测 · 共 6 题'，与实际题目数量一致"},{"text":"题目基于工作区中的 06-MCP.md，未混入其他笔记或笔记外知识","passed":true,"evidence":"transcript 显示 agent 通过 Glob 定位到 c:\\Users\\Administrator\\Desktop\\AI\\Studying\\06-MCP.md 并完整 Read 了该文件（243 行全文），随后出题，未读取其他笔记文件; 6 道题的题干素材均可对应 06-MCP.md 内容：Q1 对应第 10–35 行'一、本质：为什么需要 MCP（M×N → M+N）'，Q2 对应第 50–80 行'二、架构：Host / Client / Server 三角'，Q3 对应第 84–94 行'三、三大原语'，Q4 对应第 100–129 行'四、实战 1：写一个 MCP Server'，Q5 对应第 133–151 行'五、实战 2：写一个 MCP Client'，Q6 对应第 187–200 行'六、关键认知：MCP 和 FC 的关系'; 题干中的具体细节均出自该笔记原文：如 'M×N 份适配代码变成 M+N'（第 22–33 行）、SSE 已废弃（第 80 行）、'python test_mcp_server.py 看不到输出'（第 129 行）、'不 import server 代码！只起子进程'（第 140、151 行）、'嘴'和'手'的比喻（第 200 行），未混入笔记外知识"},{"text":"每道题可溯源到 06-MCP.md 真实小节，无笔记里不存在的内容","passed":true,"evidence":"第 1 题可溯源到笔记'## 一、本质：为什么需要 MCP（M×N → M+N）'小节，M×N → M+N 表述见第 22、33 行; 第 2 题可溯源到'## 二、架构：Host / Client / Server 三角'：三角色表格在第 69–73 行，Client 与 Server 1:1 连接见第 59 行，stdio/Streamable HTTP 两种传输及 SSE 已废弃见第 78–80 行; 第 3 题可溯源到'## 三、三大原语（Primitives）'：三类原语对应 FC/RAG/Prompt 三范式的表格见第 88–92 行; 第 4 题可溯源到'## 四、实战 1：写一个 MCP Server'：'不能直接 python test_mcp_server.py 看输出'见第 129 行，@mcp.tool() 自动生成 schema/docstring 见第 106–125 行; 第 5 题可溯源到'## 五、实战 2：写一个 MCP Client'：协议流程四步（①启动 Server ②握手 ③发现 ④调用）见第 140–148 行，'不需要 import Server 的代码'的关键认知见第 151 行; 第 6 题可溯源到'## 六、关键认知：MCP 和 FC 的关系'：'MCP 不是 FC 的替代，是分层'小节（第 189–200 行）及'FC 是嘴，MCP 是手的标准化接口'（第 200 行）"},{"text":"一个考点最多出一道题（两道题知识实质相同算重复）","passed":true,"evidence":"6 道题逐题对应笔记的 6 个不同 H2 小节（一、二、三、四、五、六），无两题落在同一小节; 知识实质不重复：Q1 考 M×N 成本模型的解释，Q4 考 FastMCP 装饰器与 stdio 运行行为，Q5 考 Client 四步协议流程与子进程解耦，Q6 考 FC/MCP 分层关系——各题考查的知识点互不重叠; final_message 明确声明'每题对应不同小节、无重复考点'，且与 transcript 中提取的 17 个标题清单核对一致：Q1↔'一、本质'，Q2↔'二、架构'，Q3↔'三、三大原语'，Q4↔'四、实战 1'，Q5↔'五、实战 2'，Q6↔'六、关键认知'，一一对应无冲突"},{"text":"认知层次混合：至少覆盖 2 个布鲁姆层次（记忆/理解/应用/分析），不全是记忆层","passed":true,"evidence":"题目标注了混合的认知层次：第 1–3 题为【理解】，第 4 题为【应用】，第 5 题为【应用/分析】，第 6 题为【分析】，覆盖理解、应用、分析至少 3 个布鲁姆层次; 实际题干内容也符合层次标注而非仅贴标签：第 4 题是情境应用题（同事小李直接运行 server 以为代码坏了，需指出误解并说明原因），第 6 题是分析/评价题（评判'MCP 是 FC 升级版、学 MCP 不用学 FC'这一说法的错处），均非单纯记忆复述; 6 道题中无任何一道是纯记忆层题目（如'列出三个角色的名称'这类），即便是第 2、3 题也要求解释'各自干什么'、'对应哪个范式、举例'，属于理解层而非记忆层，满足'不全是记忆层'的要求"},{"text":"出题时不附带答案或解析（\"答完我判分\"这类流程说明不算泄题）","passed":true,"evidence":"final_message 开头明确声明'**先作答，我后判分**——现在不透露任何答案'，全文未给出任何一题的答案或解析; 结尾'写完（或逐题）发给我，我按题判分——答错的题我会先讲思路再给答案，并标对应笔记小节'属于流程说明（承诺判分方式），未泄露题目答案本身，符合'答完我判分这类流程说明不算泄题'的豁免; 逐题检查题干：第 2 题问'哪种已被废弃'（只提问未告知是 SSE）、第 4 题问'省掉了哪两样手写的东西'（只提问未说出 TOOLS_SCHEMA/TOOL_REGISTRY）、第 5 题问'为什么不需要 import'（只提问未解释解耦机制）、第 6 题引用'嘴'和'手'的比喻仅指明作答应使用的框架，未给出'FC 是嘴、MCP 是手'的答案内容; transcript 中 agent 出题前后的所有输出均无答案文本，判分承诺与 self-test skill 步骤 5'出完题先不公布答案'一致"}],"summary":{"passed":7,"failed":0,"total":7,"pass_rate":1}},"configuration":"with_skill","prompt":"考我 MCP，考全部，出 6 道题。（已确认：考全部内容、出 6 道题，中途无需再向用户确认，直接完成出题。）\n","response":"笔记已读完（`06-MCP.md`，17 个考点，核心 6 节），6 道题按布鲁姆认知层次混合出，每题对应不同小节、无重复考点。**先作答，我后判分**——现在不透露任何答案。\n\n---\n\n## 📝 MCP 自测 · 共 6 题\n\n### 第 1 题【理解】M×N → M+N\n笔记说 MCP 解决的核心问题是\"M×N 份适配代码变成 M+N\"。请解释：**M 和 N 分别指什么？在没有 MCP 的世界里，为什么成本是 M×N？MCP 又是怎么把它变成 M+N 的？**\n\n### 第 2 题【理解】三角架构与通信\n画出（或文字描述）MCP 的三角架构：**三个角色分别是什么、各自干什么？** 并回答两个细节：\n- a) Client 和 Server 是什么连接关系？\n- b) 传输层有哪两种方式，分别适用什么场景？哪种已被废弃？\n\n### 第 3 题【理解】三大原语\nMCP Server 能暴露三类原语。**请说出这三类分别是什么，并说明它们各自对应你已学的哪个范式、举一个例子。**\n\n### 第 4 题【应用】写 Server\n你用 FastMCP 写了一个 `test_mcp_server.py`，同事小李直接运行 `python test_mcp_server.py`，发现\"什么输出都没有\"，以为代码坏了。**请指出他的误解在哪里，并说明原因。** 另外对比 FC demo：`@mcp.tool()` 装饰器帮你省掉了哪两样手写的东西？schema 和 description 分别从哪里来？\n\n### 第 5 题【应用/分析】写 Client\n写 MCP Client 时有四个协议流程步骤。**请按顺序写出这四步分别做什么。** 并回答一个关键问题：Client 只给了 `command` 和 `args` 这种\"启动命令\"，**为什么不需要 `import` Server 的代码就能调用它的工具？这体现了什么本质？**\n\n### 第 6 题【分析】MCP 和 FC 的关系\n同事说：\"MCP 是 Function Calling 的升级版，学会 MCP 就不用学 FC 了。\"**这个说法哪里不对？** 请说明两者各自解决什么层面的问题，以及在真实工业 Agent 中两者如何配合（用笔记里\"嘴\"和\"手\"的比喻解释）。\n\n---\n\n写完（或逐题）发给我，我按题判分——答错的题我会先讲思路再给答案，并标对应笔记小节。","baseline":{"id":"case-0","title":"MCP 标准请求","status":"PASS","agent_duration_ms":44201,"agent_duration":"44.2s","input_tokens":28873,"output_tokens":1312,"agent_tokens":30185,"judge_duration_ms":45320,"judge_duration":"45.3s","judge_input_tokens":31723,"judge_output_tokens":2044,"judge_tokens":33767,"turns":2,"grading":{"expectations":[{"text":"expect.must_not_contain","passed":true,"evidence":"all checks passed"},{"text":"正好 6 道题（一题含多个小问仍算一道）","passed":true,"evidence":"final_message 中恰好列出 6 道题：第 1 题至第 6 题，标题为「MCP 自测 · 共 6 题」，与用户要求的 6 道题一致; 每道题虽含多个小问（如第 2 题含角色、比例、协议层/传输层等多个子问），但仍各算一道题，总数为 6"},{"text":"题目基于工作区中的 06-MCP.md，未混入其他笔记或笔记外知识","passed":true,"evidence":"transcript 显示 agent 用 Glob 定位到 c:\\Users\\Administrator\\Desktop\\AI\\Studying\\06-MCP.md 并完整读取该笔记后才出题，题目全部对应 06-MCP.md 的第一至第六节; 第 3 题「对应你之前学过的哪三大范式」出自笔记第三节表格的「对应已学」列（FC / RAG / Prompt），属笔记内内容而非笔记外知识; 第 6 题问 Claude Code 的角色对应笔记第六节小节「你正在用的 Claude Code 就是 MCP 的 Host」，是笔记原文内容; 第 4 题的 search_notes(keyword) 是新任务场景（布鲁姆应用层出题法，references/bloom_taxonomy.md 明确示范「给个新场景让用户操作」），考察的知识点（FastMCP 装饰器、schema 自动生成、stdio 运行行为）均出自笔记第四节"},{"text":"每道题可溯源到 06-MCP.md 真实小节，无笔记里不存在的内容","passed":true,"evidence":"第 1 题对应笔记「一、本质：为什么需要 MCP（M×N → M+N）」小节，M×N/M+N 与 USB-C 类比均为该节原文; 第 2 题对应「二、架构：Host / Client / Server 三角」小节：三角色表、Client 与 Server 1:1、协议层 JSON-RPC 2.0、传输层 stdio/Streamable HTTP 及「教学首选，最简」均出自该节; 第 3 题对应「三、三大原语（Primitives）」小节的 Tools/Resources/Prompts 表格; 第 4 题对应「四、实战 1：写一个 MCP Server」的「代码结构：2 个必懂点」，包括「不能直接 python test_mcp_server.py 看输出」这一原文要点; 第 5 题对应「五、实战 2：写一个 MCP Client」的「协议流程四步」、解耦关键认知及「Windows 工程坑」小节（第一个坑 command=sys.executable 确实列在首位）; 第 6 题对应「六、关键认知：MCP 和 FC 的关系」小节的「MCP 不是 FC 的替代，是分层」和「你正在用的 Claude Code 就是 MCP 的 Host」两个小节"},{"text":"一个考点最多出一道题（两道题知识实质相同算重复）","passed":true,"evidence":"六道题逐题标注了不同考点：一（本质 M×N→M+N）、二（三角架构）、三（三大原语）、四（写 Server）、五（写 Client）、六（MCP 与 FC 的关系），与笔记六个 H2 小节一一对应，无两题落在同一小节; 知识实质不重复：第 1 题考 M×N 问题与 USB-C 类比，第 6 题考 FC 与 MCP 分层及 Claude Code 角色，虽都涉及 MCP 价值但考察的具体知识实质不同且分属笔记第一、六两节; 第 2 题与第 5 题虽都涉及 stdio，但第 2 题考传输层两种方式的选型场景，第 5 题考协议流程四步与解耦本质，知识实质不同"},{"text":"认知层次混合：至少覆盖 2 个布鲁姆层次（记忆/理解/应用/分析），不全是记忆层","passed":true,"evidence":"题目明确标注认知层次：第 1、2 题为「理解」，第 3 题为「记忆」，第 4、5 题为「应用」，第 6 题为「分析」，共覆盖 4 个布鲁姆层次; 并非全是记忆层：仅第 3 题为记忆层，其余 5 题为理解/应用/分析层次; 第 6 题要求反驳「MCP 就是 FC 换个名字」的说法并分析两层如何接起来工作，符合布鲁姆参考文件中分析层「问区别/联系/边界」的定义"},{"text":"出题时不附带答案或解析（\"答完我判分\"这类流程说明不算泄题）","passed":true,"evidence":"final_message 中每道题只提出问题，未给出任何答案或解析; 结尾「逐题作答即可，答完我按题判分、错的讲透（附对应笔记小节）」属于流程说明，明确表示判分和讲解在用户作答之后，符合「先问后判」要求; 第 4 题「终端里什么都没有——这是坏了吗？为什么？」只描述现象提问，未透露「server 在等 stdin 请求」的答案; 第 5 题虽引述「不需要 import Server 的代码」这一笔记原文事实作为题干前提，但问的是背后的「为什么」和「解耦解的是什么」，未附答案；问「第一个坑是什么」也未透露 sys.executable"}],"summary":{"passed":7,"failed":0,"total":7,"pass_rate":1}},"configuration":"without_skill","prompt":"考我 MCP，考全部，出 6 道题。（已确认：考全部内容、出 6 道题，中途无需再向用户确认，直接完成出题。）\n","response":"考点清单已提取（17 个标题，归并为 7 个核心考点），笔记已通读。你已确认考全部、出 6 题——按“每个考点最多一题”配好了覆盖面，认知层次混合出题。开考：\n\n---\n\n## 📝 MCP 自测 · 共 6 题\n\n**第 1 题**〔理解 ｜ 考点：一、本质 M×N → M+N〕\n用你自己的话说说：MCP 出现之前，M 个 Host 接 N 个工具的成本问题出在哪？MCP 是怎么把它变成 M+N 的？顺便解释一下为什么笔记里把 MCP 比作“USB-C 接口”——这个类比到底在比什么？\n\n**第 2 题**〔理解 ｜ 考点：二、Host / Client / Server 三角〕\n画出（或描述）MCP 的三角架构：三个角色各自负责什么？Client 和 Server 是几比几的关系？协议层和传输层分别指什么——传输层的两种方式各适用什么场景，其中 stdio 为什么被选为教学首选？\n\n**第 3 题**〔记忆 ｜ 考点：三、三大原语〕\nServer 能暴露哪三类东西？它们分别对应你之前学过的哪三大范式？各举一个例子。\n\n**第 4 题**〔应用 ｜ 考点：四、实战——写 MCP Server〕\n现在给你一个新任务：用 FastMCP 写一个 `search_notes(keyword)` 工具。对比 FC demo 的老写法，你需要手写哪几样东西、哪些是自动生成的？另外：写完这个 server 文件后，你直接 `python xxx.py` 运行它，终端里什么都没有——这是坏了吗？为什么？\n\n**第 5 题**〔应用 ｜ 考点：五、实战——写 MCP Client〕\n写出（或描述）Client 从零调用一个 Server 工具的协议流程四步。关键点：为什么 Client 只需要 `command + args`，**不需要 import Server 的代码**？这背后体现的“解耦”到底解的是什么？如果 Windows 上跑不起来，笔记里踩平的第一个坑是什么？\n\n**第 6 题**〔分析 ｜ 考点：六、MCP 与 FC 的关系〕\n同事说：“MCP 不就是 Function Calling 换个名字吗？学会一个另一个没用了。”请指出这句话错在哪——两者分别解决什么问题？在一个真实的工业版 Agent 里，这两层是怎么**接起来**工作的？最后：你正在用的 Claude Code 在这套架构里扮演什么角色？\n\n---\n\n逐题作答即可，答完我按题判分、错的讲透（附对应笔记小节）。开始吧 👇"}},{"id":"case-1","title":"Agent 换触发语","status":"PASS","agent_duration_ms":84903,"agent_duration":"84.9s","input_tokens":31871,"output_tokens":3363,"agent_tokens":35234,"judge_duration_ms":42094,"judge_duration":"42.1s","judge_input_tokens":35154,"judge_output_tokens":2213,"judge_tokens":37367,"turns":1,"grading":{"expectations":[{"text":"expect.must_not_contain","passed":true,"evidence":"all checks passed"},{"text":"正好 6 道题（一题含多个小问仍算一道）","passed":true,"evidence":"final_message 标题明确写 'Agent 自测 · 共 6 题'，正文依次列出第 1 题到第 6 题，不多不少; 第 4 题包含 ①② 两个小问（user 角色拼回、JSON 解析容错），第 6 题包含 ①② 两个小问（闭环五步、md5 vs hash 排错），按规则各算一道题，总数仍为 6 道"},{"text":"题目基于工作区中的 05-Agent.md，未混入其他笔记或笔记外知识","passed":true,"evidence":"第 1 题对应笔记 §一 'Agent 是什么（和 FC / Workflow 的边界）' 的表格（谁决定流程/推理是否显式，05-Agent.md 第 20-24 行）及第 26 行原句 'FC 是 Agent 的腿，Agent 是长出脑子的 FC'，均为该笔记内容; 第 3 题对应 §二 '纯 Prompt ReAct vs FC 结构化版'（第 63-75 行），第 4 题对应 §三 '代码结构：4 个必懂点' 的 ③④ 两点（第 109-122 行），第 5 题对应 §四 三层记忆表（第 155-166 行），第 6 题对应 §五 闭环五步（第 174-195 行）和 md5/hash 警告（第 214 行），全部可在 05-Agent.md 中找到原文依据; 第 6 题② 的 md5 vs hash 排错题看似课外知识，但笔记第 214 行明确写有 'id 用 md5 不用 hash(text)：Python 3.3+ 默认 PYTHONHASHSEED 随机化，hash() 跨进程不一致……'，属于笔记原文，未混入其他笔记（如 10-多Agent与SubAgent.md）或笔记外知识"},{"text":"每道题可溯源到 05-Agent.md 真实小节，无笔记里不存在的内容","passed":true,"evidence":"第 1 题引用的 'FC 是 Agent 的腿，Agent 是长出脑子的 FC' 是笔记第 26 行的逐字原文；'谁决定流程'、'推理是否显式' 是边界表（第 20-24 行）的真实列名; 第 2 题的三要素（Thought/Action/Observation）与停止判断对应笔记第 57-61 行 ReAct 图示和第 61 行原文; 第 4 题①② 分别对应笔记第 111 行 'API 没有 observation 角色。惯例用 user 塞' 和第 116-122 行的 try/except JSON 容错代码; 第 5 题 '工作记忆在 ReAct 里是免费的' 是笔记第 163 行的逐字表述；第 6 题① 的五步闭环对应笔记第 174-193 行的 ①-⑤ 流程图; final_message 末尾的考点自查把 6 题分别映射到 §一至§五 的真实小节，与 extract_topics.py 输出的 16 个标题清单一致，无笔记中不存在的小节或内容"},{"text":"一个考点最多出一道题（两道题知识实质相同算重复）","passed":true,"evidence":"6 题分属 6 个不同考点：第 1 题考边界表概念辨析、第 2 题考 ReAct 循环机制、第 3 题考两种实现的工程权衡、第 4 题考手写代码的两个具体处理、第 5 题考三层记忆模型、第 6 题考长期记忆闭环流程与 id 生成细节，知识实质互不相同; final_message 自查明确标注 '第1题→§一 边界表｜第2题→§二 ReAct 循环｜第3题→§二 trade-off 子节｜第4题→§三 代码结构｜第5题→§四 三层记忆｜第6题→§五 长期记忆闭环。六题六节，无重叠'，且该标注与笔记实际章节结构核对无误; 第 3 题与第 4 题② 虽都涉及'纯 Prompt 解析脆弱'这一主题，但第 3 题考表格层面的优劣对比与学习策略，第 4 题考代码层面的具体容错写法（try/except 喂回 Observation），考察的知识实质不同，不构成重复出题"},{"text":"认知层次混合：至少覆盖 2 个布鲁姆层次（记忆/理解/应用/分析），不全是记忆层","passed":true,"evidence":"final_message 明确标注各题认知层次：第 1 题（理解·概念辨析）、第 2 题（记忆·核心循环）、第 3 题（分析·工程权衡）、第 4 题（应用·代码细节）、第 5 题（理解·模型辨析）、第 6 题（分析·闭环+排错）; 实际覆盖了布鲁姆的 4 个层次：记忆（第 2 题）、理解（第 1、5 题）、应用（第 4 题）、分析（第 3、6 题），远超'至少 2 个层次'的要求; 6 题中仅第 2 题一题属记忆层（'三要素是什么'），其余 5 题均为解释、权衡、排错等高阶层次，不全是记忆层，符合 self-test skill 步骤 3 '混合出题，别全出死记硬背' 的要求"},{"text":"出题时不附带答案或解析（\"答完我判分\"这类流程说明不算泄题）","passed":true,"evidence":"final_message 全文没有任何一题附上答案或解析：第 1 题只引用笔记原句要求解释，未给出'谁决定流程/推理是否显式'的答案；第 4 题只指出'有两个关键处理'并提问原因，未揭示 user 角色和 JSON 容错的具体做法; 第 6 题② 排错题只给出 md5 vs hash 的现象，未透露 PYTHONHASHSEED 随机化导致跨进程不一致的根本原因; final_message 开头的认知层次标注和末尾的'考点覆盖自查'只标示题型层次与对应小节位置，属于定位信息而非答案内容，不构成泄题; 结尾 '答完我逐题判分、讲透错因' 属于流程说明，符合判分约定中'答完我判分这类流程说明不算泄题'的豁免"}],"summary":{"passed":7,"failed":0,"total":7,"pass_rate":1}},"configuration":"with_skill","prompt":"自测一下 Agent，考全部，出 6 道题。（已确认：考全部内容、出 6 道题，中途无需再向用户确认，直接完成出题。）\n","response":"考点已从 `05-Agent.md` 提取（16 个标题），范围已确认为全部内容、6 道题。出题前我做了逐题考点标注查重——6 题分别落在 6 个不同小节，无重复轰炸；认知层次上按布鲁姆分类混合了记忆、理解、应用、分析四档。\n\n---\n\n## 🤖 Agent 自测 · 共 6 题\n\n**第 1 题**（理解·概念辨析）\nWorkflow、Function Calling、Agent 三者，在「**谁决定流程**」和「**推理是否显式**」这两个维度上分别怎么区分？请解释笔记里那句\"FC 是 Agent 的腿，Agent 是长出脑子的 FC\"。\n\n**第 2 题**（记忆·核心循环）\nReAct 的三要素是什么？请完整描述一次循环是怎么走的。另外——\"信息够了，该停了\"这件事由谁决定、在循环里怎么体现？\n\n**第 3 题**（分析·工程权衡）\n纯 Prompt ReAct 和 FC 结构化版各有什么优劣？工业界默认用哪个？既然如此，笔记为什么坚持先手写纯 Prompt 版——这背后的学习策略是什么？\n\n**第 4 题**（应用·代码细节）\n手写 ReAct Agent 的代码里有两个关键处理：\n- ① Observation 为什么用 `user` 角色拼回 messages，而不是用什么\"observation 角色\"？\n- ② 模型输出的 Action Input 不是合法 JSON 时，代码为什么不直接报错崩溃？正确的处理方式是什么？\n\n**第 5 题**（理解·模型辨析）\n三层记忆分别是什么？各自的实现方式和生命周期是什么？为什么说**工作记忆在 ReAct 里是\"免费的\"**——免费在哪？\n\n**第 6 题**（分析·闭环 + 排错）\n- ① 按顺序说出长期记忆闭环的五个步骤。\n- ② 排错题：`save_memory` 里 id 用 `md5(text)` 而不是 Python 内置的 `hash(text)`。如果当初用了 `hash()`，程序会出什么 bug？根本原因是什么？\n\n---\n\n📋 **考点覆盖自查**：第1题→§一 边界表｜第2题→§二 ReAct 循环｜第3题→§二 trade-off 子节｜第4题→§三 代码结构｜第5题→§四 三层记忆｜第6题→§五 长期记忆闭环。六题六节，无重叠。\n\n请开始作答，可以逐题答也可以一次性全答。答完我逐题判分、讲透错因。","baseline":{"id":"case-1","title":"Agent 换触发语","status":"PASS","agent_duration_ms":66225,"agent_duration":"66.2s","input_tokens":32794,"output_tokens":2013,"agent_tokens":34807,"judge_duration_ms":47834,"judge_duration":"47.8s","judge_input_tokens":37335,"judge_output_tokens":3020,"judge_tokens":40355,"turns":2,"grading":{"expectations":[{"text":"expect.must_not_contain","passed":true,"evidence":"all checks passed"},{"text":"正好 6 道题（一题含多个小问仍算一道）","passed":true,"evidence":"final_message 中恰好列出第 1 题到第 6 题，标题为「📝 Agent 自测（共 6 题）」; 每题虽含多个小问（如第 2 题、第 5 题各有两三个小问），但均作为一道题编号，总题数为 6; 用户要求「考全部，出 6 道题」，final_message 开头确认「按已确认的范围——考全部、6 道题」"},{"text":"题目基于工作区中的 05-Agent.md，未混入其他笔记或笔记外知识","passed":true,"evidence":"transcript 显示 agent 用 extract_topics.py 提取 05-Agent.md 的 16 个标题作为考点清单，并完整 Read 了 c:\\Users\\Administrator\\Desktop\\AI\\Studying\\05-Agent.md; 第 1 题（ReAct 三要素）对应笔记「二、ReAct：让推理和行动交替」第 61 行「三要素：Thought -\u003e Action -\u003e Observation 循环」; 第 2 题（FC 循环 vs 自主规划）对应笔记「一、本质：从 FC 到 Agent」第 11-14 行，「查三城天气找最热算温差」例子直接来自笔记第 14 行原文; 第 3 题（Action Input 非法 JSON）对应笔记「三、实战：手写 ReAct Agent」第 4 小节解析容错的 try/except json.loads 代码（第 115-122 行）; 第 4 题（纯 Prompt vs FC 结构化版取舍）对应笔记第 63-75 行「纯 Prompt ReAct vs FC 结构化版」小节，含「为什么先手写纯 Prompt 版」原文; 第 5 题（三层记忆、工作记忆免费）对应笔记「四、三层记忆模型」第 155-166 行表格及「工作记忆在 ReAct 里是『免费的』」原文; 第 6 题（md5 vs hash）对应笔记「五、长期记忆闭环」第 203、214 行 save_memory 代码及「id 用 md5 不用 hash(text)」说明，未混入 10-多Agent与SubAgent.md 等其他笔记内容"},{"text":"每道题可溯源到 05-Agent.md 真实小节，无笔记里不存在的内容","passed":true,"evidence":"第 1 题可溯源到笔记第 61 行（三要素 + Final Answer 停止判断）; 第 2 题可溯源到笔记第 9-26 行（一、本质：从 FC 到 Agent 小节，含 FC 被动响应/Agent 目标导向对比表）; 第 3 题可溯源到笔记第 113-124 行（④ 解析容错，含「不报错崩溃，而是把『你格式错了』作为 Observation 喂回去」）; 第 4 题可溯源到笔记第 63-75 行（对比表 + 「先白盒理解，再工业封装」取舍逻辑）; 第 5 题可溯源到笔记第 151-166 行（三层记忆表格 + 工作记忆免费说明）; 第 6 题可溯源到笔记第 214 行（PYTHONHASHSEED 随机化导致 hash() 跨进程不一致、第二次运行会重复存储）; 题目中引用的 test_agent.py、save_memory、get_weather 均在笔记原文中出现，无笔记里不存在的内容"},{"text":"一个考点最多出一道题（两道题知识实质相同算重复）","passed":true,"evidence":"第 1 题落在「二、ReAct」的三要素考点；第 2 题落在「一、Agent 本质/FC 边界」考点；第 3 题落在「三、代码结构④解析容错」考点；第 4 题落在「二、纯 Prompt vs FC 结构化版取舍」考点；第 5 题落在「四、三层记忆模型」考点；第 6 题落在「五、save_memory 的 md5 id 设计」考点——6 题对应 6 个不同小节; 第 2 题考 Agent 与 FC 的概念边界（自主规划），第 4 题考两种 ReAct 实现方式的工程取舍，虽都提及 FC，但知识实质不同（笔记中也分列为不同小节）; 第 3 题考解析失败后的容错机制（喂回 Observation 自我纠正），第 4 题考为何先学脆弱版的教学/工业取舍，考查实质不重复; agent 在 final_message 中明确声明「已做考点查重：6 题分别落在不同小节，无重复覆盖」"},{"text":"认知层次混合：至少覆盖 2 个布鲁姆层次（记忆/理解/应用/分析），不全是记忆层","passed":true,"evidence":"6 题显式标注了认知层次：第 1 题（记忆）、第 2 题（理解）、第 3 题（应用）、第 4 题（分析）、第 5 题（记忆+理解）、第 6 题（分析）; 覆盖了记忆、理解、应用、分析共 4 个布鲁姆层次，远超「至少 2 个层次」的要求; 记忆层仅约 1.5 题（第 1 题、第 5 题前半），未全出死记硬背题；第 3 题给出新场景（单引号非法 JSON）要求迁移应用，第 4、6 题要求对比分析和推断 bug 成因"},{"text":"出题时不附带答案或解析（\"答完我判分\"这类流程说明不算泄题）","passed":true,"evidence":"final_message 中每道题只有题干和追问，未附任何答案、要点提示或解析; 第 3 题问「这时你的代码会发生什么？为什么……」和第 6 题问「会发生什么具体的 bug？背后的原因是什么？」，均以开放提问形式出题，未泄露结论; 结尾「逐题作答即可……我再逐题判分、讲透错题」属于先问后判的流程说明，符合判分约定，不构成泄题"}],"summary":{"passed":7,"failed":0,"total":7,"pass_rate":1}},"configuration":"without_skill","prompt":"自测一下 Agent，考全部，出 6 道题。（已确认：考全部内容、出 6 道题，中途无需再向用户确认，直接完成出题。）\n","response":"笔记已读完，考点清单已提取（16 个标题，归并为 8 个核心考点）。按已确认的范围——**考全部、6 道题**——出题如下。\n\n已做考点查重：6 题分别落在不同小节，无重复覆盖。\n\n---\n\n## 📝 Agent 自测（共 6 题）\n\n**第 1 题**（记忆）\nReAct 的三要素是什么？这个循环靠什么决定“什么时候停下来”？\n\n**第 2 题**（理解）\nFC demo 里模型明明已经会“决策 → 执行 → 回填 → 再决策”的循环了，为什么笔记说它还不算 Agent？差的“自主规划”具体指什么？用“查三城天气找最热算温差”的例子说明 FC 和 Agent 走这个任务时行为上有什么不同。\n\n**第 3 题**（应用）\n你的 `test_agent.py` 跑到某一步，模型输出的 Action Input 是这样：\n```\nAction Input: {'城市': '上海'}\n```\n（单引号，不是合法 JSON）。这时你的代码会发生什么？为什么不设计成直接报错崩溃，而是这么处理？\n\n**第 4 题**（分析）\n对比纯 Prompt ReAct 和 FC 结构化版：既然纯 Prompt 版解析那么脆弱，为什么本站还要先手写它、而不直接学 FC 版？工业上又为什么反过来默认用 FC 版？这背后的取舍逻辑是什么？\n\n**第 5 题**（记忆 + 理解）\n三层记忆分别是什么，各对应什么实现、什么生命周期？另外，为什么笔记说“工作记忆在 ReAct 里是免费的”——它“免费”在哪，不需要额外写什么代码？\n\n**第 6 题**（分析）\n`save_memory` 里给记忆条目生成 id 用的是 `md5(text)`，而不是 Python 自带的 `hash(text)`。如果图省事用 `hash()`，第二次运行程序时会发生什么具体的 bug？背后的原因是什么？\n\n---\n\n逐题作答即可（可以说“第 X 题：……”），全部答完或答到哪算哪，我再逐题判分、讲透错题。"}},{"id":"case-2","title":"Benchmark 口语匹配","status":"PASS","agent_duration_ms":51284,"agent_duration":"51.3s","input_tokens":34449,"output_tokens":2272,"agent_tokens":36721,"judge_duration_ms":71753,"judge_duration":"71.8s","judge_input_tokens":40310,"judge_output_tokens":3889,"judge_tokens":44199,"turns":1,"grading":{"expectations":[{"text":"expect.must_not_contain","passed":true,"evidence":"all checks passed"},{"text":"正好 6 道题（一题含多个小问仍算一道）","passed":true,"evidence":"final_message 中恰好列出 6 道题：第 1 题（理解，equals 断言失效+根因）、第 2 题（记忆，两层分类）、第 3 题（理解，三阶段+数据飞轮）、第 4 题（应用，评分器选型）、第 5 题（应用，Promptfoo 断言）、第 6 题（评价，工具选型+劣势）; 第 4/5/6 题虽含 (a)(b)(c) 小问，但均归并在单一题干下，各算一道，总数仍为 6; 考点覆盖自查表也恰好列出 6 行（题号 1-6），与用户'出 6 道题'的要求一致"},{"text":"题目基于工作区中的 12-应用层Benchmark评测.md，未混入其他笔记或笔记外知识","passed":true,"evidence":"transcript 显示 Agent 先用 Glob 定位到 c:\\Users\\Administrator\\Desktop\\AI\\Studying\\12-应用层Benchmark评测.md，随后 Read 了该笔记全文（transcript turn 7），出题内容均出自该次读取; 第 1 题的'根因三条/equals 失效/评估驱动开发'对应笔记 §一；第 2 题两层分类对应 §2.1 表格；第 3 题三阶段与数据飞轮对应 §2.2; 第 5 题的 trajectory:tool-sequence、SKILL.md 读取（trajectory:step-count 带 pattern）、output_schema（is-json/contains-json）均见于笔记 §三 的 Agent/SKILL 表格；第 6 题的 LangSmith/Langfuse/Arize Phoenix/Braintrust 及自托管信息见于 §7.2 表格; 第 4/5/6 题的客服、search/write 工具、LangGraph 合规等具体场景仅为布鲁姆'应用/评价'层的新情境包装，被考知识点本身全部可回溯到笔记，未引入笔记外的新知识考查点，也未引用 01-11 号其他笔记的内容"},{"text":"每道题可溯源到该笔记真实小节，无笔记里不存在的内容","passed":true,"evidence":"第 1 题可溯源到 §一：笔记'根因：①…② LLM 输出非确定性，传统单元测试的 equals 思路直接失效；③…'及'评估驱动开发（eval-driven development）'; 第 2 题可溯源到 §2.1 两层分类表的'评测对象'与'价值'两列，'榜单选型对不上'对应 §一 症状表'选型错位'与根因①; 第 3 题可溯源到 §2.2 三阶段表（界定/衡量/改进）及改进行的'数据飞轮：记录输入/输出/结果 → 定期抽样日志 → 专家审查典型案例 → 更新 prompt/工具/模型…数据集资产'; 第 4 题可溯源到 §2.3 评分器三型表及使用准则'能编码→代码型；不能编码但能用语言描述好坏→模型型；…→人工型'；第 5 题三个考点在 §三 Agent/SKILL 表中逐条存在；第 6 题 (a) 溯源到 §7.2 四平台表，(b) '纯评测框架的边界'可由 §7.1 表中 Promptfoo 的'可观测性/Tracing ❌（纯评测）'与'生产监控/在线评测 ❌（部署前为主）'两行作答，属笔记真实内容"},{"text":"一个考点最多出一道题（两道题知识实质相同算重复）","passed":true,"evidence":"Agent 在 final_message 中给出逐题考点标注自查表，6 题分别落在 §一、§2.1、§2.2、§2.3、§三、§七+§六 六个不同小节，无两题锚定同一小节; 各题考查的知识实质互不相同：第 1 题考根因与非确定性/评估驱动开发，第 2 题考两层分类的评测对象与价值，第 3 题考流程三阶段与数据飞轮，第 4 题考评分器三型选择准则，第 5 题考 Promptfoo 具体断言指标名，第 6 题考平台选型与纯评测框架边界; 第 1 题要求'根因三条中至少两条'，第 2 题主体是 §2.1 分类表；两题核心知识分别为'问题根因'与'两层分类'，非知识实质相同的重复轰炸（仅'榜单 vs 业务场景'这一衔接点存在轻微呼应，但不是任一题的主要考点）"},{"text":"认知层次混合：至少覆盖 2 个布鲁姆层次（记忆/理解/应用/分析），不全是记忆层","passed":true,"evidence":"final_message 对 6 题分别标注认知层次：第 1 题理解、第 2 题记忆、第 3 题理解、第 4 题应用、第 5 题应用、第 6 题评价，共覆盖记忆/理解/应用/评价 4 个布鲁姆层次，远超'至少 2 个'的要求; 仅第 2 题为记忆层（占 1/6），其余 5 题均为理解及以上层次，不全是记忆层; 第 4 题给出客服场景让用户迁移评分器选择准则、第 5 题要求给出具体指标名、第 6 题要求做选型判断并说明排除理由，符合 bloom_taxonomy.md 中'应用--给个新场景让用户操作'与'评价--判断好坏做选择'的定义；transcript 也显示 Agent 出题前读取了该参考文件"},{"text":"出题时不附带答案或解析（\"答完我判分\"这类流程说明不算泄题）","passed":true,"evidence":"final_message 全文只包含题干、场景描述和作答方式说明，未出现任何一题的参考答案或解析：如第 5 题只问'可以用哪些断言/指标'而未给出 trajectory:tool-sequence 等答案，第 4 题只列三种需求而未标注哪个选代码型/模型型/人工型; 结尾'请逐题作答，可以一次性答完，也可以一题一题来。答完后我会逐题判分，错的题讲清楚错在哪、对应笔记哪一节'属于'答完我判分'式流程说明，按标准不算泄题; 考点覆盖自查表仅标注每题对应的笔记小节（如'§2.1 两层分类'），是出题人的溯源标注而非答案内容，未直接泄露任何一题的答案"}],"summary":{"passed":7,"failed":0,"total":7,"pass_rate":1}},"configuration":"with_skill","prompt":"检验一下我学没学会 Benchmark 评测，考全部，出 6 道题。（已确认：考全部内容、出 6 道题，中途无需再向用户确认，直接完成出题。）\n","response":"笔记已找到：`12-应用层Benchmark评测.md`，共 17 个标题考点。已按你的确认执行：**考全部、出 6 道**。出题时我做了逐题考点查重——6 题分别落在 6 个不同小节，无重复轰炸。\n\n---\n\n## 📝 Benchmark 评测自测（6 题）\n\n**第 1 题**（理解）\n传统软件有单元测试，为什么这套\"equals 断言\"的思路在 LLM 应用里直接失效？笔记把\"改了不知道变好还是变坏\"的根因归纳为三条，请说出其中**至少两条**，并用一句话解释\"评估驱动开发\"是什么意思。\n\n**第 2 题**（记忆）\nBenchmark 分哪两层？请分别说出这两层的**评测对象**和**核心价值**各是什么。为什么按公开榜单选出来的模型，落到自己业务场景上表现可能对不上？\n\n**第 3 题**（理解）\n评测流程的三阶段是什么？请重点讲讲\"**数据飞轮**\"是怎么转起来的——从\"记录日志\"到\"黄金数据集成为越用越厚的资产\"，中间每一步发生了什么？\n\n**第 4 题**（应用）\n你负责一个客服 LLM 应用，有三个断言需求，请为每个需求选择评分器类型（代码型 / 模型型 / 人工型），并说明选择依据：\n- (a) 输出必须是合法 JSON，且包含 `order_id` 字段\n- (b) 回复语气是否友好、周到（有无数种正确说法）\n- (c) 涉及退款政策的回复是否符合公司法务合规要求（需领域专家把关）\n\n**第 5 题**（应用）\n用 Promptfoo 评测一个 Agent，你除了想知道\"任务最终成没成\"，还想验证以下三件事，分别可以用哪些断言/指标实现？（每条至少给出一个具体指标名）\n- (a) Agent 是否**按预期顺序**先调用了 search 工具再调用 write 工具\n- (b) Agent 是否**真的读取了** SKILL.md 文件\n- (c) 最终输出符合 `output_schema` 强制的 JSON 结构\n\n**第 6 题**（评价）\n你们团队已用 LangGraph 开发，需要一套\"离线评测 + 线上生产监控 + 人工标注\"全生命周期的方案，且因数据合规必须支持自托管。\n- (a) 在 LangSmith / Langfuse / Arize Phoenix / Braintrust 中你会选哪个？说明理由，并说出被你排除的某两个工具各自的定位特点；\n- (b) 笔记指出 Promptfoo 这类纯评测框架有哪两条明显的\"边界/劣势\"？\n\n---\n\n**考点覆盖自查**（6 题对应 6 个不同小节）：\n\n| 题号 | 认知层次 | 对应笔记考点 |\n|---|---|---|\n| 1 | 理解 | §一 问题与根因 |\n| 2 | 记忆 | §2.1 两层分类 |\n| 3 | 理解 | §2.2 界定→衡量→改进 |\n| 4 | 应用 | §2.3 四要素·评分器三型 |\n| 5 | 应用 | §三 Promptfoo 断言体系（Agent/Skill） |\n| 6 | 评价 | §七 工具对比 + §六 劣势与边界 |\n\n请逐题作答，可以一次性答完，也可以一题一题来。答完后我会逐题判分，错的题讲清楚错在哪、对应笔记哪一节。","baseline":{"id":"case-2","title":"Benchmark 口语匹配","status":"PASS","agent_duration_ms":68361,"agent_duration":"68.4s","input_tokens":34046,"output_tokens":2206,"agent_tokens":36252,"judge_duration_ms":81303,"judge_duration":"81.3s","judge_input_tokens":38660,"judge_output_tokens":3361,"judge_tokens":42021,"turns":2,"grading":{"expectations":[{"text":"expect.must_not_contain","passed":true,"evidence":"all checks passed"},{"text":"正好 6 道题（一题含多个小问仍算一道）","passed":true,"evidence":"final_message 中恰好包含 6 道编号题：第 1 题【记忆】四要素、第 2 题【理解】选型错位与两层 Benchmark、第 3 题【理解】界定→衡量→改进与数据飞轮、第 4 题【应用】评分器三型选择、第 5 题【分析】评测工具选型、第 6 题【评价】自动化评估缺口的批判分析; 第 4 题虽含 ①②③ 三个小问、第 5 题含三个子需求，但各自合并为一道题呈现（标题均为单数“第 N 题”），未拆成多道独立题，符合“一题含多个小问仍算一道”; transcript 显示用户要求“出 6 道题”（turn 1），最终输出与该数量完全一致"},{"text":"题目基于工作区中的 12-应用层Benchmark评测.md，未混入其他笔记或笔记外知识","passed":true,"evidence":"transcript（turn 5-7）显示 agent 运行 extract_topics.py 提取的正是 c:\\Users\\Administrator\\Desktop\\AI\\Studying\\12-应用层Benchmark评测.md 的 17 个标题，并完整 Read 了该笔记后才出题; 第 1 题四要素对应笔记 2.3 节（数据集、评分器、评测指标、评测框架）；第 2 题选型错位对应第一节症状表“选型错位”行及 2.1 两层分类表；第 3 题对应 2.2 节表格与数据飞轮描述; 第 4 题对应 2.3(2) 评分器三型表（代码型/模型型/人工型、判分依据、使用准则）及 2.3(3)/第三节 Promptfoo 确定性指标（regex 等）与模型辅助指标（llm-rubric 等）；第 5 题三个子需求分别对应 7.1/7.2 表中 mcp-eval（MCP Server + Agent）、DeepEval（Python/pytest、多轮/多模态/MCP 全家族）、LangSmith（LangChain/LangGraph 生态、生产监控+在线评测）的原有表述; 第 6 题对应“附：相关概念备忘”的评测方法四件套表（自动化评估/生产监控/A/B 测试/用户反馈）及第六节“劣势与边界”（假信心风险：自动化评估可能脱离真实用法，需配合生产监控/用户反馈校准）; 题面中的“客服 Agent”“订单号格式”“医疗报销政策”“CI 全绿、通过率 95%”仅为应用/分析层题的场景设定，考点的知识实质均出自该笔记，未混入其他笔记（如 RAG、MCP 章节）或笔记外知识"},{"text":"每道题可溯源到该笔记真实小节，无笔记里不存在的内容","passed":true,"evidence":"第 1 题可溯源到笔记 H3“2.3 四要素”（笔记第 241 行：四要素 = 数据集、评分器、评测指标、评测框架）; 第 2 题可溯源到 H2“一、问题”选型错位行（笔记第 23 行）与 H3“2.1 Benchmark 两层分类”表（笔记第 36-45 行，含“重心在应用层”）; 第 3 题可溯源到 H3“2.2 整体评测流程：界定 → 衡量 → 改进”（笔记第 47-53 行，数据飞轮：记录→抽样→专家审查→更新，形成数据集资产）; 第 4 题可溯源到 2.3(2) 评分器三型表及使用准则（笔记第 65-73 行），Promptfoo 断言指标部分可溯源到 2.3(3)（第 76-77 行：equals/contains/regex/is-json 等确定性指标，llm-rubric 等模型辅助指标）; 第 5 题可溯源到 H2“七、类似工具对比”的 7.1 一句话选型（笔记第 221 行）与 7.2 平台表（笔记第 227 行 LangSmith 适合“已用 LangChain/LangGraph 的团队”）; 第 6 题可溯源到“附：相关概念备忘”评测方法四件套（笔记第 275-284 行）与 H2“六、劣势与边界”（笔记第 185-192 行），未发现笔记中不存在的考点内容"},{"text":"一个考点最多出一道题（两道题知识实质相同算重复）","passed":true,"evidence":"第 1 题考点 = 2.3 四要素的整体记忆（四个要素及职责）；第 4 题考点 = 2.3(2) 评分器三型的选用准则及 Promptfoo 断言指标分类，二者知识实质不同：一题考“四要素是什么”的回忆，另一题考“给定需求选哪型评分器”的迁移应用，不构成同一考点重复; 第 2 题（选型错位 + 两层分类区别/重心）与第 3 题（界定→衡量→改进 + 数据飞轮）分别对应笔记不同小节（第一节+2.1 vs 2.2），无知识重叠; 第 5 题（工具选型，对应第七节）与第 6 题（评测方法四件套+劣势边界，对应附节+第六节）各占独立考点；第 2 题虽涉及选型问题，但第 6 题聚焦假信心风险与评测方法组合，考查的知识实质不同; 6 道题分别落在：四要素、两层分类、评测流程、评分器选型、工具对比、评测方法边界，覆盖 6 个不同考点，无两题同考一个知识点"},{"text":"认知层次混合：至少覆盖 2 个布鲁姆层次（记忆/理解/应用/分析），不全是记忆层","passed":true,"evidence":"final_message 中 6 道题显式标注了布鲁姆层次标签且逐题不同：第 1 题【记忆】、第 2 题【理解】、第 3 题【理解】、第 4 题【应用】、第 5 题【分析】、第 6 题【评价】; 实际认知层次与标注相符：第 1 题问“是什么”（四要素是哪四个）；第 2、3 题问“为什么”（为何选型错位、数据飞轮为何越用越厚）；第 4 题给新场景做迁移（给定三个客服 Agent 评测需求选评分器）；第 5 题做对比选择（三个需求分别选什么工具并说明理由）；第 6 题做批判判断（CI 全绿但用户投诉，分析缺了什么）; 覆盖记忆/理解/应用/分析/评价共 5 个布鲁姆层次，远超“至少 2 个层次”的要求，且仅 1 道纯记忆层题目，不全是记忆层"},{"text":"出题时不附带答案或解析（\"答完我判分\"这类流程说明不算泄题）","passed":true,"evidence":"final_message 全文仅含 6 道题的题干与场景描述，未出现任何题目的参考答案、判分要点或解析; 题干中出现的“四要素”“界定 → 衡量 → 改进”“数据飞轮”“评测方法四件套”等均为笔记原有术语名词的引用（作为提问对象），不构成答案泄露; 结尾“逐题作答即可……答完我逐题判分、讲透错误原因并对应到笔记小节”属于流程说明（先问后判），符合“答完我判分”类的允许范围，未附带任何答案; 各题标注的【记忆】【理解】【应用】【分析】【评价】是认知层次标签而非答案提示，不泄露考查内容的具体结论"}],"summary":{"passed":7,"failed":0,"total":7,"pass_rate":1}},"configuration":"without_skill","prompt":"检验一下我学没学会 Benchmark 评测，考全部，出 6 道题。（已确认：考全部内容、出 6 道题，中途无需再向用户确认，直接完成出题。）\n","response":"笔记读完，考点已确认（你之前已确认：考全部、6 道题，直接出）。6 道题按布鲁姆认知层次混合设计，覆盖笔记全部核心考点，每题对应不同小节，无重复：\n\n---\n\n## Benchmark 评测自测 · 共 6 题\n\n**第 1 题【记忆】**\nBenchmark 评测体系的“四要素”是哪四个？每个用一句话说明它的职责。\n\n**第 2 题【理解】**\n你们团队按公开榜单第一名选了模型，落到自己的客服业务链路上表现却对不上。为什么会出现这种“选型错位”？模型层 Benchmark 和应用层 Benchmark 的区别是什么，为什么工程重心要放在应用层？\n\n**第 3 题【理解】**\n“界定 → 衡量 → 改进”三个阶段分别做什么？其中“数据飞轮”是怎么运转的，为什么说它能让黄金数据集成为“越用越厚的数据资产”？\n\n**第 4 题【应用】**\n假设你要评测一个客服 Agent，有三个需求：\n- ① 验证回复中的订单号格式是否正确\n- ② 判断回复的语气是否友好、内容是否全面\n- ③ 判断回复在某个专业领域（如医疗报销政策）的表述是否准确，模型裁判信不过\n\n这三个需求分别该用哪型评分器？各自的判断依据是什么？如果落到 Promptfoo 里，①② 大致能用哪类断言指标？\n\n**第 5 题【分析】**\n你们团队的三个不同需求，分别该选什么评测工具？说明理由：\n- ① 专门评测自研 MCP Server 与 Agent 的交互\n- ② 团队全部用 Python + pytest 生态，要覆盖多轮/多模态/MCP 的全家族指标\n- ③ 已深度使用 LangChain/LangGraph，且上线后需要生产监控 + 在线评测\n\n**第 6 题【评价】**\n团队用 Promptfoo 搭了自动化评估，CI 里全绿、通过率 95%，结果上线后用户投诉不断。从“评测方法四件套”和 Benchmark 的“劣势与边界”角度分析：这套评估可能缺了什么？你会怎么补？\n\n---\n\n逐题作答即可（可以一次答完，也可以一题一题来）。答完我逐题判分、讲透错误原因并对应到笔记小节。现在开始吧 👇"}}]};
+    var feedbackMap = {};
+    var currentIndex = 0;
+    var visitedCases = {};
+
+    function init() {
+      document.getElementById("skill-name").textContent = DATA.skill_name;
+      var meta = "Engine: " + DATA.engine_name;
+      if (DATA.protocol) meta += " | Protocol: " + DATA.protocol;
+      if (DATA.requested_model) meta += " | Requested model: " + DATA.requested_model;
+      if (DATA.applied_model) meta += " | Applied model: " + DATA.applied_model;
+      else if (DATA.requested_model) meta += " | Applied model: none (local/default selection)";
+      else if (DATA.model_name) meta += " | Model: " + DATA.model_name;
+      meta += " | Observed model: " + (DATA.observed_model || "unknown");
+      if (DATA.requested_version) meta += " | Requested version: " + DATA.requested_version;
+      if (DATA.applied_version) meta += " | Applied version: " + DATA.applied_version;
+      if (DATA.observed_version) meta += " | Observed version: " + DATA.observed_version;
+      meta += " | Started: " + DATA.start_time + " | Evaluation wall time: " + DATA.evaluation_wall_time;
+      meta += " | Tested agent tokens: " + fmtInteger(DATA.agent_tokens);
+      meta += " | Judge tokens: " + fmtInteger(DATA.judge_tokens);
+      meta += " | Overall tokens: " + fmtInteger(DATA.overall_tokens);
+      document.getElementById("header-meta").textContent = meta;
+
+      var sb = document.getElementById("summary-bar");
+      var s = DATA.summary;
+      sb.innerHTML = sumCard("Total", s.total, "") + sumCard("Passed", s.passed, "clr-pass") +
+        sumCard("Failed", s.failed, "clr-fail") + sumCard("Skipped", s.skipped, "clr-skip") +
+        sumCard("Errors", s.errors, "clr-error") + sumCard("Pass Rate", s.pass_rate, "");
+
+      if (DATA.benchmark) {
+        document.getElementById("view-tabs").style.display = "flex";
+        renderBenchmark();
+      }
+
+      renderCaseList();
+
+      try {
+        fetch("/api/feedback").then(function(r) { return r.json(); }).then(function(d) {
+          if (d.reviews) { for (var i = 0; i < d.reviews.length; i++) feedbackMap[d.reviews[i].run_id] = d.reviews[i].feedback; }
+          showCase(0);
+        }).catch(function() { showCase(0); });
+      } catch(e) { showCase(0); }
+
+      var ta = document.getElementById("feedback");
+      var timer = null;
+      ta.addEventListener("input", function() {
+        clearTimeout(timer);
+        document.getElementById("feedback-status").textContent = "";
+        timer = setTimeout(function() { saveCurrentFeedback(); }, 800);
+      });
+    }
+
+    function sumCard(label, value, cls) {
+      return '<div class="summary-card"><div class="label">' + label + '</div><div class="value ' + cls + '">' + value + '</div></div>';
+    }
+
+    function renderCaseList() {
+      var list = document.getElementById("case-list");
+      var count = document.getElementById("case-count");
+      if (!list || !DATA.cases) return;
+      count.textContent = DATA.cases.length;
+      var html = "";
+      for (var i = 0; i < DATA.cases.length; i++) {
+        var c = DATA.cases[i];
+        var status = (c.status || "").toLowerCase();
+        var label = c.title || c.id || ("Case " + (i + 1));
+        html += '<div class="case-item" data-idx="' + i + '" onclick="showCase(' + i + ')" title="' + esc(label) + '">' +
+          '<span class="case-dot dot-' + status + '"></span>' +
+          '<span class="case-name">' + esc(label) + '</span>' +
+          '<span class="case-index">#' + (i + 1) + '</span>' +
+          '</div>';
+      }
+      list.innerHTML = html;
+    }
+
+    function updateCaseListActive() {
+      var items = document.querySelectorAll("#case-list .case-item");
+      for (var i = 0; i < items.length; i++) {
+        if (parseInt(items[i].getAttribute("data-idx"), 10) === currentIndex) {
+          items[i].classList.add("active");
+          if (items[i].scrollIntoView) items[i].scrollIntoView({ block: "nearest" });
+        } else {
+          items[i].classList.remove("active");
+        }
+      }
+    }
+
+    function toggleSidebar() {
+      var sb = document.getElementById("case-sidebar");
+      var btn = document.getElementById("sidebar-toggle");
+      var collapsed = sb.classList.toggle("collapsed");
+      btn.innerHTML = collapsed ? "&#9654;" : "&#9664;";
+    }
+
+    function navigate(delta) {
+      var ni = currentIndex + delta;
+      if (ni >= 0 && ni < DATA.cases.length) showCase(ni);
+    }
+
+    function showCase(index) {
+      if (typeof index !== "number" || index < 0 || index >= DATA.cases.length) return;
+      if (index !== currentIndex) { try { saveCurrentFeedback(); } catch (e) {} }
+      currentIndex = index;
+      var c = DATA.cases[index];
+      document.getElementById("progress").textContent = (index + 1) + " of " + DATA.cases.length;
+
+      var badge = document.getElementById("case-badge");
+      badge.textContent = c.status;
+      badge.className = "status-badge sb-" + c.status.toLowerCase();
+
+      var info = '<div class="info-item"><span class="info-label">Case:</span> <strong>' + esc(c.id) + '</strong></div>';
+      if (c.title) info += '<div class="info-item"><span class="info-label">Title:</span> ' + esc(c.title) + '</div>';
+      info += '<div class="info-item"><span class="info-label">Turns:</span> ' + c.turns + '</div>';
+      document.getElementById("case-info").innerHTML = info;
+      document.getElementById("case-header-metrics").innerHTML = renderCompactMetrics(c);
+
+      var promptSec = document.getElementById("prompt-section");
+      if (c.turn_results && c.turn_results.length > 0) {
+        promptSec.style.display = "none";
+      } else if (c.prompt) {
+        promptSec.style.display = "block";
+        document.getElementById("prompt-text").textContent = c.prompt;
+      } else {
+        promptSec.style.display = "none";
+      }
+
+      var errSec = document.getElementById("error-section");
+      if (c.error) { errSec.style.display = "block"; document.getElementById("error-text").textContent = c.error; }
+      else { errSec.style.display = "none"; }
+
+      renderResponse(c);
+      renderGrades(c);
+
+      document.getElementById("feedback").value = feedbackMap[c.id] || "";
+      document.getElementById("feedback-status").textContent = "";
+      document.getElementById("prev-btn").disabled = index === 0;
+      document.getElementById("next-btn").disabled = index === DATA.cases.length - 1;
+
+      visitedCases[index] = true;
+      if (Object.keys(visitedCases).length >= DATA.cases.length) document.getElementById("done-btn").classList.add("ready");
+
+      updateCaseListActive();
+
+      var main = document.querySelector(".main");
+      if (main) main.scrollTop = 0;
+    }
+
+    function renderCompactMetrics(c) {
+      var baseline = c.baseline || null;
+      var primaryLabel = c.configuration === "without_skill" ? "Without Skill" : (baseline ? "With Skill" : "Result");
+      var html = compactMetric(primaryLabel, c);
+      if (baseline) {
+        html += compactMetric("Without Skill", baseline);
+        html += '<span class="compact-metrics delta"><strong>Delta</strong>' +
+          '<span>Agent ' + formatDurationDelta(c.agent_duration_ms - baseline.agent_duration_ms) +
+          ' / ' + formatIntegerDelta(c.agent_tokens - baseline.agent_tokens) + ' tokens</span></span>';
+      }
+      return html;
+    }
+
+    function compactMetric(label, c) {
+      var agentTitle = "Input: " + fmtInteger(c.input_tokens) + ", Output: " + fmtInteger(c.output_tokens);
+      var html = '<span class="compact-metrics"><strong>' + label + '</strong>' +
+        '<span class="metrics-divider">·</span><span title="' + agentTitle + '">Agent ' +
+        c.agent_duration + ' / ' + fmtInteger(c.agent_tokens) + ' tokens</span>';
+      if (c.judge_duration_ms || c.judge_tokens) {
+        var judgeTitle = "Input: " + fmtInteger(c.judge_input_tokens) + ", Output: " + fmtInteger(c.judge_output_tokens);
+        html += '<span class="metrics-divider">·</span><span title="' + judgeTitle + '">Judge ' +
+          c.judge_duration + ' / ' + fmtInteger(c.judge_tokens) + ' tokens</span>';
+      }
+      return html + '</span>';
+    }
+
+    function fmtInteger(value) {
+      return Number(value || 0).toLocaleString("en-US");
+    }
+
+    function formatIntegerDelta(value) {
+      return (value > 0 ? "+" : "") + fmtInteger(value);
+    }
+
+    function formatDurationDelta(valueMs) {
+      var seconds = valueMs / 1000.0;
+      return (seconds > 0 ? "+" : "") + seconds.toFixed(1) + "s";
+    }
+
+    function renderResponse(c) {
+      var section = document.getElementById("response-section");
+      var body = document.getElementById("response-body");
+      var header = section.querySelector(".section-header");
+
+      
+      if (c.turn_results && c.turn_results.length > 0) {
+        section.style.display = "block";
+        header.textContent = "Conversation (" + c.turn_results.length + " turns)";
+        var html = '<div style="padding: 1rem;">';
+        for (var i = 0; i < c.turn_results.length; i++) {
+          var tr = c.turn_results[i];
+          var statusCls = "ts-" + (tr.status || "completed");
+          html += '<div class="turn-card">';
+          html += '<div class="turn-header"><span class="turn-badge">Turn ' + tr.turn_number + '</span>';
+          html += '<span class="turn-status ' + statusCls + '">' + esc(tr.status || "completed") + '</span></div>';
+          html += '<div class="turn-prompt"><div class="turn-prompt-label">Prompt</div>';
+          html += '<div class="turn-prompt-content">' + esc(tr.content || "") + '</div></div>';
+          if (tr.status === "skipped") {
+            html += '<div class="turn-skipped-msg">This turn was skipped' + (tr.reason ? ': ' + esc(tr.reason) : '') + '</div>';
+          } else if (tr.response) {
+            html += '<div class="turn-response"><div class="turn-response-label">Response</div>';
+            html += '<div class="turn-response-content">' + esc(tr.response) + '</div></div>';
+          }
+          html += '</div>';
+        }
+        html += '</div>';
+        body.innerHTML = html;
+        return;
+      }
+
+      
+      if (!c.response && !(c.baseline && c.baseline.response)) { section.style.display = "none"; return; }
+      section.style.display = "block";
+      header.textContent = "Response";
+      if (c.baseline) {
+        var html = '<div class="comparison">';
+        html += '<div class="config-col"><h3>With Skill';
+        if (c.grading) html += ' <span class="rate clr-pass">' + Math.round(c.grading.summary.pass_rate * 100) + '%</span>';
+        html += '</h3>';
+        if (c.response) html += '<div class="response-box">' + esc(c.response) + '</div>';
+        html += '</div>';
+        html += '<div class="config-col"><h3>Without Skill';
+        if (c.baseline.grading) html += ' <span class="rate clr-fail">' + Math.round(c.baseline.grading.summary.pass_rate * 100) + '%</span>';
+        html += '</h3>';
+        if (c.baseline.response) html += '<div class="response-box">' + esc(c.baseline.response) + '</div>';
+        html += '</div></div>';
+        body.innerHTML = html;
+      } else {
+        body.innerHTML = '<div style="padding: 1rem;"><div class="response-box">' + esc(c.response) + '</div></div>';
+      }
+    }
+
+    function renderGrades(c) {
+      var section = document.getElementById("grades-section");
+      var content = document.getElementById("grades-content");
+
+      
+      var hasGrading = c.grading || (c.baseline && c.baseline.grading);
+      var hasTurnFailures = !hasGrading && c.turn_results && c.turn_results.some(function(tr) { return tr.status === "failed" || tr.status === "error"; });
+
+      if (!hasGrading && !hasTurnFailures) { section.style.display = "none"; return; }
+      section.style.display = "block";
+      content.classList.remove("open");
+      document.getElementById("grades-arrow").classList.remove("open");
+
+      var html = '<div style="padding: 1rem;">';
+      if (hasGrading) {
+        if (c.baseline) {
+          html += '<div class="comparison">';
+          html += '<div class="config-col"><h3>With Skill</h3>' + renderGradingBlock(c.grading) + '</div>';
+          html += '<div class="config-col"><h3>Without Skill</h3>' + renderGradingBlock(c.baseline.grading) + '</div>';
+          html += '</div>';
+        } else {
+          html += renderGradingBlock(c.grading);
+        }
+      } else {
+        
+        html += renderTurnFailuresAsGrades(c.turn_results);
+      }
+      html += '</div>';
+      content.innerHTML = html;
+    }
+
+    function renderTurnFailuresAsGrades(turns) {
+      var failed = turns.filter(function(tr) { return tr.status === "failed" || tr.status === "error"; });
+      var passed = turns.filter(function(tr) { return tr.status === "completed"; });
+      var total = failed.length + passed.length;
+      var rate = total === 0 ? 0 : Math.round((passed.length / total) * 100);
+      var badgeClass = rate === 100 ? "grade-pass" : "grade-fail";
+      var html = '<div class="grades-summary"><span class="grade-badge ' + badgeClass + '">' + rate + '%</span>';
+      html += '<span>' + passed.length + ' passed, ' + failed.length + ' failed of ' + total + ' (post-condition checks)</span></div>';
+      html += '<ul class="assertion-list">';
+      for (var i = 0; i < turns.length; i++) {
+        var tr = turns[i];
+        if (tr.status === "failed" || tr.status === "error") {
+          html += '<li class="assertion-item"><span class="assertion-status a-fail">\u2717</span>';
+          html += '<span>Turn ' + tr.turn_number + ' post-condition</span>';
+          if (tr.reason) html += '<div class="assertion-evidence">' + esc(tr.reason) + '</div>';
+          html += '</li>';
+        } else if (tr.status === "completed") {
+          html += '<li class="assertion-item"><span class="assertion-status a-pass">\u2713</span>';
+          html += '<span>Turn ' + tr.turn_number + ' post-condition</span>';
+          html += '</li>';
+        }
+      }
+      html += '</ul>';
+      return html;
+    }
+
+    function renderGradingBlock(g) {
+      if (!g) return '<div style="color: var(--text-muted); font-style: italic;">No grading data</div>';
+      var s = g.summary;
+      var passRate = Math.round(s.pass_rate * 100) + "%";
+      var bc = s.pass_rate >= 0.8 ? "grade-pass" : s.pass_rate >= 0.5 ? "" : "grade-fail";
+      var html = '<div class="grades-summary"><span class="grade-badge ' + bc + '">' + passRate + '</span>';
+      html += '<span>' + s.passed + ' passed, ' + s.failed + ' failed of ' + s.total + '</span></div>';
+      html += '<ul class="assertion-list">';
+      for (var i = 0; i < g.expectations.length; i++) {
+        var exp = g.expectations[i];
+        var sc = exp.passed ? "a-pass" : "a-fail";
+        var icon = exp.passed ? "\u2713" : "\u2717";
+        html += '<li class="assertion-item"><span class="assertion-status ' + sc + '">' + icon + '</span>';
+        html += '<span>' + esc(exp.text) + '</span>';
+        if (exp.evidence) html += '<div class="assertion-evidence">' + esc(exp.evidence) + '</div>';
+        html += '</li>';
+      }
+      html += '</ul>';
+      return html;
+    }
+
+    function toggleGrades() {
+      document.getElementById("grades-content").classList.toggle("open");
+      document.getElementById("grades-arrow").classList.toggle("open");
+    }
+
+    function saveCurrentFeedback() {
+      var c = DATA.cases[currentIndex];
+      var text = document.getElementById("feedback").value;
+      if (text.trim() === "") { delete feedbackMap[c.id]; } else { feedbackMap[c.id] = text; }
+      var reviews = [];
+      for (var rid in feedbackMap) {
+        if (feedbackMap[rid].trim()) reviews.push({ run_id: rid, feedback: feedbackMap[rid], timestamp: new Date().toISOString() });
+      }
+      fetch("/api/feedback", { method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ reviews: reviews, status: "in_progress" })
+      }).then(function() { document.getElementById("feedback-status").textContent = "Saved"; })
+       .catch(function() { document.getElementById("feedback-status").textContent = "Will download on submit"; });
+    }
+
+    function showDoneDialog() {
+      var c = DATA.cases[currentIndex];
+      var text = document.getElementById("feedback").value;
+      if (text.trim() === "") { delete feedbackMap[c.id]; } else { feedbackMap[c.id] = text; }
+      var reviews = [], ts = new Date().toISOString();
+      for (var i = 0; i < DATA.cases.length; i++) {
+        reviews.push({ run_id: DATA.cases[i].id, feedback: feedbackMap[DATA.cases[i].id] || "", timestamp: ts });
+      }
+      var payload = JSON.stringify({ reviews: reviews, status: "complete" }, null, 2);
+      fetch("/api/feedback", { method: "POST", headers: { "Content-Type": "application/json" }, body: payload })
+        .then(function() { document.getElementById("done-overlay").classList.add("visible"); })
+        .catch(function() {
+          var blob = new Blob([payload], { type: "application/json" });
+          var url = URL.createObjectURL(blob);
+          var a = document.createElement("a"); a.href = url; a.download = "feedback.json"; a.click();
+          URL.revokeObjectURL(url);
+          document.getElementById("done-overlay").classList.add("visible");
+        });
+    }
+
+    function closeDoneDialog() {
+      saveCurrentFeedback();
+      document.getElementById("done-overlay").classList.remove("visible");
+    }
+
+    function switchView(view) {
+      var tabs = document.querySelectorAll(".view-tab");
+      var panels = document.querySelectorAll(".view-panel");
+      for (var i = 0; i < tabs.length; i++) tabs[i].classList.remove("active");
+      for (var i = 0; i < panels.length; i++) panels[i].classList.remove("active");
+      document.querySelector('.view-tab[data-view="' + view + '"]').classList.add("active");
+      document.getElementById("panel-" + view).classList.add("active");
+    }
+
+    function renderBenchmark() {
+      var bm = DATA.benchmark;
+      if (!bm || !bm.run_summary) return;
+      var container = document.getElementById("benchmark-content");
+      var rs = bm.run_summary;
+      var html = "<h2 style='font-family: Inter, system-ui, -apple-system, sans-serif; margin-bottom: 1rem;'>Benchmark Summary</h2>";
+      html += '<table class="benchmark-table"><thead><tr><th>Metric</th><th>With Skill</th>';
+      if (rs.without_skill) html += '<th>Without Skill</th>';
+      if (rs.delta) html += '<th>Delta</th>';
+      html += '</tr></thead><tbody>';
+      html += bmRow("Pass Rate", rs.with_skill.pass_rate, rs.without_skill ? rs.without_skill.pass_rate : null, rs.delta ? rs.delta.pass_rate : null, true);
+      html += bmRow("Time (s)", rs.with_skill.time_seconds, rs.without_skill ? rs.without_skill.time_seconds : null, rs.delta ? rs.delta.time_seconds : null, false);
+      html += bmRow("Tokens", rs.with_skill.tokens, rs.without_skill ? rs.without_skill.tokens : null, rs.delta ? rs.delta.tokens : null, false);
+      html += '</tbody></table>';
+      container.innerHTML = html;
+    }
+
+    function bmRow(label, ws, wos, delta, pct) {
+      var html = '<tr><td><strong>' + label + '</strong></td><td>' + fmtStat(ws, pct) + '</td>';
+      if (wos !== null) html += '<td>' + fmtStat(wos, pct) + '</td>';
+      if (delta !== null) html += '<td class="' + deltaClass(delta) + '">' + fmtDelta(delta, pct) + '</td>';
+      return html + '</tr>';
+    }
+
+    function fmtStat(sv, pct) {
+      if (!sv) return "\u2014";
+      var m = pct ? (sv.mean * 100).toFixed(0) + "%" : sv.mean.toFixed(1);
+      var s = pct ? (sv.stddev * 100).toFixed(0) + "%" : sv.stddev.toFixed(1);
+      return m + " \u00b1 " + s;
+    }
+
+    function fmtDelta(val, pct) {
+      if (val == null) return "\u2014";
+      if (pct) return (val >= 0 ? "+" : "") + (val * 100).toFixed(0) + "%";
+      return (val >= 0 ? "+" : "") + val.toFixed(1);
+    }
+
+    function deltaClass(val) {
+      if (val > 0) return "bm-pos";
+      if (val < 0) return "bm-neg";
+      return "";
+    }
+
+    function showToast(msg) {
+      var t = document.getElementById("toast");
+      t.textContent = msg; t.classList.add("visible");
+      setTimeout(function() { t.classList.remove("visible"); }, 2000);
+    }
+
+    function esc(text) {
+      var div = document.createElement("div");
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    document.addEventListener("keydown", function(e) {
+      if (e.target.tagName === "TEXTAREA") return;
+      if (e.key === "ArrowLeft" || e.key === "ArrowUp") { e.preventDefault(); navigate(-1); }
+      else if (e.key === "ArrowRight" || e.key === "ArrowDown") { e.preventDefault(); navigate(1); }
+    });
+
+    init();
+  </script>
+</body>
+</html>

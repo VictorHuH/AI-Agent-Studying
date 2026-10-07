@@ -1,0 +1,6 @@
+2ace44b88063b72f5dae3ab4ed056c80e6fc6d270f2b1e15ca28e8ec9b9a1cd8  skill-up_0.12.0_darwin_amd64.tar.gz
+30ff2526f2c349c62fd05e843b8ced7c550f957a0efbd0c54644705edbc2860f  skill-up_0.12.0_darwin_arm64.tar.gz
+ec2631e45702d460b69cd700e1847f5562ef2e971f09c23be2efcec4e0f583c6  skill-up_0.12.0_linux_amd64.tar.gz
+acfd2e646e381841770fbd88878389ce39cf6909838b88f33551dfd45da3a54b  skill-up_0.12.0_linux_arm64.tar.gz
+21595d0ccfe3bea85ce0047dbb71b13149e8d0b9bccd08e4f0ba6c9e53de53ca  skill-up_0.12.0_windows_amd64.zip
+a839daa4328e886de1d9b5dfbef9b49933c5d12cabe6bfd1c214e5dc340c1ba6  skill-up_0.12.0_windows_arm64.zip

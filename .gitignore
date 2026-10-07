@@ -1,0 +1,8 @@
+# npm 依赖生成物（2.5GB，npm install 可完整重建；GitHub 拒收 >100MB 单文件）
+node_modules/
+
+# 二进制工具（skill-up CLI，GitHub Releases 可重下）
+SkillTest/skill-up/bin/
+
+# promptfoo 本地缓存
+.promptfoo/
