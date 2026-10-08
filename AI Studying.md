@@ -645,8 +645,6 @@ plugin-name/
 | 🤥 会幻觉（回答有依据）     | 不知道也硬编，无法溯源原文         |
 | 💰 微调成本高               | 更新知识要重新训练，又贵又慢       |
 
-**关键：**【检索】，检索决定上限，生成决定下限。
-
 **核心流程：**
 
 ```
@@ -660,7 +658,39 @@ plugin-name/
    [检索到的块 + 用户问题] → 拼成 Prompt → 大模型生成回答
 ```
 
-**ChunkSize（块大小）**：
+**关键概念：**
+
+**1. Embedding（向量化）**
+
+把文本变成一串数字（向量），让计算机能计算**语义相似度**。
+
+- "猫" 和 "小猫咪" → 向量距离很近 ✅
+- "猫" 和 "汽车" → 向量距离很远 ❌
+
+这是 RAG 能做**语义检索**（而非关键词匹配）的根本原因。用户问"年假"，能命中写"带薪休假"的文档。
+
+**2. Chunking（切块）**
+
+文档太长，模型一次吃不下，要切成小块。
+
+- 块太大 → 检索不精准，浪费 token
+- 块太小 → 丢失上下文
+- 常见策略：按字符数切（如 500 字），带重叠（overlap 50 字，防止切断语义）
+
+**3. 向量数据库**
+
+专门存向量、做相似度搜索的数据库。
+
+- 主流：Pinecone、Milvus、Chroma、Qdrant、Weaviate
+- 也能用现有数据库：PostgreSQL + pgvector 插件
+
+**4. 相似度检索**
+
+用**余弦相似度（Cosine Similarity）**算两个向量的"方向"是否一致，越接近 1 越相似。
+
+
+
+**优化一：ChunkSize（块大小）**：
 
 |          | 块太大                                                       | 块太小                                             |
 | -------- | ------------------------------------------------------------ | -------------------------------------------------- |
@@ -711,7 +741,7 @@ Small-to-Big ：**检索用小块（精准定位），返回用大块（上下�
 
 
 
-**Re-ranking（重排序）:**
+**优化二：Re-ranking（重排序）:**
 
 一般检索：问题 -> embedding -> 直接取 top-3，问题在于 embedding 检索是**"双塔"粗排**：
 
@@ -732,7 +762,7 @@ Re-ranking 改成**两段式**：
 
 **检索质量评估**
 
-RAG 评估分两**量化指标**：**检索质量**（关键）+ **生成质量**。
+RAG 评估分两**量化指标**：**检索质量**（关键）+ **生成质量**。检索决定上限，生成决定下限。
 
 **两个核心检索指标**：
 
@@ -745,54 +775,7 @@ RAG 评估分两**量化指标**：**检索质量**（关键）+ **生成质量*
 
 **关键前提**：评估需要**标注数据**（一组"问题 + 正确块编号"的对照）
 
-**没有标注就没有评估，没有评估就没有优化，标注质量决定评估质量。**
 
-
-
-**Agentic RAG（2026 生产范式）：** 用 Agent 动态编排检索流程——判断是否需要检索、检索哪些源、是否需要多轮检索/多路召回、结果如何综合。相比朴素 RAG（固定切块→向量检索→生成），Agentic RAG 显著提升复杂问题回答质量。
-
-**生产级 RAG 关键能力：**
-- 混合检索：向量 + 关键词（BM25）+ 知识图谱
-- 重排（Reranking）：Cross-encoder 精排
-- 查询路由：Agent 根据问题类型选择数据源
-- 评估体系：检索准确率 / 答案相关性 / 忠实度三元评估
-- 权限与多租户：企业级数据隔离
-
-**详细知识节点：** [[RAG/production-agentic-rag.md]]
-
-**关键概念：**
-
-**1. Embedding（向量化）**
-
-把文本变成一串数字（向量），让计算机能计算**语义相似度**。
-
-- "猫" 和 "小猫咪" → 向量距离很近 ✅
-- "猫" 和 "汽车" → 向量距离很远 ❌
-
-这是 RAG 能做**语义检索**（而非关键词匹配）的根本原因。用户问"年假"，能命中写"带薪休假"的文档。
-
-**2. Chunking（切块）**
-
-文档太长，模型一次吃不下，要切成小块。
-
-- 块太大 → 检索不精准，浪费 token
-- 块太小 → 丢失上下文
-- 常见策略：按字符数切（如 500 字），带重叠（overlap 50 字，防止切断语义）
-
-**3. 向量数据库**
-
-专门存向量、做相似度搜索的数据库。
-
-- 主流：Pinecone、Milvus、Chroma、Qdrant、Weaviate
-- 也能用现有数据库：PostgreSQL + pgvector 插件
-
-**4. 相似度检索**
-
-用**余弦相似度（Cosine Similarity）**算两个向量的"方向"是否一致，越接近 1 越相似。
-
-**向量数据库：**
-
- 存向量 + 查向量 + 索引加速 + 持久化
 
 **向量模型和向量数据库：**一个负责把文本变成数字，一个负责存数字、查数字
 
@@ -1764,6 +1747,8 @@ dispatch_node 读 sources 列表，返回 3 个 Send：
 
 **参考：** [Anthropic — Demystifying evals for AI agents](https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents) / [OpenAI — 评估框架](https://openai.com/zh-Hans-CN/index/evals-drive-next-chapter-of-ai/) / [Langfuse — LLM Evaluation Strategy](https://langfuse.com/resources/engineering/llm-evaluation-strategy)
 
+
+
 ### WorkBuddy 连接器
 
 **定义：** 腾讯 WorkBuddy（AI 助手）的第三方能力扩展接口：开发者提交符合规范的目录（zip），审核通过进市场，用户安装后自然语言调用服务。
@@ -1789,4 +1774,53 @@ dispatch_node 读 sources 列表，返回 3 个 Send：
 **连接已学：** 没引入新概念——MCP+Skill = 协议注册与读说明书两种"模型怎么知道能力"的拼合（13-CLI 三形态判断被官方文档证实）；skills/ 复用 07-Skill 的格式与渐进式披露；版本门控 = 配置分发层的渐进式披露；verify_skill.py = 12-Benchmark skill-used 断言的最小实现；WorkBuddy 本身 = 05-Agent 站的 Host/Harness（管安装认证轮询，模型只决策）。归「工程实践补充」，非学习路线节点。详见 [[14-WorkBuddy连接器]]。
 
 **参考：** [WorkBuddy 连接器指南](https://open.workbuddy.cn/docs/connector) / [WorkBuddy 技能指南](https://open.workbuddy.cn/docs/skill) / 本仓库实物 `WorkBuddy/flashcards-mcp/`、`WorkBuddy/flashcards-cli/`
+
+
+
+### CodeGraph
+
+**定义：** 本地代码知识图谱工具（colbymchenry/codegraph，7万+ star）：把代码库预解析成图谱（节点=函数/类/方法，边=调用/继承/导入），存本地 SQLite，AI 编程助手经 MCP 直接查图——治 Agent 在陌生大仓库 grep/glob/read 暴力爬文件烧 token 的病。
+
+**核心：** 四阶段流水线——① tree-sitter 把源码解析成 AST，抽节点+边（**确定性解析**，ground truth，非 LLM 摘要）；② 存 `.codegraph/codegraph.db`（SQLite+FTS5，100% 本地）；③ 解析引用→定义（含跨语言）；④ OS 文件事件自动同步（2 秒防抖，图永不 stale）。向量 RAG 找"长得像的"，图遍历找"有关系的"——**关系型查询（谁调用谁/改动影响范围）是向量 RAG 盲区，代码理解重心恰恰是关系**。
+
+**实现机制：** stdio MCP Server（新版只暴露 `codegraph_explore` 一个工具，一次返回相关源码+调用路径+影响半径）；**MCP 配置在 npm install 时**写入 `~/.claude.json mcpServers`，**索引在 `codegraph init -i` 时**生成——agent 见到 `.codegraph/` 目录才干活（配置=枪，索引=子弹）。
+
+**命令：**
+
+| 命令 | 作用 |
+|---|---|
+| `npm i -g @colbymchenry/codegraph` | 安装 + 写 MCP 配置（自动检测已装 agent） |
+| `codegraph init -i` | 建索引（项目级，clone 后第一步） |
+| `codegraph callers/callees <符号>` | 谁调用了它 / 它调用了谁 |
+| `codegraph impact <符号>` | 变更影响分析（反向可达性=传递闭包的调用者集合） |
+| `codegraph affected` | 受改动影响的测试文件（CI） |
+| `codegraph status / uninstall` | 看索引统计 / 全部移除 |
+
+提问模式决定图谱用不用得上：**点名符号+点名关系**（"`login()` 的调用链？"）诱导查图；形容词式（"看看登录相关代码"）把 agent 引回 grep。`.codegraph/` 进 gitignore。
+
+**实测收益：** 我的 A/B（fastapi，人工验证过 callers 为 ground truth）：同一问题用 codegraph 5 次工具调用 vs 不用 7 次（↓29%）；差异归因=fastapi 结构规整 grep 不迷路，baseline 越烂图谱收益越大。官方 benchmark（7 仓库）：调用 ↓71% / token ↓57% / 成本 ↓35%。
+
+**劣势/边界：**
+
+1. 只有语法边没有语义边——"谁调用 X"满分，"为什么这么设计"零分
+2. 反射/鸭子类型等动态派发追不到
+3. 小项目、绿地项目、规整仓库收益收窄
+4. **评 benchmark 四问**：任务选择偏差（关系型查询是主场）/baseline 强弱/省 token 有没有掉成功率/谁测的——效率指标必须和效果指标成对出现
+
+**同类：**
+
+| 工具 | 抽取方式 | 差异 |
+|---|---|---|
+| Serena | 真 LSP（IDE 跳转/引用那套） | 编译器级精度天花板，40+ 语言，配置重 |
+| CodeGraph | tree-sitter | 零配置，一个 explore 工具打天下 |
+| Graphify | LLM 抽取 | 泛化（文本/图/PDF）但关系可能错 |
+| GitNexus/CodeGraphContext | Neo4j 图数据库 | 表达力强，要自运维 DB |
+| Sourcegraph | SCIP 精确索引 | 企业级跨仓库，绑自家生态 |
+| Aider repo map | tree-sitter+PageRank | 只给概览不查询，最轻量 |
+
+选型：LSP 可配→Serena；零配置→CodeGraph；monorepo→Sourcegraph；小项目→repomix 打包就够。
+
+**连接已学：** 没引入新范式——RAG（01站"索引一次反复查询"的图检索变体，治向量盲区）+ MCP（06站 stdio Server，install 时注册）+ Agent（05站 Claude Code=Host+Agent）+ Benchmark（12站四问框架批判官方数据）+ CLI（13站双形态）的产品级组装。与阶段5 GraphRAG 的关键差异：代码自带结构所以用确定性抽取，非结构化文本才需要 LLM 抽取。归「工程实践补充」，非学习路线节点。详见 [[16-CodeGraph]]。
+
+**参考：** [GitHub](https://github.com/colbymchenry/codegraph) / [腾讯云：CodeGraph为什么这么火](https://cloud.tencent.com/developer/article/2713192) / [Antão Almada: Knowledge Graph Tools for AI Code Agents](https://antaoalmada.dev/posts/Code-Agent-Knowledge-Graphs)
 

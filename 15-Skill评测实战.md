@@ -267,3 +267,78 @@ judge:
 - 触发质量数据：`.claude/skills/self-test-workspace/trigger-eval/`（14 组 response + summary.md）
 - promptfoo 复现实战：`SkillTest/promptfoo/`（promptfooconfig.yaml：2 providers + 5 断言；run-eval.cmd：认证桥；fixtures：v1/v2 + 06-MCP.md）
 - skill-up 实战：`SkillTest/skill-up/`（self-test 副本 + evals 原生 YAML + 两轮 workspace 报告；隔离重跑目录 `Desktop/AI/skill-up-eval/`）
+
+---
+
+## 十、全程小结（收官）
+
+### 总览
+
+从一个问题出发——**"怎么对一个 SKILL 进行评测并优化？"**——走完了三套方案的完整实战，最终把它变成了"工程化·评估"环节的落地项目：
+
+```
+方法论框架（两维度）
+   ↓
+① skill-creator 手动实战：执行质量两轮迭代 + 触发质量一轮（26 次对照运行）
+   ↓
+② promptfoo 实战：外部平台桥接，swap-only 声明式对照 + LLM judge
+   ↓
+③ skill-up 实战：评测+演进闭环 CLI，撞出基线污染 + skill 真缺陷
+   ↓
+全部沉淀进 15-Skill评测实战.md（三套方案完整对照录）
+```
+
+### 一、方法论框架（一切的骨架）
+
+**评测两维度，独立分开测，混测说不清 Δ 来源**：
+
+| 维度 | 测什么 | 看哪 |
+|------|--------|------|
+| 执行质量 | 触发了做得好不好 | SKILL.md 正文 |
+| 触发质量 | 该用时想不想得起、不该用抢不抢、抢不抢别人的活 | description |
+
+### 二、手动实战（skill-creator 方法论）
+
+**Iteration-1（证 skill 有用，对照=无 skill）**：94.4% vs 83.3%。Δ 拆解发现全部增量来自"锚定指定笔记"一条断言（4/6 断言非区分性）；with-skill 自己栽在"考点重复"——**口号 ≠ 机制**。
+
+**三处改动**：GBK 脚本修复 / 新增"考点查重"可执行步骤（口号→机制）/ 护栏补 why。
+
+**Iteration-2（证改动有效，对照=旧版快照）**：100% vs 94.4%，耗时 −25%，token 持平。**对照组随问题切换**是设计精髓。
+
+**触发质量（14 条 query：正例口语变体 + 负例近似失误）**：14/14 全对——漏触发 0、误触发 0、技能路由 2/2（record-tool/git-upload 地盘没被抢）。description"推式"写法验证安全。
+
+### 三、promptfoo 实战（外部平台桥接）
+
+被测系统只要能被程序化调用就能进评测平台——桥 = Claude Agent SDK provider。**swap-only 声明式对照**（两个 provider 唯一差异 working_dir）、`skill-used` 断言拿**一等公民证据**（tool call 元数据）、`llm-rubric` + `file://` 变量把笔记喂给 judge。四道坎：SDK 认证桥接（环境变量显式传）、.cmd 纯 ASCII（GBK 第三次应验）、非区分性断言、单次方差。
+
+### 四、skill-up 实战（评测+演进闭环）
+
+两层架构（skill-upper 编排层 = 用 Skill 评测 Skill 的元应用；skill-up CLI 执行引擎）、import 无损吃掉存量 evals.json、`benchmark.enabled` 一键消融、**agent_judge 证据三套最强**（行号引用 + grep 验证 + transcript 交叉核对 + 格式自愈）、零认证配置。
+
+**两个关键发现**：
+
+1. **基线污染**——无 skill 基线 agent 从文件系统摸到仓库部署的真 skill 抄作业，Δ=0 是假象；搬出仓库也拦不住（全局配置授权 Desktop 读取）。三层教训：消融效度=隔离强度；共享机器 no-skill 基线必须真沙箱；**读轨迹和读分数一样重要**
+2. **skill 真缺陷**——"考 Agent"匹配两篇笔记，预确认把"考哪篇"的追问短路 → 挂范围锚定。改进项：**多笔记匹配必须先问**。干净基线还实测挂了"越界"（考笔记外的 OAuth/Sampling）——skill 锚定价值首次被工具评测直接证实
+
+### 五、三套方案最终定位
+
+| | skill-creator | promptfoo | skill-up |
+|---|---|---|---|
+| 本质 | 方法论（人肉编排） | 评测平台 | 评测 CLI + 演进闭环 |
+| 最强项 | 会话内交互迭代 | 平台化（Web/矩阵/红队/CI） | judge 证据 + Anthropic 兼容 + 一键消融 |
+| 隔离 | 靠 prompt 指令 | fixture working_dir | none=纸糊，须沙箱 |
+
+### 六、带走的判断力（十要点）
+
+1. 两维度分开评 2. 测试集=真实 prompt+近似失误 3. 消融对照、baseline 随问题切换 4. 断言三层（脚本→judge→人工），**能脚本判的不用 judge** 5. **断言先问区分力**——全绿可能是安慰剂 6. 证据分级：tool call 元数据 > 行为佐证 > 模型自报 7. 指标三角（质量×成本×耗时） 8. **Δ 拆解归因**，别只看总分 9. **多轮看失败率**，单次 ≠ 结论 10. **口号≠机制**——每条质量要求配一个怎么做
+
+外加三条工程级认知：**评测平台边界不在"能测什么"而在"被测系统能否被程序化调用"**；**消融效度=隔离强度**；**测试集该从真实使用长出来**（skill-up 的观察模式就是这个思路的产品化）。
+
+### 七、遗留待办
+
+1. **self-test 修"多笔记匹配歧义"**（改 SKILL.md + skill-up 跑回归，case-1 现成用例）
+2. 隔离真 Δ：等真沙箱（docker/opensandbox）或干净配置 profile
+3. 工程化剩余部分：流式输出 / FastAPI 部署 / 护栏
+
+> 这条线走完，对"评测"的理解已从 12 号笔记的理论（四要素、界定→衡量→改进）落到三套工具的实操和坑里——**评估驱动开发，不再盲飞**。
+

@@ -2,7 +2,11 @@
   "permissions": {
     "allow": [
       "Bash(PYTHONIOENCODING=utf-8 python daily_brief.py)",
-      "Edit(/.claude/skills/record-tool/**)"
+      "Edit(/.claude/skills/record-tool/**)",
+      "Bash(git reset *)",
+      "Bash(git commit *)",
+      "Bash(git remote *)",
+      "Bash(git push *)"
     ]
   }
 }
