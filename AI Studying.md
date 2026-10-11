@@ -771,9 +771,7 @@ RAG 评估分两**量化指标**：**检索质量**（关键）+ **生成质量*
 | **Hit@K**（命中率） | top-K 里有没有正确块。最朴素。      | 6 题里 4 题命中 -> Hit@3 = 4/6 = 67%       |
 | **MRR**（平均排名） | 正确块排名越靠前越好。比 Hit 更细。 | 排第1=1.0，排第2=0.5，排第3=0.33，没命中=0 |
 
-> Hit@K 只看"有没有"，MRR 还看"排第几"。排第1比排第3好，MRR 能体现这个差异。
-
-**关键前提**：评估需要**标注数据**（一组"问题 + 正确块编号"的对照）
+> Hit@K 只看"有没有"，MRR 还看"排第几"。排第1比排第3好，MRR 能体现这个差异
 
 
 
@@ -1823,4 +1821,37 @@ dispatch_node 读 sources 列表，返回 3 个 Send：
 **连接已学：** 没引入新范式——RAG（01站"索引一次反复查询"的图检索变体，治向量盲区）+ MCP（06站 stdio Server，install 时注册）+ Agent（05站 Claude Code=Host+Agent）+ Benchmark（12站四问框架批判官方数据）+ CLI（13站双形态）的产品级组装。与阶段5 GraphRAG 的关键差异：代码自带结构所以用确定性抽取，非结构化文本才需要 LLM 抽取。归「工程实践补充」，非学习路线节点。详见 [[16-CodeGraph]]。
 
 **参考：** [GitHub](https://github.com/colbymchenry/codegraph) / [腾讯云：CodeGraph为什么这么火](https://cloud.tencent.com/developer/article/2713192) / [Antão Almada: Knowledge Graph Tools for AI Code Agents](https://antaoalmada.dev/posts/Code-Agent-Knowledge-Graphs)
+
+
+
+### 生产 RAG 知识库流水线（Wiki + RAG）
+
+**定义：** 把一套文档（wiki）建成"机器可检索知识库"的工程模式：**离线入库 / 在线查询两条流水线分离** + 向量存储，让 LLM 回答时带出处引用。本仓库用它把 17 篇学习笔记建成可问答的知识库。完整机制见 [[17-生产知识库实战]]。
+
+**核心：**
+- **入库/查询分离**：入库是**异步增量**的（扫文档→按 `##` 结构切块→embedding→持久化索引，记录每篇 md5，文件没变就跳过、不重复花向量钱）；查询是**同步**的（问题→向量 top-k→拼 prompt→带 [n] 引用生成）——生产骨架就是这两条，不是 demo 的"运行时现切块"
+- **知识库 ≠ RAG**：知识库=知识的组织（本文档本身）；RAG=消费技术之一。笔记即知识库，向量索引只是"RAG 牌读卡器"的附件——Agentic 直读 / BM25 关键词 / 全长塞上下文都不需要它
+- **RAG vs Agentic 分水岭 = 谁决定读什么**（控制流），不是内容形态："怎么搜"（向量/关键词/导航）和"谁决定搜"（写死 pipeline / 模型自主循环）是正交的两个维度
+
+**代码（本仓库）：**
+
+| 脚本 | 作用 |
+|---|---|
+| `Code/build_wiki_index.py` | 离线入库：按 ## 标题切块 → 豆包 embedding → JSON 索引，md5 驱动增量 |
+| `Code/ask_wiki.py` | 在线：余弦 top-5 → 拼 prompt → glm-5.2 带引用回答 |
+
+**命令：** `python -X utf8 Code/build_wiki_index.py`（入库/增量）· `python -X utf8 Code/ask_wiki.py`（问答，q 退出）。
+
+**向量存储谱系（选型看数据量/云/混合检索/运维力）：** 嵌入式（本方案 JSON/numpy、Faiss）→ 本地向量库服务（Chroma/Qdrant/Weaviate）→ 分布式（Milvus/ES）→ 云托管（Pinecone/Azure AI Search）。换存储只改"存取"层，`retrieve()` 接口不变。坑：Chroma 在 Python 3.14 上因 opentelemetry 依赖不兼容 import 直接崩。
+
+**实测（17 笔记问答）：** 跨文档题（FC/MCP/Skill 的演进关系）✅ 命中 07/06/13 三篇、相似度 0.67、答案带 [n] 引用；引用链题（"Agent 站埋的钩子兑现了吗"）⚠️ 翻车——标准答案在 06-MCP「钩子兑现」一节却没进 top-5（最高 0.38），模型诚实报"资料里查不到"，暴露**一次性检索"知识在库却查不到"是最难排查的 RAG bug**（不报错、只是悄悄答不全，查询与文档语义没对齐）。
+
+**劣势/边界：**
+1. 一次定生死，查漏无感知——模型不知道自己错过了什么（Agentic 才能"读完不够再查"）
+2. 口语问法 vs 文档用语语义不对齐时，检索质量暴跌
+3. json/内存方案只适合小块级；量产、要并发上 Chroma/Qdrant/Milvus
+
+**连接已学：** 是 RAG 全链（01 概念 → 02 实战 → Chunking/Re-rank/父子块）的"生产形态"组装：入库/查询分离=工程化；按 `##` 结构切块+metadata 溯源=切块进阶；【n】引用溯源=Prompt Rule「不编造」；RAG vs Agentic=Agent 站 ReAct 控制权的延伸。归「工程实践」，详见 [[17-生产知识库实战]]（全量教程）。
+
+**参考：** [火山引擎 ARK coding-plan embedding 记忆接入文档](https://docs.volcengine.com/docs/ark/coding-plan-personal-embedding-memory?lang=zh)（`doubao-embedding-vision`，OpenAI 兼容）
 
