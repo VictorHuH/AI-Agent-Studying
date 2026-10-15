@@ -6,7 +6,21 @@
       "Bash(git reset *)",
       "Bash(git commit *)",
       "Bash(git remote *)",
-      "Bash(git push *)"
+      "Bash(git push *)",
+      "Bash(mkdir -p \"C:/Users/Administrator/Desktop/软考/课件/markdown\" && python -c \" *)",
+      "Bash(mineru -p \"3.6数据库补充课件.pdf\" -o markdown_mineru)",
+      "Bash(mineru --help)",
+      "Bash(mineru parse *)",
+      "Bash(mineru server *)",
+      "Bash(mineru config *)",
+      "Read(//c/Users/Administrator/.mineru/logs/**)",
+      "Bash(mineru-kit models *)",
+      "Bash(rm -rf \"C:/Users/Administrator/Desktop/软考/课件/markdown\" \"C:/Users/Administrator/Desktop/软考/课件/markdown_mineru\")",
+      "Bash(rm -rf \"C:/Users/Administrator/.mineru\")",
+      "Bash(pip uninstall *)",
+      "Bash(mineru --version)",
+      "Read(//c/Users/Administrator/**)",
+      "Bash(git add *)"
     ]
   }
 }
