@@ -1906,14 +1906,6 @@ dispatch_node 读 sources 列表，返回 3 个 Send：
 
 
 
-**劣势/边界：**
-
-1. 一次定生死，查漏无感知——模型不知道自己错过了什么（Agentic 才能"读完不够再查"）
-2. 口语问法 vs 文档用语语义不对齐时，检索质量暴跌
-3. json/内存方案只适合小块级；量产、要并发上 Chroma/Qdrant/Milvus
-4. **平台路线（FastGPT 社区版）更新闭环是断的**：改笔记要么删集合重传，要么脚本覆盖 minio 对象 + 手点重训（点「重新训练」无效——它读的是 minio 旧原文）
-5. **平台路线多一层抽象**（aiproxy 网关 / 应用实体），任一处"只配了一半"，表面症状都是"界面空白"，排查成本高于自写脚本
-
 **连接已学：** 是 RAG 全链（01 概念 → 02 实战 → Chunking/Re-rank/父子块）的"生产形态"组装：入库/查询分离=工程化；按 `##` 结构切块+metadata 溯源=切块进阶；【n】引用溯源=Prompt Rule「不编造」；RAG vs Agentic=Agent 站 ReAct 控制权的延伸。归「工程实践」，详见 [[17-生产知识库实战]]（全量教程）。
 
 **参考：** [火山引擎 ARK coding-plan embedding 记忆接入文档](https://docs.volcengine.com/docs/ark/coding-plan-personal-embedding-memory?lang=zh)（`doubao-embedding-vision`，OpenAI 兼容）/ [FastGPT 模型配置说明](https://doc.fastgpt.io/zh-CN/self-host/config/model/intro)（渠道/启用模型两层）/ [FastGPT 自部署文档](https://doc.fastgpt.io/zh-CN/self-host/deploy/docker)
