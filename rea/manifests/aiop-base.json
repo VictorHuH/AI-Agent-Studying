@@ -1,0 +1,896 @@
+{
+  "id": "baseProvider",
+  "name": "baseProvider",
+  "metaData": {
+    "name": "baseProvider",
+    "type": "app",
+    "buildInfo": {
+      "buildVersion": "1.0.0",
+      "buildName": "aiop-base"
+    },
+    "remoteEntry": {
+      "name": "static/js/baseProvider.073b3273.js",
+      "path": "",
+      "type": "global"
+    },
+    "types": {
+      "path": "",
+      "name": "",
+      "zip": "",
+      "api": ""
+    },
+    "globalName": "baseProvider",
+    "pluginVersion": "0.21.6",
+    "prefetchInterface": false,
+    "publicPath": "/ai-layout/static/aiop-base-tmp/aiop-base@1.0.0/"
+  },
+  "shared": [
+    {
+      "id": "baseProvider:aiop-ui",
+      "name": "aiop-ui",
+      "version": "1.2.20",
+      "singleton": true,
+      "requiredVersion": "^1.2.20",
+      "assets": {
+        "js": {
+          "async": [],
+          "sync": [
+            "static/js/async/aiop-ui.ae9e33e2.js"
+          ]
+        },
+        "css": {
+          "async": [],
+          "sync": []
+        }
+      }
+    },
+    {
+      "id": "baseProvider:vue",
+      "name": "vue",
+      "version": "2.7.16",
+      "singleton": true,
+      "requiredVersion": "^2.7.16",
+      "assets": {
+        "js": {
+          "async": [],
+          "sync": [
+            "static/js/lib-vue.682e9d85.js",
+            "static/js/baseProvider.073b3273.js"
+          ]
+        },
+        "css": {
+          "async": [],
+          "sync": []
+        }
+      }
+    }
+  ],
+  "remotes": [],
+  "exposes": [
+    {
+      "id": "baseProvider:AiopSearchGroup",
+      "name": "AiopSearchGroup",
+      "assets": {
+        "js": {
+          "sync": [
+            "static/js/vendors.5a7c9944.js",
+            "static/js/async/9586.664d6044.js",
+            "static/js/async/5348.7a139ce9.js",
+            "static/js/async/1229.bc71b84e.js",
+            "static/js/async/3410.8f5ff310.js",
+            "static/js/async/__federation_expose_AiopSearchGroup.4c2bb530.js"
+          ],
+          "async": []
+        },
+        "css": {
+          "sync": [
+            "static/css/async/__federation_expose_AiopSearchGroup.482da6ee.css"
+          ],
+          "async": []
+        }
+      },
+      "path": "./AiopSearchGroup"
+    },
+    {
+      "id": "baseProvider:AiopLayoutGraphGenerator",
+      "name": "AiopLayoutGraphGenerator",
+      "assets": {
+        "js": {
+          "sync": [
+            "static/js/vendors.5a7c9944.js",
+            "static/js/447.f8330a8d.js",
+            "static/js/1134.7aeaae0a.js",
+            "static/js/async/__federation_expose_AiopLayoutGraphGenerator.008999af.js"
+          ],
+          "async": []
+        },
+        "css": {
+          "sync": [
+            "static/css/1134.d563ff9e.css"
+          ],
+          "async": []
+        }
+      },
+      "path": "./AiopLayoutGraphGenerator"
+    },
+    {
+      "id": "baseProvider:AiopAdaptCardManage",
+      "name": "AiopAdaptCardManage",
+      "assets": {
+        "js": {
+          "sync": [
+            "static/js/async/__federation_expose_AiopAdaptCardManage.dcf7f3dd.js"
+          ],
+          "async": []
+        },
+        "css": {
+          "sync": [
+            "static/css/async/__federation_expose_AiopAdaptCardManage.9735a4b4.css"
+          ],
+          "async": []
+        }
+      },
+      "path": "./AiopAdaptCardManage"
+    },
+    {
+      "id": "baseProvider:AiopAudio",
+      "name": "AiopAudio",
+      "assets": {
+        "js": {
+          "sync": [
+            "static/js/async/__federation_expose_AiopAudio.aee3efce.js"
+          ],
+          "async": []
+        },
+        "css": {
+          "sync": [
+            "static/css/async/__federation_expose_AiopAudio.69440292.css"
+          ],
+          "async": []
+        }
+      },
+      "path": "./AiopAudio"
+    },
+    {
+      "id": "baseProvider:AiopBatchButton",
+      "name": "AiopBatchButton",
+      "assets": {
+        "js": {
+          "sync": [
+            "static/js/async/__federation_expose_AiopBatchButton.9297e6fe.js"
+          ],
+          "async": []
+        },
+        "css": {
+          "sync": [
+            "static/css/async/__federation_expose_AiopBatchButton.4ad9cf10.css"
+          ],
+          "async": []
+        }
+      },
+      "path": "./AiopBatchButton"
+    },
+    {
+      "id": "baseProvider:AiopBread",
+      "name": "AiopBread",
+      "assets": {
+        "js": {
+          "sync": [
+            "static/js/async/__federation_expose_AiopBread.dd14a267.js"
+          ],
+          "async": []
+        },
+        "css": {
+          "sync": [
+            "static/css/async/__federation_expose_AiopBread.423fb259.css"
+          ],
+          "async": []
+        }
+      },
+      "path": "./AiopBread"
+    },
+    {
+      "id": "baseProvider:AiopCard",
+      "name": "AiopCard",
+      "assets": {
+        "js": {
+          "sync": [
+            "static/js/async/__federation_expose_AiopCard.b61ab9a0.js"
+          ],
+          "async": []
+        },
+        "css": {
+          "sync": [
+            "static/css/async/__federation_expose_AiopCard.8e969b81.css"
+          ],
+          "async": []
+        }
+      },
+      "path": "./AiopCard"
+    },
+    {
+      "id": "baseProvider:AiopCascadeSelect",
+      "name": "AiopCascadeSelect",
+      "assets": {
+        "js": {
+          "sync": [
+            "static/js/async/__federation_expose_AiopCascadeSelect.d077602a.js"
+          ],
+          "async": []
+        },
+        "css": {
+          "sync": [
+            "static/css/async/__federation_expose_AiopCascadeSelect.bbbcca0e.css"
+          ],
+          "async": []
+        }
+      },
+      "path": "./AiopCascadeSelect"
+    },
+    {
+      "id": "baseProvider:AiopCheckboxButton",
+      "name": "AiopCheckboxButton",
+      "assets": {
+        "js": {
+          "sync": [
+            "static/js/async/__federation_expose_AiopCheckboxButton.d3ce814f.js"
+          ],
+          "async": []
+        },
+        "css": {
+          "sync": [
+            "static/css/async/__federation_expose_AiopCheckboxButton.b64d5be1.css"
+          ],
+          "async": []
+        }
+      },
+      "path": "./AiopCheckboxButton"
+    },
+    {
+      "id": "baseProvider:AiopCheckMask",
+      "name": "AiopCheckMask",
+      "assets": {
+        "js": {
+          "sync": [
+            "static/js/async/__federation_expose_AiopCheckMask.93202fcc.js"
+          ],
+          "async": []
+        },
+        "css": {
+          "sync": [
+            "static/css/async/__federation_expose_AiopCheckMask.0dec0e71.css"
+          ],
+          "async": []
+        }
+      },
+      "path": "./AiopCheckMask"
+    },
+    {
+      "id": "baseProvider:AiopDataTimeGroup",
+      "name": "AiopDataTimeGroup",
+      "assets": {
+        "js": {
+          "sync": [
+            "static/js/async/__federation_expose_AiopDataTimeGroup.fad38b1a.js"
+          ],
+          "async": []
+        },
+        "css": {
+          "sync": [
+            "static/css/async/__federation_expose_AiopDataTimeGroup.970e9bec.css"
+          ],
+          "async": []
+        }
+      },
+      "path": "./AiopDataTimeGroup"
+    },
+    {
+      "id": "baseProvider:AiopDefaultProcess",
+      "name": "AiopDefaultProcess",
+      "assets": {
+        "js": {
+          "sync": [
+            "static/js/async/__federation_expose_AiopDefaultProcess.2c1a9718.js"
+          ],
+          "async": []
+        },
+        "css": {
+          "sync": [
+            "static/css/async/__federation_expose_AiopDefaultProcess.d44366a0.css"
+          ],
+          "async": []
+        }
+      },
+      "path": "./AiopDefaultProcess"
+    },
+    {
+      "id": "baseProvider:AiopEmpty",
+      "name": "AiopEmpty",
+      "assets": {
+        "js": {
+          "sync": [
+            "static/js/async/__federation_expose_AiopEmpty.998ac116.js"
+          ],
+          "async": []
+        },
+        "css": {
+          "sync": [
+            "static/css/async/__federation_expose_AiopEmpty.61471fbf.css"
+          ],
+          "async": []
+        }
+      },
+      "path": "./AiopEmpty"
+    },
+    {
+      "id": "baseProvider:AiopFilterGroup",
+      "name": "AiopFilterGroup",
+      "assets": {
+        "js": {
+          "sync": [
+            "static/js/async/9586.664d6044.js",
+            "static/js/async/5348.7a139ce9.js",
+            "static/js/async/1229.bc71b84e.js"
+          ],
+          "async": []
+        },
+        "css": {
+          "sync": [
+            "static/css/async/__federation_expose_AiopFilterGroup.f010fa20.css"
+          ],
+          "async": []
+        }
+      },
+      "path": "./AiopFilterGroup"
+    },
+    {
+      "id": "baseProvider:AiopFreeDialog",
+      "name": "AiopFreeDialog",
+      "assets": {
+        "js": {
+          "sync": [
+            "static/js/vendors.5a7c9944.js",
+            "static/js/async/3410.8f5ff310.js"
+          ],
+          "async": []
+        },
+        "css": {
+          "sync": [
+            "static/css/async/__federation_expose_AiopFreeDialog.08d0e0d5.css"
+          ],
+          "async": []
+        }
+      },
+      "path": "./AiopFreeDialog"
+    },
+    {
+      "id": "baseProvider:AiopHangButton",
+      "name": "AiopHangButton",
+      "assets": {
+        "js": {
+          "sync": [
+            "static/js/async/__federation_expose_AiopHangButton.12770e9f.js"
+          ],
+          "async": []
+        },
+        "css": {
+          "sync": [
+            "static/css/async/__federation_expose_AiopHangButton.89ac9629.css"
+          ],
+          "async": []
+        }
+      },
+      "path": "./AiopHangButton"
+    },
+    {
+      "id": "baseProvider:AiopLayout",
+      "name": "AiopLayout",
+      "assets": {
+        "js": {
+          "sync": [
+            "static/js/async/__federation_expose_AiopLayout.f4adce72.js"
+          ],
+          "async": []
+        },
+        "css": {
+          "sync": [
+            "static/css/async/__federation_expose_AiopLayout.d7ec73fd.css"
+          ],
+          "async": []
+        }
+      },
+      "path": "./AiopLayout"
+    },
+    {
+      "id": "baseProvider:AiopLoading",
+      "name": "AiopLoading",
+      "assets": {
+        "js": {
+          "sync": [
+            "static/js/async/__federation_expose_AiopLoading.32c50ee9.js"
+          ],
+          "async": []
+        },
+        "css": {
+          "sync": [
+            "static/css/async/__federation_expose_AiopLoading.1ba2def1.css"
+          ],
+          "async": []
+        }
+      },
+      "path": "./AiopLoading"
+    },
+    {
+      "id": "baseProvider:AiopMark",
+      "name": "AiopMark",
+      "assets": {
+        "js": {
+          "sync": [
+            "static/js/async/__federation_expose_AiopMark.257f2788.js"
+          ],
+          "async": []
+        },
+        "css": {
+          "sync": [
+            "static/css/async/__federation_expose_AiopMark.b610cdad.css"
+          ],
+          "async": []
+        }
+      },
+      "path": "./AiopMark"
+    },
+    {
+      "id": "baseProvider:AiopMenu",
+      "name": "AiopMenu",
+      "assets": {
+        "js": {
+          "sync": [
+            "static/js/async/__federation_expose_AiopMenu.0577b6f2.js"
+          ],
+          "async": []
+        },
+        "css": {
+          "sync": [
+            "static/css/async/__federation_expose_AiopMenu.c4e56feb.css"
+          ],
+          "async": []
+        }
+      },
+      "path": "./AiopMenu"
+    },
+    {
+      "id": "baseProvider:AiopPopover",
+      "name": "AiopPopover",
+      "assets": {
+        "js": {
+          "sync": [
+            "static/js/async/__federation_expose_AiopPopover.75b00345.js"
+          ],
+          "async": []
+        },
+        "css": {
+          "sync": [
+            "static/css/async/__federation_expose_AiopPopover.71eb6d6e.css"
+          ],
+          "async": []
+        }
+      },
+      "path": "./AiopPopover"
+    },
+    {
+      "id": "baseProvider:AiopPrompt",
+      "name": "AiopPrompt",
+      "assets": {
+        "js": {
+          "sync": [
+            "static/js/async/__federation_expose_AiopPrompt.565e051d.js"
+          ],
+          "async": []
+        },
+        "css": {
+          "sync": [
+            "static/css/async/__federation_expose_AiopPrompt.8603e74c.css"
+          ],
+          "async": []
+        }
+      },
+      "path": "./AiopPrompt"
+    },
+    {
+      "id": "baseProvider:AiopRadioButton",
+      "name": "AiopRadioButton",
+      "assets": {
+        "js": {
+          "sync": [
+            "static/js/async/__federation_expose_AiopRadioButton.fd7c9c61.js"
+          ],
+          "async": []
+        },
+        "css": {
+          "sync": [
+            "static/css/async/__federation_expose_AiopRadioButton.66bae746.css"
+          ],
+          "async": []
+        }
+      },
+      "path": "./AiopRadioButton"
+    },
+    {
+      "id": "baseProvider:AiopScrollbar",
+      "name": "AiopScrollbar",
+      "assets": {
+        "js": {
+          "sync": [
+            "static/js/async/__federation_expose_AiopScrollbar.d8db25b9.js"
+          ],
+          "async": []
+        },
+        "css": {
+          "sync": [
+            "static/css/async/__federation_expose_AiopScrollbar.88219279.css"
+          ],
+          "async": []
+        }
+      },
+      "path": "./AiopScrollbar"
+    },
+    {
+      "id": "baseProvider:AiopTabs",
+      "name": "AiopTabs",
+      "assets": {
+        "js": {
+          "sync": [
+            "static/js/async/__federation_expose_AiopTabs.14b04060.js"
+          ],
+          "async": []
+        },
+        "css": {
+          "sync": [
+            "static/css/async/__federation_expose_AiopTabs.38725733.css"
+          ],
+          "async": []
+        }
+      },
+      "path": "./AiopTabs"
+    },
+    {
+      "id": "baseProvider:AiopTag",
+      "name": "AiopTag",
+      "assets": {
+        "js": {
+          "sync": [
+            "static/js/async/__federation_expose_AiopTag.4384ae0f.js"
+          ],
+          "async": []
+        },
+        "css": {
+          "sync": [
+            "static/css/async/__federation_expose_AiopTag.fcd95b2d.css"
+          ],
+          "async": []
+        }
+      },
+      "path": "./AiopTag"
+    },
+    {
+      "id": "baseProvider:AiopTagFilter",
+      "name": "AiopTagFilter",
+      "assets": {
+        "js": {
+          "sync": [
+            "static/js/async/9586.664d6044.js"
+          ],
+          "async": []
+        },
+        "css": {
+          "sync": [
+            "static/css/async/__federation_expose_AiopTagFilter.6610e644.css"
+          ],
+          "async": []
+        }
+      },
+      "path": "./AiopTagFilter"
+    },
+    {
+      "id": "baseProvider:AiopTagFilterMultiLevel",
+      "name": "AiopTagFilterMultiLevel",
+      "assets": {
+        "js": {
+          "sync": [
+            "static/js/async/9586.664d6044.js",
+            "static/js/async/5348.7a139ce9.js"
+          ],
+          "async": []
+        },
+        "css": {
+          "sync": [
+            "static/css/async/__federation_expose_AiopTagFilterMultiLevel.5ca772e9.css"
+          ],
+          "async": []
+        }
+      },
+      "path": "./AiopTagFilterMultiLevel"
+    },
+    {
+      "id": "baseProvider:AiopTagFilterTwoLevel",
+      "name": "AiopTagFilterTwoLevel",
+      "assets": {
+        "js": {
+          "sync": [
+            "static/js/async/9586.664d6044.js",
+            "static/js/async/__federation_expose_AiopTagFilterTwoLevel.6459844c.js"
+          ],
+          "async": []
+        },
+        "css": {
+          "sync": [
+            "static/css/async/__federation_expose_AiopTagFilterTwoLevel.786767d3.css"
+          ],
+          "async": []
+        }
+      },
+      "path": "./AiopTagFilterTwoLevel"
+    },
+    {
+      "id": "baseProvider:AiopTips",
+      "name": "AiopTips",
+      "assets": {
+        "js": {
+          "sync": [
+            "static/js/async/__federation_expose_AiopTips.18ef8e79.js"
+          ],
+          "async": []
+        },
+        "css": {
+          "sync": [
+            "static/css/async/__federation_expose_AiopTips.91bb24b4.css"
+          ],
+          "async": []
+        }
+      },
+      "path": "./AiopTips"
+    },
+    {
+      "id": "baseProvider:AiopTransfer",
+      "name": "AiopTransfer",
+      "assets": {
+        "js": {
+          "sync": [
+            "static/js/async/__federation_expose_AiopTransfer.67c7c7dd.js"
+          ],
+          "async": []
+        },
+        "css": {
+          "sync": [
+            "static/css/async/__federation_expose_AiopTransfer.52394a1f.css"
+          ],
+          "async": []
+        }
+      },
+      "path": "./AiopTransfer"
+    },
+    {
+      "id": "baseProvider:AiopSlicksort",
+      "name": "AiopSlicksort",
+      "assets": {
+        "js": {
+          "sync": [
+            "static/js/async/__federation_expose_AiopSlicksort.a893bcfd.js"
+          ],
+          "async": []
+        },
+        "css": {
+          "sync": [],
+          "async": []
+        }
+      },
+      "path": "./AiopSlicksort"
+    },
+    {
+      "id": "baseProvider:NoAuthority",
+      "name": "NoAuthority",
+      "assets": {
+        "js": {
+          "sync": [
+            "static/js/async/__federation_expose_NoAuthority.d8e98b33.js"
+          ],
+          "async": []
+        },
+        "css": {
+          "sync": [
+            "static/css/async/__federation_expose_NoAuthority.d28dd075.css"
+          ],
+          "async": []
+        }
+      },
+      "path": "./NoAuthority"
+    },
+    {
+      "id": "baseProvider:ErrorPage",
+      "name": "ErrorPage",
+      "assets": {
+        "js": {
+          "sync": [
+            "static/js/async/__federation_expose_ErrorPage.cf9feadb.js"
+          ],
+          "async": []
+        },
+        "css": {
+          "sync": [
+            "static/css/async/__federation_expose_ErrorPage.d5033655.css"
+          ],
+          "async": []
+        }
+      },
+      "path": "./ErrorPage"
+    },
+    {
+      "id": "baseProvider:Api",
+      "name": "Api",
+      "assets": {
+        "js": {
+          "sync": [
+            "static/js/async/__federation_expose_Api.aa8794b1.js"
+          ],
+          "async": []
+        },
+        "css": {
+          "sync": [],
+          "async": []
+        }
+      },
+      "path": "./Api"
+    },
+    {
+      "id": "baseProvider:Axios",
+      "name": "Axios",
+      "assets": {
+        "js": {
+          "sync": [
+            "static/js/async/lib-axios.70a39919.js",
+            "static/js/vendors.5a7c9944.js",
+            "static/js/async/__federation_expose_Axios.2f442d95.js"
+          ],
+          "async": [
+            "static/js/vendors.5a7c9944.js",
+            "static/js/447.f8330a8d.js",
+            "static/js/1134.7aeaae0a.js",
+            "static/js/async/__federation_expose_AiopLayoutGraphGenerator.008999af.js"
+          ]
+        },
+        "css": {
+          "sync": [],
+          "async": [
+            "static/css/1134.d563ff9e.css"
+          ]
+        }
+      },
+      "path": "./Axios"
+    },
+    {
+      "id": "baseProvider:TaskManager",
+      "name": "TaskManager",
+      "assets": {
+        "js": {
+          "sync": [
+            "static/js/async/__federation_expose_TaskManager.35b20ab1.js"
+          ],
+          "async": []
+        },
+        "css": {
+          "sync": [],
+          "async": []
+        }
+      },
+      "path": "./TaskManager"
+    },
+    {
+      "id": "baseProvider:UploadTask",
+      "name": "UploadTask",
+      "assets": {
+        "js": {
+          "sync": [
+            "static/js/async/lib-axios.70a39919.js",
+            "static/js/vendors.5a7c9944.js",
+            "static/js/async/__federation_expose_UploadTask.7992d860.js"
+          ],
+          "async": []
+        },
+        "css": {
+          "sync": [],
+          "async": []
+        }
+      },
+      "path": "./UploadTask"
+    },
+    {
+      "id": "baseProvider:DownloadTask",
+      "name": "DownloadTask",
+      "assets": {
+        "js": {
+          "sync": [
+            "static/js/async/lib-axios.70a39919.js",
+            "static/js/vendors.5a7c9944.js",
+            "static/js/async/__federation_expose_DownloadTask.5072d211.js"
+          ],
+          "async": []
+        },
+        "css": {
+          "sync": [],
+          "async": []
+        }
+      },
+      "path": "./DownloadTask"
+    },
+    {
+      "id": "baseProvider:LunchClient",
+      "name": "LunchClient",
+      "assets": {
+        "js": {
+          "sync": [
+            "static/js/async/__federation_expose_LunchClient.a8ce2d4f.js"
+          ],
+          "async": [
+            "static/js/vendors.5a7c9944.js",
+            "static/js/async/9586.664d6044.js",
+            "static/js/async/5348.7a139ce9.js",
+            "static/js/async/1229.bc71b84e.js",
+            "static/js/async/3410.8f5ff310.js",
+            "static/js/async/__federation_expose_AiopSearchGroup.4c2bb530.js",
+            "static/js/447.f8330a8d.js",
+            "static/js/1134.7aeaae0a.js",
+            "static/js/async/__federation_expose_AiopLayoutGraphGenerator.008999af.js",
+            "static/js/async/lib-axios.70a39919.js",
+            "static/js/async/__federation_expose_Axios.2f442d95.js",
+            "static/js/async/__federation_expose_UploadTask.7992d860.js",
+            "static/js/async/__federation_expose_DownloadTask.5072d211.js"
+          ]
+        },
+        "css": {
+          "sync": [],
+          "async": [
+            "static/css/async/__federation_expose_AiopSearchGroup.482da6ee.css",
+            "static/css/1134.d563ff9e.css",
+            "static/css/async/__federation_expose_AiopFreeDialog.08d0e0d5.css"
+          ]
+        }
+      },
+      "path": "./LunchClient"
+    },
+    {
+      "id": "baseProvider:APiCodeEnum",
+      "name": "APiCodeEnum",
+      "assets": {
+        "js": {
+          "sync": [
+            "static/js/async/__federation_expose_APiCodeEnum.301cdd1b.js"
+          ],
+          "async": []
+        },
+        "css": {
+          "sync": [],
+          "async": []
+        }
+      },
+      "path": "./APiCodeEnum"
+    },
+    {
+      "id": "baseProvider:LayoutGraphGeneratorFun",
+      "name": "LayoutGraphGeneratorFun",
+      "assets": {
+        "js": {
+          "sync": [
+            "static/js/447.f8330a8d.js",
+            "static/js/async/__federation_expose_LayoutGraphGeneratorFun.d5a5a6ed.js"
+          ],
+          "async": []
+        },
+        "css": {
+          "sync": [],
+          "async": []
+        }
+      },
+      "path": "./LayoutGraphGeneratorFun"
+    }
+  ]
+}

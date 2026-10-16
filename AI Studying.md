@@ -1824,6 +1824,54 @@ dispatch_node 读 sources 列表，返回 3 个 Send：
 
 
 
+### REA
+
+**定义：** 逆向工程 MCP Server + CLI（morluto/rea，npm `rea-agents`，半年 28.5 万 star）：对**拿不到源码**的目标（Electron/JS 应用、网站、原生二进制、APK、.NET）做结构侦察——看清架构、路由、依赖、联邦拓扑。治 Agent 遇到没有源码的东西就瞎猜的病。
+
+**核心：** **Evidence 三件套**——每个结论挂 `authority`（怎么知道的：ast-static-analysis / static-relationship-inference / unknown）+ `confidence`（exact/high/medium/low/unknown）+ `limitations`（边界在哪）。**它敢标 unknown**，也敢把"这次分析堆爆了"写进 limitations。加上 `location` 精确到 `file:line:column`——**价值不是"给你源码"（源码本来就能拿到），是"给你一张精确到列、标注了可信度的地图"**。
+
+**实现机制：** **解压 + 读 AST + 模式匹配，全程不执行目标程序**。Babel 解析 → 找已知模式（`require`/`__webpack_require__` → 模块边；`ipcMain.handle` ↔ `ipcRenderer.invoke` → **按字面量名配对**；`fetch` → endpoint 候选）→ 字面量才配对，动态拼接的标 unknown，**拒绝按文本相似度猜**。带 source map 可还原原始源码。网站走 CDP 被动观测（attach 到你自己开的浏览器，不是爬虫）。
+
+**命令：**
+
+| 命令 | 作用 |
+|---|---|
+| `npx rea-agents setup` | 注册 MCP + 装 skill（多选菜单 `Space` 选中，**直接回车 = 一个都不选**） |
+| `rea doctor` / `rea capabilities` | 体检 / 列能力与副作用 |
+| `rea analyze-javascript-application <asar\|dir>` | **建库**：JS/Electron 静态重建 |
+| `rea analyze-web-bundle <endpoint> <target>` | **建库**：网站 bundle 解析 |
+| `rea inspect-web-page` / `list-browser-targets` | 被动观测已打开的页面 |
+| `rea trace-application-feature <json>` / `inspect-analysis-view <json>` | **查库**：吃 Evidence JSON，不重跑 |
+| `--token-count` / `--token-limit` / `--filter-output <keys>` | token 感知 IO（投影，不是精简） |
+
+**实测收益：** G HUB（19 MB asar）：1m52s → **输出 200 MB / 489 万行，其中只有 32 行是给人看的**（92% 是 semantic_graph）。`--filter-output` 投影后 **200 MB → 4 KB**，但**不省时间**。MCP 探针（自写 stdio 握手）：**207 tools / 3.09 MB schema / ~858K token**，分布很平砍不掉，`rea mcp` 无过滤选项 → **撤 MCP 留 skill**（skill 22 KB + 68 KB 按需 references，SKILL.md 自带 CLI 兜底）。官方 notes 示例：每条 `file:line` 逐条核对**全部命中**。
+
+**劣势/边界：**
+
+1. **MCP 常驻成本极高**：858K token，无裁剪选项；对比 skill+CLI 只 22 KB，**差 40 倍能力一样**
+2. **不执行目标程序**：动态通道/运行时注册/真实性能指标全拿不到
+3. **原生二进制要分析引擎**：Hopper（付费/macOS）/ Ghidra（免费，Windows experimental）/ IDA（付费）；JS 和 .NET 静态分析零依赖
+4. **大目标失控**：19 MB → 200 MB 输出；187 MB 的 asar 别全量跑
+5. **`detail:"summary"` 不落盘**，完整 Evidence 只在进程内存，留档要显式 `export_evidence_bundle`
+6. **注册版本钉死**，不会自动升级
+7. 结果超 token 上限会被 **harness 落盘**（传输层截断的副作用，不是 REA 的导出机制）
+
+**同类：**
+
+| 工具 | 差异 |
+|---|---|
+| DevTools / View Source | 人肉翻，无结构化证据、无可信度标注 |
+| curl / HTTP 层 | 只看到响应，看不到代码结构 |
+| Wappalyzer | 只识别"用了什么"，不回答"怎么实现的" |
+| Ghidra / IDA / Hopper | 反汇编引擎；REA 是**编排层**，把它们的输出统一成同一套 Evidence 契约 |
+| [[16-CodeGraph]] | **CodeGraph 要源码，REA 治的是没有源码**——互补不重叠（一个从源码建图，一个从产物建图） |
+
+**连接已学：** 没引入新范式——MCP（06站 stdio Server，**207 tools 是"工具多"的极端反例**）+ Skill（07站，22 KB 说明书**明写 CLI 兜底**，MCP/Skill 可分离的活案例）+ CLI（13站，"工具多低频选 CLI 省上下文"被 858K token 实测证实）+ Agent（05站）三形态的产品级组装。**两条最该抄的设计**：①**建库/查库分离**（analyze 贵跑一次 / trace-inspect 便宜反复跑；合成一个工具 Agent 每次追问都重跑）；②**输出要"投影"不要"精简"**（200 MB 里 32 行给人看，不该读它该 SELECT 它）。归「工程实践补充」，非学习路线节点。详见 [[18-REA逆向工程]]。
+
+**参考：** [GitHub](https://github.com/morluto/rea) / [官网](https://rea.tools/) / [browser-observation.md](https://github.com/morluto/rea/blob/main/docs/browser-observation.md) / 本地实践：`rea/基于REA的海康威视AI开放平台站点分析.md`
+
+
+
 ### 生产 RAG 知识库流水线（Wiki + RAG）
 
 **定义：** 把一套文档（wiki）建成"机器可检索知识库"的工程模式：**离线入库 / 在线查询两条流水线分离** + 向量存储，让 LLM 回答时带出处引用。本仓库用它把 17 篇学习笔记建成可问答的知识库。完整机制见 [[17-生产知识库实战]]。

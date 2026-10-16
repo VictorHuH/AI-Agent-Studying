@@ -1,0 +1,379 @@
+{
+  "id": "intelligentAssistantProvider",
+  "name": "intelligentAssistantProvider",
+  "metaData": {
+    "name": "intelligentAssistantProvider",
+    "type": "app",
+    "buildInfo": {
+      "buildVersion": "1.0.0",
+      "buildName": "aiop-intelligent-assistant"
+    },
+    "remoteEntry": {
+      "name": "static/js/intelligentAssistantProvider.0197ec07.js",
+      "path": "",
+      "type": "global"
+    },
+    "types": {
+      "path": "",
+      "name": "",
+      "zip": "",
+      "api": ""
+    },
+    "globalName": "intelligentAssistantProvider",
+    "pluginVersion": "0.21.6",
+    "prefetchInterface": false,
+    "publicPath": "/ai-layout/static/aiop-intelligent-assistant/aiop-intelligent-assistant@1.0.0/"
+  },
+  "shared": [
+    {
+      "id": "intelligentAssistantProvider:vue",
+      "name": "vue",
+      "version": "2.7.16",
+      "singleton": false,
+      "requiredVersion": "^2.7.16",
+      "assets": {
+        "js": {
+          "async": [],
+          "sync": [
+            "static/js/async/lib-vue.cac353f3.js"
+          ]
+        },
+        "css": {
+          "async": [],
+          "sync": []
+        }
+      }
+    }
+  ],
+  "remotes": [],
+  "exposes": [
+    {
+      "id": "intelligentAssistantProvider:IntelligentAssistantSideBar",
+      "name": "IntelligentAssistantSideBar",
+      "assets": {
+        "js": {
+          "sync": [
+            "static/js/vendors.2d156af1.js",
+            "static/js/async/51.71eb6c64.js",
+            "static/js/async/779.1bcbd94d.js",
+            "static/js/async/973.657e2dd3.js",
+            "static/js/async/__federation_expose_IntelligentAssistantSideBar.69f7b62d.js"
+          ],
+          "async": []
+        },
+        "css": {
+          "sync": [
+            "static/css/vendors.6152abd2.css",
+            "static/css/async/__federation_expose_IntelligentAssistantSideBar.d41943a5.css"
+          ],
+          "async": []
+        }
+      },
+      "path": "./IntelligentAssistantSideBar"
+    },
+    {
+      "id": "intelligentAssistantProvider:IntelligentAssistantChatArea",
+      "name": "IntelligentAssistantChatArea",
+      "assets": {
+        "js": {
+          "sync": [
+            "static/js/aiop-ui.1a2a1284.js",
+            "static/js/async/lib-axios.587e224c.js",
+            "static/js/vendors.2d156af1.js",
+            "static/js/async/51.71eb6c64.js",
+            "static/js/async/779.1bcbd94d.js",
+            "static/js/async/872.9ee98a35.js",
+            "static/js/async/318.ef0cb0b1.js",
+            "static/js/async/831.d76f5cc2.js",
+            "static/js/async/619.3a79210a.js",
+            "static/js/async/585.f87b0812.js",
+            "static/js/async/917.3f0340ec.js",
+            "static/js/async/__federation_expose_IntelligentAssistantChatArea.89fafeb4.js"
+          ],
+          "async": [
+            "static/js/async/503.f4b2cf33.js",
+            "static/js/async/236.1ed32014.js",
+            "static/js/async/443.f9eff4fd.js",
+            "static/js/async/428.639c9174.js",
+            "static/js/async/567.2585e4df.js",
+            "static/js/async/890.1b3996b8.js",
+            "static/js/async/600.bb1ca81c.js"
+          ]
+        },
+        "css": {
+          "sync": [
+            "static/css/vendors.6152abd2.css",
+            "static/css/async/585.e031e6dc.css",
+            "static/css/async/917.078c01cc.css",
+            "static/css/68.827837a9.css"
+          ],
+          "async": []
+        }
+      },
+      "path": "./IntelligentAssistantChatArea"
+    },
+    {
+      "id": "intelligentAssistantProvider:IntelligentAssistantChat",
+      "name": "IntelligentAssistantChat",
+      "assets": {
+        "js": {
+          "sync": [
+            "static/js/async/619.3a79210a.js",
+            "static/js/async/__federation_expose_IntelligentAssistantChat.e82e5a26.js"
+          ],
+          "async": []
+        },
+        "css": {
+          "sync": [
+            "static/css/async/__federation_expose_IntelligentAssistantChat.6260c9c9.css"
+          ],
+          "async": []
+        }
+      },
+      "path": "./IntelligentAssistantChat"
+    },
+    {
+      "id": "intelligentAssistantProvider:IntelligentAssistantDialog",
+      "name": "IntelligentAssistantDialog",
+      "assets": {
+        "js": {
+          "sync": [
+            "static/js/aiop-ui.1a2a1284.js",
+            "static/js/async/lib-axios.587e224c.js",
+            "static/js/vendors.2d156af1.js",
+            "static/js/async/51.71eb6c64.js",
+            "static/js/async/779.1bcbd94d.js",
+            "static/js/async/872.9ee98a35.js",
+            "static/js/async/318.ef0cb0b1.js",
+            "static/js/async/831.d76f5cc2.js",
+            "static/js/async/619.3a79210a.js",
+            "static/js/async/585.f87b0812.js",
+            "static/js/async/917.3f0340ec.js",
+            "static/js/async/973.657e2dd3.js",
+            "static/js/async/279.c94acd2b.js",
+            "static/js/async/16.59c8063a.js",
+            "static/js/async/__federation_expose_IntelligentAssistantDialog.373a7b47.js"
+          ],
+          "async": [
+            "static/js/async/503.f4b2cf33.js",
+            "static/js/async/236.1ed32014.js",
+            "static/js/async/443.f9eff4fd.js",
+            "static/js/async/428.639c9174.js",
+            "static/js/async/567.2585e4df.js",
+            "static/js/async/890.1b3996b8.js",
+            "static/js/async/600.bb1ca81c.js"
+          ]
+        },
+        "css": {
+          "sync": [
+            "static/css/vendors.6152abd2.css",
+            "static/css/async/585.e031e6dc.css",
+            "static/css/async/917.078c01cc.css",
+            "static/css/68.827837a9.css",
+            "static/css/async/__federation_expose_IntelligentAssistantDialog.49034201.css"
+          ],
+          "async": []
+        }
+      },
+      "path": "./IntelligentAssistantDialog"
+    },
+    {
+      "id": "intelligentAssistantProvider:IntelligentAssistantPage",
+      "name": "IntelligentAssistantPage",
+      "assets": {
+        "js": {
+          "sync": [
+            "static/js/aiop-ui.1a2a1284.js",
+            "static/js/async/lib-axios.587e224c.js",
+            "static/js/vendors.2d156af1.js",
+            "static/js/async/51.71eb6c64.js",
+            "static/js/async/779.1bcbd94d.js",
+            "static/js/async/872.9ee98a35.js",
+            "static/js/async/318.ef0cb0b1.js",
+            "static/js/async/831.d76f5cc2.js",
+            "static/js/async/619.3a79210a.js",
+            "static/js/async/585.f87b0812.js",
+            "static/js/async/917.3f0340ec.js",
+            "static/js/async/973.657e2dd3.js",
+            "static/js/async/279.c94acd2b.js",
+            "static/js/async/__federation_expose_IntelligentAssistantPage.0237d1c2.js"
+          ],
+          "async": [
+            "static/js/async/503.f4b2cf33.js",
+            "static/js/async/236.1ed32014.js",
+            "static/js/async/443.f9eff4fd.js",
+            "static/js/async/428.639c9174.js",
+            "static/js/async/567.2585e4df.js",
+            "static/js/async/890.1b3996b8.js",
+            "static/js/async/600.bb1ca81c.js"
+          ]
+        },
+        "css": {
+          "sync": [
+            "static/css/vendors.6152abd2.css",
+            "static/css/async/585.e031e6dc.css",
+            "static/css/async/917.078c01cc.css",
+            "static/css/68.827837a9.css",
+            "static/css/async/__federation_expose_IntelligentAssistantPage.fafb1337.css"
+          ],
+          "async": []
+        }
+      },
+      "path": "./IntelligentAssistantPage"
+    },
+    {
+      "id": "intelligentAssistantProvider:IntelligentAssistantLayoutCard",
+      "name": "IntelligentAssistantLayoutCard",
+      "assets": {
+        "js": {
+          "sync": [
+            "static/js/aiop-ui.1a2a1284.js",
+            "static/js/async/lib-axios.587e224c.js",
+            "static/js/vendors.2d156af1.js",
+            "static/js/async/51.71eb6c64.js",
+            "static/js/async/779.1bcbd94d.js",
+            "static/js/async/872.9ee98a35.js",
+            "static/js/async/831.d76f5cc2.js",
+            "static/js/async/__federation_expose_IntelligentAssistantLayoutCard.c326ed70.js"
+          ],
+          "async": []
+        },
+        "css": {
+          "sync": [
+            "static/css/vendors.6152abd2.css",
+            "static/css/async/__federation_expose_IntelligentAssistantLayoutCard.f2769024.css"
+          ],
+          "async": []
+        }
+      },
+      "path": "./IntelligentAssistantLayoutCard"
+    },
+    {
+      "id": "intelligentAssistantProvider:IntelligentAssistantLayoutCardHiklink",
+      "name": "IntelligentAssistantLayoutCardHiklink",
+      "assets": {
+        "js": {
+          "sync": [
+            "static/js/aiop-ui.1a2a1284.js",
+            "static/js/async/lib-axios.587e224c.js",
+            "static/js/vendors.2d156af1.js",
+            "static/js/async/51.71eb6c64.js",
+            "static/js/async/779.1bcbd94d.js",
+            "static/js/async/872.9ee98a35.js",
+            "static/js/async/318.ef0cb0b1.js",
+            "static/js/async/__federation_expose_IntelligentAssistantLayoutCardHiklink.c28d1ccb.js"
+          ],
+          "async": []
+        },
+        "css": {
+          "sync": [
+            "static/css/vendors.6152abd2.css",
+            "static/css/async/__federation_expose_IntelligentAssistantLayoutCardHiklink.50cdca0e.css"
+          ],
+          "async": []
+        }
+      },
+      "path": "./IntelligentAssistantLayoutCardHiklink"
+    },
+    {
+      "id": "intelligentAssistantProvider:IntelligentAssistantPdfExcelPreview",
+      "name": "IntelligentAssistantPdfExcelPreview",
+      "assets": {
+        "js": {
+          "sync": [
+            "static/js/vendors.2d156af1.js",
+            "static/js/async/51.71eb6c64.js",
+            "static/js/async/779.1bcbd94d.js",
+            "static/js/async/__federation_expose_IntelligentAssistantPdfExcelPreview.a390669b.js"
+          ],
+          "async": []
+        },
+        "css": {
+          "sync": [
+            "static/css/vendors.6152abd2.css",
+            "static/css/async/__federation_expose_IntelligentAssistantPdfExcelPreview.46c126fb.css"
+          ],
+          "async": []
+        }
+      },
+      "path": "./IntelligentAssistantPdfExcelPreview"
+    },
+    {
+      "id": "intelligentAssistantProvider:HikIntelligentAssistantPage",
+      "name": "HikIntelligentAssistantPage",
+      "assets": {
+        "js": {
+          "sync": [
+            "static/js/aiop-ui.1a2a1284.js",
+            "static/js/async/lib-axios.587e224c.js",
+            "static/js/vendors.2d156af1.js",
+            "static/js/async/51.71eb6c64.js",
+            "static/js/async/779.1bcbd94d.js",
+            "static/js/async/872.9ee98a35.js",
+            "static/js/async/318.ef0cb0b1.js",
+            "static/js/async/831.d76f5cc2.js",
+            "static/js/async/619.3a79210a.js",
+            "static/js/async/585.f87b0812.js",
+            "static/js/async/__federation_expose_HikIntelligentAssistantPage.02bd57bb.js"
+          ],
+          "async": []
+        },
+        "css": {
+          "sync": [
+            "static/css/vendors.6152abd2.css",
+            "static/css/async/585.e031e6dc.css",
+            "static/css/async/__federation_expose_HikIntelligentAssistantPage.89849bd3.css"
+          ],
+          "async": []
+        }
+      },
+      "path": "./HikIntelligentAssistantPage"
+    },
+    {
+      "id": "intelligentAssistantProvider:QuestionSourcesList",
+      "name": "QuestionSourcesList",
+      "assets": {
+        "js": {
+          "sync": [
+            "static/js/vendors.2d156af1.js",
+            "static/js/async/51.71eb6c64.js",
+            "static/js/async/779.1bcbd94d.js",
+            "static/js/async/__federation_expose_QuestionSourcesList.a123c082.js"
+          ],
+          "async": []
+        },
+        "css": {
+          "sync": [
+            "static/css/vendors.6152abd2.css",
+            "static/css/async/__federation_expose_QuestionSourcesList.9c43e515.css"
+          ],
+          "async": []
+        }
+      },
+      "path": "./QuestionSourcesList"
+    },
+    {
+      "id": "intelligentAssistantProvider:FeedbackDialogPage",
+      "name": "FeedbackDialogPage",
+      "assets": {
+        "js": {
+          "sync": [
+            "static/js/vendors.2d156af1.js",
+            "static/js/async/51.71eb6c64.js",
+            "static/js/async/779.1bcbd94d.js",
+            "static/js/async/__federation_expose_FeedbackDialogPage.55b61dd5.js"
+          ],
+          "async": []
+        },
+        "css": {
+          "sync": [
+            "static/css/vendors.6152abd2.css",
+            "static/css/async/__federation_expose_FeedbackDialogPage.9d2975e6.css"
+          ],
+          "async": []
+        }
+      },
+      "path": "./FeedbackDialogPage"
+    }
+  ]
+}
