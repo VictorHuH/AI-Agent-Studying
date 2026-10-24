@@ -1872,6 +1872,63 @@ dispatch_node 读 sources 列表，返回 3 个 Send：
 
 
 
+### Multica
+
+**定义：** 源码公开、可自托管的 **AI Native 团队工作区**（multica-ai/multica）：像给同事派活一样把任务交给 AI 编码智能体——它自己接手、在你自己的机器上跑、边做边评论、卡住主动说，做完挪到审核中等你验收。治的是「多开终端标签页、会话一关上下文全丢」的病。
+
+**核心：**
+- **不自带模型**：驱动你已装好、登录好的 Agent CLI（Claude Code/Codex/Cursor 等 26 种），换提供方只是切下拉框。
+- **任务即工作单元**：任务持久保存描述、讨论、状态、运行记录、产出和成本；**任务 : 运行 = 1 : N**，运行结束 ≠ 任务完成。
+- **智能体是身份不是进程**：四种触发——分配任务 / 评论 `@` / 直接对话 / 自动化（cron 或 webhook）。
+- **运行时 ≠ 守护进程**：守护进程是电脑上的进程；运行时是服务器上的一条记录（电脑 × 工具 × 工作区）。1 个守护进程 → N 条运行时；运行时本身不执行。
+- **小队 = 组织路由**：leader（智能体）+ 成员（人或智能体），靠评论里的 `mention://` 触发新 run，没有进程在等谁。
+
+**实现机制：** 控制面/数据面分离——服务器存工作区、任务、评论、配置、运行记录；你的电脑存代码、CLI 凭据、实际文件修改。全部本地执行，代码不出门；例外是 `custom_env`/MCP 配置存服务器侧。
+
+**命令：**
+
+| 命令 | 作用 |
+|---|---|
+| `multica setup` / `auth status` / `daemon status` | 连接、认证、看本机守护进程 |
+| `multica issue create --title ... --assignee "Engineer" --output json` | 建任务并分配 |
+| `multica issue runs MARS-9 --output json` | 看一个任务的全部运行（Task:Run=1:N 的证据） |
+| `multica issue run-messages <task-id> --issue MARS-9` | 看某次运行的消息 |
+| `multica agent list` / `skill import` / `squad create` | 管理智能体、Skill、小队 |
+| `multica autopilot create ... --mode create_issue` | 建自动化 |
+| `multica autopilot trigger-add <id> --kind webhook` | 挂 webhook 触发器（返回 URL） |
+
+**实测收益（2026-10-24，真实工作区）：**
+- Webhook 全链路：`curl POST` → 立即 `200 accepted` → 45 秒后 run `completed`；payload 原样透传，智能体读到了 `{"hello":"world"}`。
+- 同一脚本只换 `--assignee`：派给智能体 = **1 条 run**（`attribution.source=direct_human`）；派给小队 = **5 条 run**（3 条 `is_leader_task=true`，`source=delegation`）——小队 = 多次独立运行的干净证明。
+- 成本：一句话任务，第二轮输入 **298,587 token**、输出 776 token、缓存读 858,240——**固定上下文压倒任务本身**；`provider`（Harness）与 `model` 分开记账。
+- 开发者插槽实测：CLI 40+ 命令 + 内部 API（`mul_` PAT）+ webhook + Plugin SDK（`plugin-api.multica.ai/v1`，5 个路径）。
+
+**劣势/边界：**
+
+1. **不提升单次执行质量**：底层还是你登录的 Claude Code，模型/工具/质量不变；平台只放大吞吐、可追溯、治理。
+2. 有协调成本：建任务、配运行时、维护看板；一次性小任务直接开 Claude Code 更快。
+3. 运行机器必须装好并登录至少一款支持的 Agent CLI；运行时离线时正在执行的 run 会失败。
+4. Webhook 默认无签名（`has_signing_secret: false`），URL 就是密码；发送方重试可能重复触发，幂等要自己做。
+5. Plugin 沙箱限制：无 localStorage/cookie，网络必须声明 `net:` scope，版本不可变。
+6. 任务/看板模型偏软件工程协作，非软件类工作未必适配。
+
+**同类：**
+
+| 平台 | 定位 | 与 Multica 差异 |
+|---|---|---|
+| **Pragma** | 跨 Harness Agent 团队平台 | 方法即资产：YAML DSL + `.pragma` 可移植包；Desktop/CLI/SDK 三入口 |
+| **Dify / Coze / FastGPT** | 低代码 AI 应用平台 | 在平台里搭应用，不管理 Agent CLI；弱任务治理 |
+| **n8n** | 工作流自动化 | 确定性流程，无 Agent 自主决策 |
+| **Claude Code** | 单个 Coding Agent | 无任务队列/看板/审计/多人协作 |
+| **LangGraph** | Agent 编排框架 | 是库不是平台，调度与治理要自己写 |
+
+**连接已学：** 没引入新范式，是已学概念的**产品级组装**——Unique 增量只有一个：**Harness 从你手写的代码变成平台上的插槽**（[[05-Agent]]）。任务 : 运行 = 1:N 是 [[09-LangGraph]] Checkpointer 的升级版（从「持久化一次执行」到「持久化工作本身」）；小队 = 持久化事件日志 + 事件驱动路由，区别于 [[10-多Agent与SubAgent]] 的调用栈/图；`mul_`/`mat_` 是执行边界上的 least privilege；`--output json` 与「界面能点的 CLI 都能调」是 [[13-CLI]] 的延续。归「工程实践补充」，非学习路线节点。详见 [[19-Multica]]。
+
+**参考：** [GitHub](https://github.com/multica-ai/multica) / [中文 README](https://github.com/multica-ai/multica/blob/main/README.zh.md) / [官方文档](https://multica.ai/docs/zh/concepts) / 公共 API 契约 `server/pkg/publicapi/v1/openapi.yaml` / 本地实践 `Code/multica_run.py`
+
+
+
+
 ### 生产 RAG 知识库流水线（Wiki + RAG）
 
 **定义：** 把一套文档（wiki）建成"机器可检索知识库"的工程模式：**离线入库 / 在线查询两条流水线分离** + 向量存储，让 LLM 回答时带出处引用。本仓库用它把 17 篇学习笔记建成可问答的知识库。完整机制见 [[17-生产知识库实战]]。
