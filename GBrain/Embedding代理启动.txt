@@ -1,0 +1,9 @@
+环境变量已设好：
+
+- **`OPENAI_API_KEY`** → 永久生效 ✅
+- **`OPENAI_BASE_URL`** → 指向本地代理 `localhost:11435` ✅
+
+使用流程：
+
+1. 开一个终端跑代理：node C:\Users\Administrator\.openclaw\workspace\ark-proxy.mjs
+2. 开另一个终端直接用 gbrain：`gbrain import ./目录` / `gbrain ask "..."`

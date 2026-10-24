@@ -20,7 +20,9 @@
       "Bash(pip uninstall *)",
       "Bash(mineru --version)",
       "Read(//c/Users/Administrator/**)",
-      "Bash(git add *)"
+      "Bash(git add *)",
+      "Bash(env)",
+      "Bash(git -c http.proxy= -c https.proxy= push)"
     ]
   }
 }
