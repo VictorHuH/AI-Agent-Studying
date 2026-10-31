@@ -22,7 +22,12 @@
       "Read(//c/Users/Administrator/**)",
       "Bash(git add *)",
       "Bash(env)",
-      "Bash(git -c http.proxy= -c https.proxy= push)"
+      "Bash(git -c http.proxy= -c https.proxy= push)",
+      "Bash(ls -la \"/c/Users/Administrator/.claude/projects/c--Users-Administrator-Desktop-AI-Studying/memory/\")",
+      "Read(//c/Users/Administrator/.claude/projects/c--Users-Administrator-Desktop-AI-Studying/memory//**)"
+    ],
+    "additionalDirectories": [
+      "c:\\Users\\Administrator\\Desktop\\AI\\AI Native"
     ]
   }
 }

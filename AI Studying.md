@@ -1929,6 +1929,54 @@ dispatch_node 读 sources 列表，返回 3 个 Send：
 
 
 
+### whatsmyagentdoing
+
+**定义：** 零插桩的 Agent 可视化看板（Charonyuu/whatsmyagentdoing，MIT，v0.6.0）：一个 Claude Code / Codex 用的 skill，`/myoffice` 之后在浏览器里用等距办公室显示本机每个 Agent 现在在干嘛。治的是「同时开着好几个 Agent，不知道谁在干活、谁卡住、谁在等你」。
+
+**核心：**
+- **日志即接口**：不挂钩子、不要 API key，只读 tail 各家 CLI 已经写好的会话 JSONL（`~/.claude/projects/…`、`~/.codex/sessions/…`、`~/.gemini/tmp/…`）。
+- **状态 = 日志 + 时钟**：日志只按块落盘，所以沉默本身是信号——45s 无声的回复判 `done`，10min 还在跑的工具标 `stuck`。
+- **七态归约**：`thinking / tool / typing / waiting / done / interrupted / error / idle`，每家日志格式的差异全吃在 parser 适配层。
+- **变才推**：去掉时间戳后比较整包 JSON，没变化就不发 SSE。
+
+**实现机制：** `watcher.tick()` 每 1s stat 已知文件、每 5s 重扫目录（轮询而非 `fs.watch`，跨平台一致）→ 增量读 `offset → size`（大文件只读头 128KB + 尾 768KB）→ parser 归约 → `view()` 时钟修正 → SSE 推快照 → 前端画办公室。本地服务只绑 `127.0.0.1`，校验 `Host` 头（防 DNS rebinding）+ 自定义头（防 CSRF）。
+
+**命令：**
+
+| 命令 | 作用 |
+|---|---|
+| `node bin/cli.js` | 起面板（默认 4545，被占自动 +1） |
+| `node bin/cli.js --demo` | 假团队演示，不暴露自己的会话 |
+| `node bin/cli.js --private` | 隐藏 prompt/回复，只听状态（投屏安全） |
+| `node bin/cli.js --json` | 打一次快照退出，可脚本化 |
+| `node bin/cli.js --hours 4` / `--stop` | 时间窗 / 停掉面板 |
+| `node bin/cli.js --install-hook` | 可选：让权限询问显示成 `Waiting for you` |
+
+**实测收益：** 本次**没有实跑**（clone + 源码走读，起 demo 被执行权限拦下）。静态数据：仓库 20MB 中 7.9MB 是演示图、1.6MB 是 3D 模型，真正的代码 ~140KB / ~4200 行；运行时零依赖；作者**没有给任何 benchmark**。
+
+**劣势/边界：**
+
+1. 日志按块落盘，`Writing reply` 不是实时逐字。
+2. Claude Code 不记录权限询问，等审批会显示成 `Running`（除非装 hook）。
+3. 日志格式不是公开 API，上游一改状态就可能退化。
+4. 收益取决于并行开几个 Agent——单人单会话时不如直接看终端。
+5. 90% 代码是 3D 场景、8 家客户端适配、9 种 i18n，与可观测性骨架无关。
+6. 只解决"看见"，不解决"控制"（无暂停/重试/验收）。
+
+**同类：**
+
+| 工具 | 定位 | 差异 |
+|---|---|---|
+| Claude Code `/status`、resume 列表 | 单工具自省 | 不跨会话聚合 |
+| ccusage | token 成本统计 | 看历史账单，不看当下 |
+| LangSmith / Langfuse / Phoenix | Agent 追踪平台 | 要 SDK 插桩上报；它零插桩读磁盘 |
+| OpenTelemetry GenAI 约定 | 追踪标准 | 管不到别人家 CLI 的私有日志 |
+| Multica（[[19-Multica]]） | 平台侧任务治理 | 状态在服务端记录；它状态在本机日志。两端互补 |
+
+**连接已学：** 没引入新概念，是已学 [[05-Agent]]（Harness 的日志成为外部可观测接口）+ [[07-Skill]]（整个工具包成一个 skill，SKILL.md 只负责触发）+ [[13-CLI]]（CLI 是底座，`--json` 让它可被脚本/Agent 消费）+ [[12-应用层Benchmark评测]]（看板无 ground truth，别硬套评测）的产品级组装。值得抄的只有 ~100 行：`watcher.tick` 增量读 + `view()` 时钟补状态 + `push` 去重推送。归「工程实践补充」，非学习路线节点。详见 [[20-whatsmyagentdoing]]。
+
+**参考：** [GitHub](https://github.com/Charonyuu/whatsmyagentdoing) / 本地副本 `whatsmyagentdoing/`（v0.6.0）
+
 ### 生产 RAG 知识库流水线（Wiki + RAG）
 
 **定义：** 把一套文档（wiki）建成"机器可检索知识库"的工程模式：**离线入库 / 在线查询两条流水线分离** + 向量存储，让 LLM 回答时带出处引用。本仓库用它把 17 篇学习笔记建成可问答的知识库。完整机制见 [[17-生产知识库实战]]。

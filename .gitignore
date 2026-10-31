@@ -6,3 +6,6 @@ SkillTest/skill-up/bin/
 
 # promptfoo 本地缓存
 .promptfoo/
+
+# 外部仓库副本（自带 .git，克隆即可重建；避免嵌套 gitlink 和 20MB 二进制进笔记仓库）
+whatsmyagentdoing/
