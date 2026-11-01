@@ -1977,6 +1977,8 @@ dispatch_node 读 sources 列表，返回 3 个 Send：
 
 **参考：** [GitHub](https://github.com/Charonyuu/whatsmyagentdoing) / 本地副本 `whatsmyagentdoing/`（v0.6.0）
 
+
+
 ### 生产 RAG 知识库流水线（Wiki + RAG）
 
 **定义：** 把一套文档（wiki）建成"机器可检索知识库"的工程模式：**离线入库 / 在线查询两条流水线分离** + 向量存储，让 LLM 回答时带出处引用。本仓库用它把 17 篇学习笔记建成可问答的知识库。完整机制见 [[17-生产知识库实战]]。
@@ -2057,9 +2059,55 @@ dispatch_node 读 sources 列表，返回 3 个 Send：
 
 **为什么开放知识库要先建"应用"**：知识库是**资源**（无输入输出语义），应用才是**可调用实体**；权限/密钥/日志/计费全挂应用上，而且社区版压根没有"裸知识库"出口。**类比：知识库 ≈ 数据库，应用 ≈ API endpoint。** 想要裸检索就用极薄的工作流应用（开始 → 知识库搜索 → 结束）。
 
-
-
 **连接已学：** 是 RAG 全链（01 概念 → 02 实战 → Chunking/Re-rank/父子块）的"生产形态"组装：入库/查询分离=工程化；按 `##` 结构切块+metadata 溯源=切块进阶；【n】引用溯源=Prompt Rule「不编造」；RAG vs Agentic=Agent 站 ReAct 控制权的延伸。归「工程实践」，详见 [[17-生产知识库实战]]（全量教程）。
 
 **参考：** [火山引擎 ARK coding-plan embedding 记忆接入文档](https://docs.volcengine.com/docs/ark/coding-plan-personal-embedding-memory?lang=zh)（`doubao-embedding-vision`，OpenAI 兼容）/ [FastGPT 模型配置说明](https://doc.fastgpt.io/zh-CN/self-host/config/model/intro)（渠道/启用模型两层）/ [FastGPT 自部署文档](https://doc.fastgpt.io/zh-CN/self-host/deploy/docker)
+
+
+
+### pagesift
+
+**定义：** 自托管的「网页 / PDF / Office / EPUB / CSV → 干净 Markdown」引擎，一个 Rust 二进制，同一转换核心套五层皮（CLI / Firecrawl 兼容 HTTP / Jina Reader `/r/` / MCP / Python·Node SDK）。治 RAG 入库流水线第一公里的脏活。
+
+**核心：一种能力、多种皮。** 选哪层看消费者，不看功能——人/脚本/Agent 用 CLI，已有 Firecrawl 代码换 `api_url` 即迁，Claude Code 接 MCP。**协议形态会砍掉能力**：MCP 参数是 JSON，所以本地文件传不进去（官方明说"文件不经 MCP 传"），文件类任务只能走 CLI 挂载或 `/v2/parse` 上传。
+
+**实现机制：HTTP 优先，浏览器兜底。** `engine: auto` 先用纯 HTTP 抓，只有浏览器能多拿到内容时才起无头浏览器（镜像自带 lightpanda）。默认守 robots.txt、同主机 1s 间隔、SSRF 防护、按 cgroup 定容量；结果残缺时给 `partial_content` / `output_truncated` 警告而非静默返回半截。
+
+**命令（Windows 实测可用）：**
+
+| 命令 | 作用 |
+|---|---|
+| `MSYS_NO_PATHCONV=1 docker run --rm -v "$PWD:/work" ghcr.io/yolow92/pagesift:0.81.5 scrape "/work/x.pdf" > x.md` | 本地文件转换（**`MSYS_NO_PATHCONV=1` 必加**，否则 Git Bash 改写路径报 SSRF_BLOCKED） |
+| `docker run -d --name pagesift -p 127.0.0.1:3002:3002 -e PAGESIFT_API_KEYS=sk-test -v pagesift-data:/data ghcr.io/yolow92/pagesift:0.81.5` | 常驻 HTTP 服务 |
+| `curl -s localhost:3002/r/<url> -H 'Authorization: Bearer sk-test'` | Jina 风格抓网页 |
+| `curl -s localhost:3002/v2/parse -F 'file=@x.pdf' -F 'options={"formats":["markdown"]}'` | 上传文件，返回 `{"success":true,"data":{markdown,metadata}}` |
+| `claude mcp add --scope user pagesift -- docker run -i --rm ghcr.io/yolow92/pagesift:0.81.5 mcp` | 接成 MCP（5 工具，只接 URL） |
+
+**实测（2026-11-01，Windows 11 + Docker）：**
+
+- 2 页中文简历 PDF → 2309 字符 / 76 行，表格版式原样保留；元数据标题被推断错（`titleSource: "inferred"`）
+- 安装路径：PyPI **只有 sdist 无 Windows wheel**（pip 会去编译 Rust）、GitHub Release **无 Windows 二进制**、npm 有预编译可用、**Docker 是唯一开箱可用的形态**
+- 官方 benchmark：PDF 单页 2.2s vs pypdf 50s（×22）、HTML 0.24s vs Turndown 1.9s、Office 吞吐 94.1 vs Kreuzberg 19.5、礼貌爬取覆盖率 0.740 vs Crawl4AI 0.529；**自认落后**：回放 2.4 页/s vs spider 156.6、扫描件完成率 0.112 vs Docling 1.000
+
+**劣势/边界：**
+
+1. **不做 OCR**——扫描版 PDF / 图片读不到，该换 Docling
+2. 不追极限爬速——守 robots.txt + 1s 间隔是设计取舍，比 spider 慢一个量级
+3. Windows 覆盖不全：无 CLI 二进制、无 Python wheel
+4. MCP 不接文件；AGPL-3.0；无托管云服务
+
+**同类：**
+
+| 工具 | 定位 | 差异 |
+|---|---|---|
+| Firecrawl | 商业抓取 API | 协议兼容，换 URL 即迁，不按页付费 |
+| Jina Reader | 托管 reader | 同形 `/r/` 端点自托管 |
+| Crawl4AI | Python 爬取框架 | 可编程性更强，覆盖/召回指标更低 |
+| trafilatura / Readability | 纯 HTML 正文提取 | 不碰 PDF/Office/爬站 |
+| Docling | 文档理解含 OCR | **扫描件场景它赢** |
+| spider | 极快爬虫 | 快但不限速，无 Markdown 清洗 |
+
+**连接已学：** 没引入新概念，是已学 [[17-生产知识库实战]]（RAG 入库段服务化）+ [[06-MCP]]（第五层皮，也是"协议形态砍能力"的实证）+ [[13-CLI]]（第一层皮，三条契约逐条对上）的产品级组装；"结果残缺要报警"与 [[18-REA逆向工程]] 的 Evidence 契约同源。归「工程实践补充」，非学习路线节点。详见 [[21-pagesift]]。
+
+**参考：** [GitHub](https://github.com/YOLOW92/pagesift) / [中文 README](https://github.com/YOLOW92/pagesift/blob/main/docs/README.zh-CN.md) / [parse API](https://github.com/YOLOW92/pagesift/blob/main/docs/parse-api.md)
 

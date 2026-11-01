@@ -24,7 +24,18 @@
       "Bash(env)",
       "Bash(git -c http.proxy= -c https.proxy= push)",
       "Bash(ls -la \"/c/Users/Administrator/.claude/projects/c--Users-Administrator-Desktop-AI-Studying/memory/\")",
-      "Read(//c/Users/Administrator/.claude/projects/c--Users-Administrator-Desktop-AI-Studying/memory//**)"
+      "Read(//c/Users/Administrator/.claude/projects/c--Users-Administrator-Desktop-AI-Studying/memory//**)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Bash(curl -sI --max-time 15 https://github.com)",
+      "Bash(timeout 60 npm view @pagesift/node version)",
+      "Bash(timeout 60 pip index versions pagesift)",
+      "Bash(mkdir -p /tmp/pstest)",
+      "Read(//tmp/**)",
+      "Bash(npm init *)",
+      "Bash(node -e \"console.log\\(require\\('./node_modules/@pagesift/node/package.json'\\)\\)\")",
+      "Bash(node -e \"const m=require\\('@pagesift/node'\\); console.log\\(Object.keys\\(m\\)\\); console.log\\(typeof m.default, m.default && Object.keys\\(m.default\\)\\)\")",
+      "Bash(cd /tmp/pstest && grep -n \"export declare function\\\\|export class\\\\|export interface\\\\|convert\\\\|scrape\" node_modules/@pagesift/node/index.d.ts | head -40)",
+      "Bash(cd /tmp/pstest && sed -n 100,150p node_modules/@pagesift/node/index.d.ts)"
     ],
     "additionalDirectories": [
       "c:\\Users\\Administrator\\Desktop\\AI\\AI Native"
